@@ -2,6 +2,12 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.2.2] - 2026-05-23
+
+### Fixed
+
+- `node --test` without shell globs — fixes CI on Linux (quoted `**` paths are literal on Ubuntu)
+
 ## [2.2.1] - 2026-05-23
 
 ### Changed
