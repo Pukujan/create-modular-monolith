@@ -1,0 +1,36 @@
+{
+  "name": "@pukujan/create-modular-monolith",
+  "version": "2.1.0",
+  "description": "Scaffold a modular monolith with architecture contracts, file-exchange, agent dev logs, and lint automation for Cursor-scale engineering.",
+  "type": "module",
+  "bin": {
+    "create-modular-monolith": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template"
+  ],
+  "keywords": [
+    "modular-monolith",
+    "express",
+    "react",
+    "vite",
+    "cursor",
+    "architecture",
+    "scaffold",
+    "create-app"
+  ],
+  "author": "Pukujan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pukujan/create-modular-monolith.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pukujan/create-modular-monolith/issues"
+  },
+  "homepage": "https://github.com/Pukujan/create-modular-monolith#readme",
+  "engines": {
+    "node": ">=20"
+  }
+}
