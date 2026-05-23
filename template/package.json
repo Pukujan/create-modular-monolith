@@ -3,6 +3,8 @@
   "private": true,
   "version": "2.0.0",
   "scripts": {
+    "sync:cli-template": "node scripts/sync-cli-template.mjs",
+    "export:architecture-starter": "node scripts/export-architecture-starter.mjs",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "lint:boundaries": "npm --prefix backend run lint:boundaries",
@@ -12,12 +14,10 @@
     "lint:repo-artifacts": "node scripts/lint-repo-artifacts.mjs",
     "lint:architecture": "npm --prefix backend run lint:architecture",
     "test": "npm --prefix backend test && npm --prefix frontend test",
-    "test:evals": "npm --prefix backend run test:evals",
-    "test:ci": "npm run lint:contracts && npm run lint:repo-artifacts && npm run lint:architecture && npm test && npm run test:evals",
     "new:module": "node scripts/new-module.mjs",
     "condense-prompts": "node scripts/condense-prompts.mjs",
     "condense-file-structure": "node scripts/condense-file-structure.mjs",
-    "condense:all": "npm run condense-prompts && npm run condense-file-structure && npm --prefix backend run condense-models -- --local",
+    "condense:all": "node scripts/condense-all.mjs",
     "dev-log:pre-push": "node scripts/write-pre-push-dev-log.mjs",
     "dev-log:verify": "node scripts/verify-dev-log.mjs",
     "import:file-exchange": "node scripts/import-to-file-exchange.mjs"

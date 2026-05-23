@@ -35,80 +35,20 @@ cd backend && npm install && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
-- API: `http://localhost:3001` — [docs/API.md](docs/API.md)
-- UI: Vite dev server — see `frontend/package.json`
-
 ---
 
 ## Daily commands
 
 ```bash
-# Before every git push
 npm run dev-log:pre-push -- --slug your-topic
 npm run test:ci
-
-# Inbound files for agents (never process from Downloads/ directly)
 npm run import:file-exchange -- "/path/to/bundle"
-
-# Refresh agent-readable snapshots
 npm run condense:all
-
-# New feature
 npm run new:module -- billing --label "Billing"
-```
-
----
-
-## Repository map
-
-```text
-my-modular-monolith/
-├── backend/src/modules/       # add features here (_reference = layout example)
-├── frontend/src/modules/
-├── docs/architecture/         # contracts, guardrails
-├── file-exchange/             # imports/{stamp}/ exports/consolidated-*.json
-├── work-log/                  # handoffs + dev-logs (human + agent)
-├── scripts/                   # lint, condense, dev-log, new-module
-└── .github/workflows/ci.yml
-```
-
-Canonical paths: [docs/architecture/REPO_ARTIFACT_LAYOUT.md](docs/architecture/REPO_ARTIFACT_LAYOUT.md)
-
----
-
-## What is included
-
-- **Modules:** `_reference` (example layout), `model-condenser` (schema inventory API)
-- **Platform contracts** v001 — file exchange, dev logs, consolidated exports, API registry
-- **Lint:** `lint:architecture`, `lint:contracts`, `lint:repo-artifacts`
-- **CI:** GitHub Actions runs the same checks as `npm run test:ci`
-- **Observability:** `backend/src/shared/utils/traceId.js` for correlating workflow steps
-
----
-
-## What you add
-
-- Domain modules under `backend/src/modules/<name>/` and `frontend/src/modules/<name>/`
-- Prompts in each module’s `prompts/`
-- Optional `evals/golden/{caseId}/` when you have curated expected JSON for regression
-- Runtime data under `data/` (gitignored by default)
-
----
-
-## Architecture checks
-
-```bash
-npm run test:ci              # recommended before push
-npm run lint:architecture
-npm run test:evals           # module example eval runners (offline)
 ```
 
 ---
 
 ## License & attribution
 
-This scaffold includes **platform files** licensed by Pukujan (see [LICENSE](LICENSE)
-and [NOTICE](NOTICE)). **Keep attribution** in README or NOTICE if you retain
-those files. Application code you write is yours.
-
-Full terms: [create-modular-monolith/LICENSE](https://github.com/Pukujan/create-modular-monolith/blob/main/LICENSE)
+Platform files from [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith). See [LICENSE](LICENSE) and [NOTICE](NOTICE).

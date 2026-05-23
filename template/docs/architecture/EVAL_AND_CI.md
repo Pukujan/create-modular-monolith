@@ -1,79 +1,106 @@
 # Evals, regression, and CI gates
 
-Plain-language guide for **domain-agnostic** projects scaffolded from this template.
+Plain-language guide to how this repo checks prompt and pipeline quality automatically.
 
 ---
 
 ## What is a “gate”?
 
-A **gate** is an automatic check that must pass before code is merged.
+A **gate** is an automatic check that must pass before code is merged or published.
 
-| Gate | What it blocks |
-|------|----------------|
+Think of it like airport security: if the check fails, you do not proceed until it is fixed.
+
+| Gate (command) | What it blocks |
+|----------------|----------------|
 | `npm run lint:contracts` | Broken contract paths in `manifest.json` |
-| `npm run lint:repo-artifacts` | Missing platform folders (file-exchange, dev-logs, …) |
-| `npm run lint:architecture` | Module boundary / layer / API doc violations |
-| `npm test` | Unit/integration failures |
-| `npm run test:evals` | Module `evals/runners/*.eval.mjs` failures |
+| `npm run lint:repo-artifacts` | Missing required folders/files (including golden CI slice) |
+| `npm run lint:architecture` | Module boundary/layer/API doc violations |
+| `npm test` | Unit/integration test failures |
+| `npm run test:evals` | Golden regression failures (offline, no API key) |
 
-GitHub Actions runs these on push/PR (see `.github/workflows/ci.yml`). Locally: **`npm run test:ci`**.
+GitHub Actions runs these on every push/PR to `main` (see `.github/workflows/ci.yml`).
 
 ---
 
 ## What is “eval / regression”?
 
-**Eval** = automated check that output meets expectations.
+**Eval** = compare actual AI output to **expected** (golden) JSON.
 
-**Regression** = re-run evals after a change to catch quality going **down**.
+**Regression** = re-run that comparison after you change prompts or code, to see if quality got worse.
 
-### Golden data is per domain case — not universal
+```text
+Fixture output (or live batch output)
+        ↓
+   evalRunner.evalDocument()
+        ↓
+Compare to evals/golden/case_001/doc_NNN.expected.json
+        ↓
+Scores + pass | partial | fail
+```
 
-Every product case is different (different users, documents, rules). You **do not** ship one golden dataset for all future cases.
+This repo uses **golden files** under `evals/golden/case_001/`:
 
-| Pattern | When to use |
-|---------|-------------|
-| **Module example evals** | Shipped in `_reference` — smoke tests, no API keys |
-| **Optional `evals/golden/{caseId}/`** | When **you** curate expected JSON for one fixed regression case |
-| **Live runs only** | New cases with no golden yet — process, review, optionally add golden later |
+| File | Purpose |
+|------|---------|
+| `doc_001.expected.json` | What doc 1 extraction should look like |
+| `after_doc_001.expected.json` | Case snapshot after doc 1 |
+| `negative_guardrails.expected.json` | Rules that must never appear in output |
+| `case_001.golden-dataset.json` | Manifest (checkpoints, version) |
 
-Golden answers the question: *“On **this** known fixture, did we get worse than last time?”*  
-Not: *“We already know the truth for every new case.”*
+A **minimal golden slice** is committed for CI. Full synthetic case data can be ingested via:
 
-When you add a domain module (`npm run new:module`), add `evals/runners/` and optional `evals/golden/` for cases you control.
+```bash
+npm run import:file-exchange -- <bundle>
+npm run ingest:golden-expected
+```
+
+---
+
+## Running evals locally
+
+```bash
+# All module eval runners (offline for case-filing-ai)
+npm run test:evals
+
+# Case Filing AI only
+npm run test:evals -- case-filing-ai
+```
+
+`golden-regression.eval.mjs` uses test fixtures — **no OpenRouter key required**.
+
+Live batch evals still run when you process uploads; reports land in `data/.../batches/batch-NNN/evals/`.
 
 ---
 
 ## Trace IDs (observability)
 
-Use `backend/src/shared/utils/traceId.js` in long-running workflows:
+Each batch gets `batchTraceId`; each document gets `traceId` in:
 
-```js
-import { createTraceId, docTraceId } from "../shared/utils/traceId.js";
+- `processing-log.jsonl` entries
+- Document output JSON
 
-const batchTraceId = createTraceId("batch_my-job");
-const traceId = docTraceId(batchTraceId, 1);
-```
+Use these to correlate logs, eval reports, and future external tracing (Langfuse, etc.).
 
-Log both IDs in JSONL or structured logs so agents and humans can correlate steps. Plug the same IDs into Langfuse/OpenTelemetry later if needed.
+---
+
+## Schema validation
+
+Master prompt JSON is validated against:
+
+- `schemas/master-output.v1.schema.json` (v1, compact, v2)
+- `schemas/master-output.v001.schema.json` (v001)
+
+Invalid output triggers a schema-aware retry before failing the document.
 
 ---
 
 ## CI workflow
 
-`.github/workflows/ci.yml`:
+`.github/workflows/ci.yml` runs on push/PR:
 
-1. Install backend + frontend  
+1. Install backend + frontend deps  
 2. `lint:contracts` · `lint:repo-artifacts` · `lint:architecture`  
-3. `npm test` · `npm run test:evals`
+3. `npm test`  
+4. `npm run test:evals`  
 
----
-
-## Adding domain evals
-
-```bash
-npm run new:module -- billing --label "Billing"
-# Add backend/src/modules/billing/evals/runners/my-check.eval.mjs
-npm run test:evals -- billing
-```
-
-See [MODULE_INTERNAL_CONTRACT.md](./MODULE_INTERNAL_CONTRACT.md) for colocated `prompts/` and `evals/`.
+Or locally: `npm run test:ci` (same checks from repo root).

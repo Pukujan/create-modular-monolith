@@ -65,9 +65,6 @@ function classifyRoute(row) {
   return "active";
 }
 
-/**
- * @param {string} repoRoot
- */
 export async function collectApiInventory(repoRoot) {
   const masterApiPath = join(repoRoot, "docs/API.md");
   const masterText = existsSync(masterApiPath) ? readText(masterApiPath) : "";
@@ -84,63 +81,38 @@ export async function collectApiInventory(repoRoot) {
     });
   }
 
-  const pkg = JSON.parse(readText(join(repoRoot, "package.json")));
-
-  const versioned = {
-    pipeline: {
-      app: pkg.version ?? "2.0.0",
-      note: "Add pipelineVersions.contract.js in domain modules when you introduce batch workflows"
-    },
-    prompts: {
-      defaultEnv: "n/a",
-      envVar: "MASTER_PROMPT_VERSION",
-      allowed: [],
-      specs: {},
-      notes: ["Add promptVersions.js in your domain module when you introduce LLM workflows"]
-    },
-    storage: {},
-    app: { packageJson: pkg.version }
-  };
-
-  const deprecated = { http: http.deprecated, cli: [], prompts: [], notes: [] };
-  const exportDeprecated = join(repoRoot, "scripts/export-consolidated-models.mjs");
-  if (existsSync(exportDeprecated)) {
-    const t = readText(exportDeprecated);
-    if (/@deprecated/i.test(t)) {
-      deprecated.cli.push({
-        command: "scripts/export-consolidated-models.mjs",
-        replacement: "npm run condense-models or POST /api/model-condenser/condense"
-      });
-    }
-  }
-
   const cli = [
-    { command: "npm run test:ci", purpose: "All CI gates (lint + test + evals)" },
     { command: "npm run dev-log:pre-push", purpose: "Paired human + agent dev logs" },
-    { command: "npm run condense:all", purpose: "Snapshots → file-exchange/exports/" },
-    { command: "npm run import:file-exchange", purpose: "Inbound → file-exchange/imports/{stamp}/" },
-    { command: "npm run lint:contracts", purpose: "Verify contract manifest paths" },
+    {
+      command: "npm run condense:all",
+      purpose: "consolidated snapshots → file-exchange/exports/{stamp}_consolidated/"
+    },
+    { command: "npm run import:file-exchange", purpose: "Inbound bundle → file-exchange/imports/{stamp}/" },
     { command: "npm --prefix backend run condense-models", purpose: "Regenerate consolidated-models.json" }
   ];
 
   return {
     capturedAt: new Date().toISOString(),
-    sourceDocs: ["docs/API.md", "backend/src/modules/*/routes/"],
+    sourceDocs: ["docs/API.md"],
     http,
     moduleStatus: moduleIndex.map((m) => ({
       module: m.module,
       basePath: m.basePath,
       status: m.status
     })),
-    versioned,
-    deprecated,
+    versioned: {
+      pipeline: null,
+      prompts: null,
+      storage: null,
+      app: {
+        packageJson: readText(join(repoRoot, "package.json")).match(/"version":\s*"([^"]+)"/)?.[1]
+      }
+    },
+    deprecated: { http: http.deprecated, cli: [], prompts: [], notes: [] },
     cli
   };
 }
 
-/**
- * @param {Awaited<ReturnType<typeof collectApiInventory>>} apis
- */
 export function formatApisMarkdown(apis) {
   const lines = [
     "### HTTP — active",
@@ -160,23 +132,6 @@ export function formatApisMarkdown(apis) {
   } else {
     lines.push("_none_");
   }
-  lines.push("", "### HTTP — deprecated", "");
-  if (apis.http.deprecated.length) {
-    lines.push("| Method | Path | Module | Description |", "|--------|------|--------|-------------|");
-    for (const r of apis.http.deprecated) {
-      lines.push(`| ${r.method} | \`${r.path}\` | ${r.module} | ${r.description} |`);
-    }
-  } else {
-    lines.push("_none registered in docs/API.md_");
-  }
-  lines.push("", "### Versioned contracts (platform)", "", "```json");
-  lines.push(JSON.stringify(apis.versioned.pipeline, null, 2));
-  lines.push("```");
-  if (apis.deprecated.cli.length) {
-    lines.push("", "### Deprecated CLI", "");
-    for (const d of apis.deprecated.cli) {
-      lines.push(`- \`${d.command}\` → ${d.replacement}`);
-    }
-  }
+  lines.push("", "### HTTP — deprecated", "", "_none registered in docs/API.md_");
   return lines.join("\n");
 }

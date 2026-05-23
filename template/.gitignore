@@ -6,6 +6,6 @@ export/
 .env.local
 backend/.env
 frontend/.env.local
-data/
+data/case-filing-ai/batches/
 eval-bundles/
 case-exports/

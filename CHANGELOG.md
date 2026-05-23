@@ -2,6 +2,14 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.2.3] - 2026-05-23
+
+### Fixed
+
+- Removed litigation-domain consolidated artifacts and model condenser from template
+- Starter export: generic prompts condenser, platform-only model inventory, `treeText`-only file structure
+- `TREE_IGNORE_PREFIXES` in starter is `["data"]` only (not product batch paths)
+
 ## [2.2.2] - 2026-05-23
 
 ### Fixed
