@@ -35,22 +35,5 @@
     "registry": "docs/API.md",
     "lintScript": "scripts/check-api-docs.mjs",
     "architectureDoc": "docs/architecture/API_DOCUMENTATION_CONTRACT.md"
-  },
-  "caseFilingStorageLayout": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/storageLayout.contract.js"
-  },
-  "parsedDocumentArtifacts": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/parsedDocumentArtifacts.contract.js"
-  },
-  "pipelineVersions": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/pipelineVersions.js",
-    "promptVersions": "backend/src/modules/case-filing-ai/prompts/promptVersions.js"
-  },
-  "ruleAuthority": {
-    "version": "v001",
-    "file": "backend/src/modules/court-rules/contracts/ruleAuthority.contract.js"
   }
 }

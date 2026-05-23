@@ -2,6 +2,21 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.2.0] - 2026-05-23
+
+### Added
+
+- Template: GitHub Actions CI (`.github/workflows/ci.yml`) and `npm run test:ci`
+- `docs/architecture/EVAL_AND_CI.md` — gates, regression, golden-is-per-case (not universal)
+- `backend/src/shared/utils/traceId.js` for batch/document correlation
+- `model-condenser` exempt from false-positive boundary lint (path inventory strings)
+
+### Changed
+
+- Synced platform scripts and docs from litigation-prompt-engineering (architecture layer only)
+- Generic `api-inventory.mjs` and `condense-prompts.mjs` (no case-filing-ai dependency)
+- Starter `lint:repo-artifacts` paths for platform-only layout
+
 ## [2.1.0] - 2026-05-23
 
 ### Added

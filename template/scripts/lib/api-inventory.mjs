@@ -1,9 +1,5 @@
-import { readFileSync, readdirSync, statSync, existsSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-
-const SKIP_MODULES = new Set(["_reference"]);
-const ROUTE_RE = /router\.(get|post|put|patch|delete)\(\s*["'`]([^"'`]+)["'`]/gi;
-const BASE_PATH_RE = /app\.use\(\s*["'`](\/api\/[^"'`]+)["'`]/;
 
 function readText(path) {
   return readFileSync(path, "utf8");
@@ -80,8 +76,7 @@ export async function collectApiInventory(repoRoot) {
 
   const http = { active: [], stub: [], deprecated: [] };
   for (const row of registry) {
-    const bucket = classifyRoute(row);
-    http[bucket].push({
+    http[classifyRoute(row)].push({
       method: row.method,
       path: row.path,
       module: row.module,
@@ -89,23 +84,20 @@ export async function collectApiInventory(repoRoot) {
     });
   }
 
-  const promptVersions = {
-    defaultEnv: "n/a",
-    envVar: "MASTER_PROMPT_VERSION",
-    allowed: [],
-    specs: {},
-    notes: ["Add promptVersions.js in your domain module when you introduce LLM workflows"]
-  };
-
   const pkg = JSON.parse(readText(join(repoRoot, "package.json")));
-  const pipelineVersions = {
-    app: pkg.version ?? "2.0.0",
-    note: "Add pipelineVersions.contract.js in domain modules for batch/runtime versioning"
-  };
 
   const versioned = {
-    pipeline: pipelineVersions,
-    prompts: promptVersions,
+    pipeline: {
+      app: pkg.version ?? "2.0.0",
+      note: "Add pipelineVersions.contract.js in domain modules when you introduce batch workflows"
+    },
+    prompts: {
+      defaultEnv: "n/a",
+      envVar: "MASTER_PROMPT_VERSION",
+      allowed: [],
+      specs: {},
+      notes: ["Add promptVersions.js in your domain module when you introduce LLM workflows"]
+    },
     storage: {},
     app: { packageJson: pkg.version }
   };
@@ -123,6 +115,7 @@ export async function collectApiInventory(repoRoot) {
   }
 
   const cli = [
+    { command: "npm run test:ci", purpose: "All CI gates (lint + test + evals)" },
     { command: "npm run dev-log:pre-push", purpose: "Paired human + agent dev logs" },
     { command: "npm run condense:all", purpose: "Snapshots → file-exchange/exports/" },
     { command: "npm run import:file-exchange", purpose: "Inbound → file-exchange/imports/{stamp}/" },

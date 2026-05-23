@@ -158,6 +158,18 @@ HTTP entrypoint: `POST /api/case-filing-ai/process-batch` ([API.md](../API.md)).
 
 ---
 
+## Exporting architecture to the npm starter
+
+To refresh the **boilerplate CLI template** without domain modules:
+
+```bash
+npm run export:architecture-starter -- --to packages/create-modular-monolith/template
+```
+
+Output defaults to `export/architecture-starter/`. See `EXPORT_MANIFEST.json` and [PUBLISHING.md](../PUBLISHING.md).
+
+---
+
 ## Adding a new contract
 
 1. Add `docs/architecture/contracts/<name>.contract.md`

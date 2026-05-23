@@ -32,7 +32,7 @@ npm run condense:all
 ## Workflow
 
 1. Triage loose files into `imports/{stamp}/` (`npm run import:file-exchange -- <path>`).
-2. Process via case-filing APIs using files **under that stamp** only.
+2. Process via your domain module APIs using files **under that stamp** only.
 3. Copy batch bundles / reports to `exports/{stamp}/` when done.
 4. Refresh consolidated snapshots: `npm run condense:all`.
 

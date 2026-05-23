@@ -18,8 +18,8 @@ test("condenseModels writes consolidated-models.json", async () => {
     });
 
     assert.equal(result.status, "condensed");
-    assert.ok(result.modelCount >= 16);
-    assert.ok(result.exampleInstanceCount >= 4);
+    assert.ok(result.modelCount >= 8);
+    assert.ok(result.exampleInstanceCount >= 2);
 
     const raw = await readFile(join(modelsDir, "consolidated-models.json"), "utf8");
     const parsed = JSON.parse(raw);

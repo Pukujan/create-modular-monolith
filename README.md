@@ -3,7 +3,7 @@
 **npm create** scaffold for a modular monolith built for **human + agent** engineering at scale.
 
 ```bash
-npm create @pukujan/modular-monolith@2 my-platform
+npm create @pukujan/modular-monolith@2.2.0 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 ```
@@ -71,6 +71,8 @@ These live under `template/scripts/` and are copied into new projects:
 | `condense-prompts.mjs` | `npm run condense-prompts` | All prompts → consolidated JSON |
 | `import-to-file-exchange.mjs` | `npm run import:file-exchange` | Inbound bundles → `imports/{stamp}/` |
 | `new-module.mjs` | `npm run new:module` | Scaffold backend + frontend module |
+
+Scaffolded projects also ship **`npm run test:ci`**, **`.github/workflows/ci.yml`**, **`traceId.js`**, and **[EVAL_AND_CI.md](template/docs/architecture/EVAL_AND_CI.md)** (gates + per-case golden guidance).
 
 Supporting libraries: `scripts/lib/repo-tree.mjs`, `api-inventory.mjs`, `dev-log-human-format.mjs`, `git-snapshot.mjs`, `run-tests.mjs`.
 

@@ -3,17 +3,15 @@
  * Collect all versioned prompt templates into models/consolidated-prompts.json
  * Usage: node scripts/condense-prompts.mjs
  */
-import { readFile, readdir, stat } from "fs/promises";
+import { readFile, readdir, stat, access } from "fs/promises";
+import { existsSync } from "fs";
 import { join, relative, dirname } from "path";
 import { fileURLToPath } from "url";
 import { writeConsolidatedArtifact } from "./consolidated-output.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const SCAN_ROOTS = [
-  "backend/src/modules",
-  "work-log/handoffs/001_2026-05-23_starter_case-filing-ai-updated/prompts"
-];
+const SCAN_ROOTS = ["backend/src/modules"];
 
 const PROMPT_EXTENSIONS = [".prompt.md", ".prompt.js"];
 
@@ -74,11 +72,14 @@ async function findManifests() {
   return manifests;
 }
 
-async function loadCaseFilingVersions() {
+async function loadDomainPromptVersions() {
   const path = join(
     repoRoot,
     "backend/src/modules/case-filing-ai/prompts/promptVersions.js"
   );
+  if (!existsSync(path)) {
+    return { sourcePath: null, versions: {} };
+  }
   const raw = await readFile(path, "utf8");
   const versions = {};
   const blockRe = /(\w+):\s*\{[^}]*id:\s*"([^"]+)"[^}]*masterCaseFiling:\s*"([^"]+)"[^}]*description:\s*"([^"]+)"/gs;
@@ -133,7 +134,7 @@ async function main() {
     };
   }
 
-  const caseFilingVersions = await loadCaseFilingVersions();
+  const domainPromptVersions = await loadDomainPromptVersions();
   const moduleManifests = await findManifests();
 
   const doc = {
@@ -141,11 +142,10 @@ async function main() {
       generatedAt: new Date().toISOString(),
       repositoryRoot: repoRoot,
       condensedBy: "condense-prompts",
-      description:
-        "Consolidated prompt templates for legal-prmpt-eng (active + starter reference).",
+      description: "Consolidated prompt templates across backend modules.",
       promptCount: inventory.length
     },
-    caseFilingPromptVersions: caseFilingVersions,
+    domainPromptVersions,
     moduleManifests,
     inventory,
     prompts
