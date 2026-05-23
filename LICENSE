@@ -1,21 +1,50 @@
-MIT License
+# Pukujan Modular Monolith Platform License
 
-Copyright (c) 2026 Pukujan
+Copyright (c) 2026 Pukujan. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository and the `@pukujan/create-modular-monolith` npm package (including
+the `template/` directory) are proprietary. No rights are granted except as
+stated below.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Permitted use
+
+1. **Scaffold** — You may install and run `@pukujan/create-modular-monolith` to
+   generate a project for your own application development.
+
+2. **Your application code** — You retain ownership of code you write in a
+   scaffolded project. Platform files copied from the template remain subject
+   to this license for as long as you keep them in your repository.
+
+3. **Attribution (required)** — If your repository or product includes
+   substantial portions of this platform (for example: architecture contracts,
+   file-exchange layout, dev-log tooling, or scripts copied from the template),
+   you must include **visible attribution** in a prominent place (typically
+   README), such as:
+
+   > Built with the Pukujan Modular Monolith platform  
+   > https://github.com/Pukujan/create-modular-monolith
+
+   You must also retain copyright and license notices in `LICENSE` and `NOTICE`
+   files that you do not replace with your own.
+
+## Restrictions
+
+- Do not remove or obscure copyright or attribution notices from platform files
+  you retain.
+- Do not republish this package, its `template/`, or a substantially similar
+  scaffold under another name without written permission from the copyright holder.
+- Do not use the Pukujan name or branding to imply endorsement of your product.
+
+## No warranty
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING
+FROM USE OF THE SOFTWARE.
+
+## Licensing inquiries
+
+For permissions beyond this license (commercial redistribution of the scaffold,
+white-label templates, etc.), open an issue at  
+https://github.com/Pukujan/create-modular-monolith/issues

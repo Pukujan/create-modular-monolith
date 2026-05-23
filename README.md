@@ -3,14 +3,14 @@
 **Scaffold a modular monolith built for human + Cursor agent engineering** — Express + React, versioned contracts, file-exchange handoffs, paired dev logs, and CI gates out of the box.
 
 ```bash
-npm create @pukujan/modular-monolith@2.2.0 my-platform
+npm create @pukujan/modular-monolith@2.2.1 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
 ```
 
 [![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Proprietary%20%2B%20attribution-lightgrey)](LICENSE)
 
 | | |
 |---|---|
@@ -156,7 +156,7 @@ See [EVAL_AND_CI.md](template/docs/architecture/EVAL_AND_CI.md). Optional: creat
 ```text
 create-modular-monolith/          ← npm package (this repo)
 ├── README.md                     ← you are here
-├── package.json                  ← @pukujan/create-modular-monolith@2.2.0
+├── package.json                  ← @pukujan/create-modular-monolith@2.2.1
 ├── index.js                      ← copies template/ on npm create
 ├── CHANGELOG.md
 └── template/                     ← full starter copied to user's folder
@@ -192,4 +192,6 @@ Requires npm auth (granular token with publish access).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+**Proprietary — all rights reserved.** You may use the npm scaffold to build your
+own apps; **attribution is required** if you keep substantial platform files from
+the template. See [LICENSE](LICENSE) and [template/NOTICE](template/NOTICE).

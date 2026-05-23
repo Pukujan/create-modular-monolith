@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Scaffold a modular monolith with architecture contracts, file-exchange, agent dev logs, and lint automation for Cursor-scale engineering.",
   "type": "module",
   "bin": {
@@ -22,7 +22,7 @@
     "create-app"
   ],
   "author": "Pukujan",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Pukujan/create-modular-monolith.git"

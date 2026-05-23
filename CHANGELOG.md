@@ -2,6 +2,14 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.2.1] - 2026-05-23
+
+### Changed
+
+- Replaced MIT with **Pukujan Modular Monolith Platform License** (proprietary, all rights reserved)
+- Required attribution when retaining substantial platform files from the template
+- Scaffold now includes `template/LICENSE` and `template/NOTICE` for generated projects
+
 ## [2.2.0] - 2026-05-23
 
 ### Added

@@ -105,6 +105,10 @@ npm run test:evals           # module example eval runners (offline)
 
 ---
 
-## License
+## License & attribution
 
-MIT (add `LICENSE` at repo root if your project needs one).
+This scaffold includes **platform files** licensed by Pukujan (see [LICENSE](LICENSE)
+and [NOTICE](NOTICE)). **Keep attribution** in README or NOTICE if you retain
+those files. Application code you write is yours.
+
+Full terms: [create-modular-monolith/LICENSE](https://github.com/Pukujan/create-modular-monolith/blob/main/LICENSE)
