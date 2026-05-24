@@ -40,5 +40,5 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Module eval runners
+      - name: Golden regression evals
         run: npm run test:evals

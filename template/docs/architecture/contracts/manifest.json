@@ -17,6 +17,16 @@
     "file": "backend/src/shared/contracts/consolidatedExports.contract.js",
     "utility": "backend/src/shared/utils/consolidatedExport.js"
   },
+  "planningPhase": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/planningPhase.contract.md",
+    "file": "backend/src/shared/contracts/planningPhase.contract.js",
+    "finalize": "scripts/plan-finalize.mjs",
+    "gate": "scripts/plan-gate.mjs",
+    "artifacts": "scripts/lib/plan-artifacts.mjs",
+    "studyLogCommand": ".cursor/commands/planning-study-log.md",
+    "planningDir": "work-log/planning"
+  },
   "prePushDevLog": {
     "version": "v001",
     "doc": "docs/architecture/contracts/prePushDevLog.contract.md",
@@ -35,22 +45,5 @@
     "registry": "docs/API.md",
     "lintScript": "scripts/check-api-docs.mjs",
     "architectureDoc": "docs/architecture/API_DOCUMENTATION_CONTRACT.md"
-  },
-  "caseFilingStorageLayout": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/storageLayout.contract.js"
-  },
-  "parsedDocumentArtifacts": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/parsedDocumentArtifacts.contract.js"
-  },
-  "pipelineVersions": {
-    "version": "v001",
-    "file": "backend/src/modules/case-filing-ai/contracts/pipelineVersions.js",
-    "promptVersions": "backend/src/modules/case-filing-ai/prompts/promptVersions.js"
-  },
-  "ruleAuthority": {
-    "version": "v001",
-    "file": "backend/src/modules/court-rules/contracts/ruleAuthority.contract.js"
   }
 }

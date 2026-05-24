@@ -7,11 +7,14 @@
  *   npm run export:architecture-starter -- --to packages/create-modular-monolith/template
  */
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync, readdirSync } from "fs";
-import { join, dirname, resolve, isAbsolute } from "path";
+import { join, dirname, resolve, isAbsolute, relative } from "path";
 import { fileURLToPath } from "url";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const templatesRoot = join(repoRoot, "export-templates");
+export const ARCHITECTURE_TEMPLATES_DIR = "file-exchange/exports/templates";
+export const ARCHITECTURE_EXPORT_OUTPUT_DIR = "file-exchange/exports/architecture-starter";
+
+const templatesRoot = join(repoRoot, ARCHITECTURE_TEMPLATES_DIR);
 
 const EXCLUDE_DIRS = new Set([
   "node_modules",
@@ -20,12 +23,17 @@ const EXCLUDE_DIRS = new Set([
   "build",
   "coverage",
   "packages",
-  "export",
   "data",
   "eval-bundles",
   "case-exports",
   "evals"
 ]);
+
+/** Generated or maintainer-only paths under file-exchange/exports (not part of product copy). */
+const EXPORT_SKIP_PREFIXES = [
+  ARCHITECTURE_EXPORT_OUTPUT_DIR,
+  ARCHITECTURE_TEMPLATES_DIR
+];
 
 const BACKEND_MODULES_KEEP = new Set(["_reference", "model-condenser"]);
 const FRONTEND_MODULES_KEEP = new Set(["_reference"]);
@@ -44,6 +52,8 @@ const SCRIPTS_KEEP = new Set([
   "consolidated-output.mjs",
   "write-pre-push-dev-log.mjs",
   "verify-dev-log.mjs",
+  "plan-finalize.mjs",
+  "plan-gate.mjs",
   "import-to-file-exchange.mjs",
   "resolve-import-stamp.mjs",
   "export-consolidated-models.mjs",
@@ -58,7 +68,7 @@ const DOCS_KEEP_FILES = new Set([
 ]);
 
 function parseArgs(argv) {
-  let target = join(repoRoot, "export/architecture-starter");
+  let target = join(repoRoot, ARCHITECTURE_EXPORT_OUTPUT_DIR);
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--to" && argv[i + 1]) {
       const raw = argv[++i];
@@ -70,7 +80,12 @@ function parseArgs(argv) {
 
 function shouldExcludePath(sourcePath) {
   const parts = sourcePath.split(/[/\\]/);
-  return parts.some((p) => EXCLUDE_DIRS.has(p));
+  if (parts.some((p) => EXCLUDE_DIRS.has(p))) return true;
+  const rel = relative(repoRoot, sourcePath).replace(/\\/g, "/");
+  if (!rel || rel.startsWith("..")) return false;
+  return EXPORT_SKIP_PREFIXES.some(
+    (prefix) => rel === prefix || rel.startsWith(`${prefix}/`)
+  );
 }
 
 function copyFiltered(src, dest, filterFn) {
@@ -158,7 +173,9 @@ function copyWorkLog(target) {
   cpSync(join(repoRoot, "work-log/handoffs/README.md"), join(dest, "handoffs/README.md"));
   mkdirSync(join(dest, "study-docs"), { recursive: true });
   cpSync(join(repoRoot, "work-log/study-docs/README.md"), join(dest, "study-docs/README.md"));
-  console.log("  ✓ work-log/ (structure, no domain handoffs)");
+  mkdirSync(join(dest, "planning"), { recursive: true });
+  writeFileSync(join(dest, "planning/.gitkeep"), "");
+  console.log("  ✓ work-log/ (structure, planning/, no domain handoffs)");
 }
 
 function copyFileExchange(target) {
@@ -176,6 +193,24 @@ function copyCursor(target) {
   console.log("  ✓ .cursor/");
 }
 
+function copyGithubCi(target) {
+  const src = join(repoRoot, ".github/workflows/ci.yml");
+  if (!existsSync(src)) return;
+  const dest = join(target, ".github/workflows/ci.yml");
+  mkdirSync(join(target, ".github/workflows"), { recursive: true });
+  cpSync(src, dest);
+  console.log("  ✓ .github/workflows/ci.yml");
+}
+
+function copyPlatformArchitectureDoc(target) {
+  const src = join(repoRoot, "docs/architecture/PLATFORM_ARCHITECTURE.md");
+  const dest = join(target, "docs/architecture/PLATFORM_ARCHITECTURE.md");
+  if (existsSync(src)) {
+    cpSync(src, dest);
+    console.log("  ✓ docs/architecture/PLATFORM_ARCHITECTURE.md");
+  }
+}
+
 function copySharedContracts(target) {
   const sharedContracts = join(target, "backend/src/shared/contracts");
   mkdirSync(sharedContracts, { recursive: true });
@@ -189,9 +224,9 @@ function writeStarterRootFiles(target) {
   cpSync(join(repoRoot, ".gitignore"), join(target, ".gitignore"));
   cpSync(join(templatesRoot, "LICENSE.starter"), join(target, "LICENSE"));
   cpSync(join(templatesRoot, "NOTICE.starter"), join(target, "NOTICE"));
-  mkdirSync(join(target, "models"), { recursive: true });
-  writeFileSync(join(target, "models/.gitkeep"), "");
-  console.log("  ✓ package.json, AGENTS.md, README, LICENSE, NOTICE, models/.gitkeep");
+  mkdirSync(join(target, "consolidated-files"), { recursive: true });
+  writeFileSync(join(target, "consolidated-files/.gitkeep"), "");
+  console.log("  ✓ package.json, AGENTS.md, README, LICENSE, NOTICE, consolidated-files/.gitkeep");
 }
 
 function patchStarterScripts(target) {
@@ -210,6 +245,13 @@ function patchStarterScripts(target) {
     join(templatesRoot, "api-inventory.starter.mjs"),
     join(target, "scripts/lib/api-inventory.mjs")
   );
+  cpSync(
+    join(templatesRoot, "modelCondenser.service.test.starter.js"),
+    join(
+      target,
+      "backend/src/modules/model-condenser/tests/unit/modelCondenser.service.test.js"
+    )
+  );
   const repoTreePath = join(target, "scripts/lib/repo-tree.mjs");
   let repoTree = readFileSync(repoTreePath, "utf8");
   repoTree = repoTree.replace(
@@ -225,7 +267,25 @@ function patchStarterScripts(target) {
     "and runtime data/ (if present)."
   );
   writeFileSync(fileStructurePath, fileStructure);
-  console.log("  ✓ starter patches (prompts, model-condenser, repo-tree)");
+
+  const fxReadme = join(target, "file-exchange/README.md");
+  if (existsSync(fxReadme)) {
+    let fx = readFileSync(fxReadme, "utf8");
+    fx = fx.replace("case-filing APIs", "your module APIs");
+    writeFileSync(fxReadme, fx);
+  }
+
+  const condenserRoutesTest = join(
+    target,
+    "backend/src/modules/model-condenser/tests/integration/modelCondenser.routes.test.js"
+  );
+  if (existsSync(condenserRoutesTest)) {
+    let routesTest = readFileSync(condenserRoutesTest, "utf8");
+    routesTest = routesTest.replace("body.modelCount >= 16", "body.modelCount >= 1");
+    writeFileSync(condenserRoutesTest, routesTest);
+  }
+
+  console.log("  ✓ starter patches (prompts, model-condenser, repo-tree, api-inventory)");
 }
 
 function writeManifest(target) {
@@ -255,7 +315,7 @@ function writeManifest(target) {
       scripts: "ingest-golden-*, rerun-batch-evals, run-module-evals"
     },
     nextSteps: [
-      "Review export/ARCHITECTURE_EXPORT_README.md",
+      "Review file-exchange/exports/architecture-starter/ARCHITECTURE_EXPORT_README.md",
       "npm install in backend/ and frontend/",
       "npm run lint:contracts && npm run lint:architecture",
       "node scripts/new-module.mjs my-feature --label \"My Feature\"",
@@ -272,7 +332,7 @@ Generated by \`npm run export:architecture-starter\`.
 
 ## What this is
 
-A **clean modular-monolith boilerplate**: contracts, file-exchange, dev-logs, model-condenser, \`_reference\` module, lint scripts — **without** litigation/case-filing domain modules or runtime data.
+A **clean modular-monolith boilerplate**: contracts, file-exchange, planning gate (study log + plan before build), pre-push dev-logs, model-condenser, \`_reference\` module, lint scripts — **without** litigation/case-filing domain modules or runtime data.
 
 ## What was excluded
 
@@ -300,6 +360,13 @@ Start at [docs/architecture/CONTRACTS_OVERVIEW.md](docs/architecture/CONTRACTS_O
   writeFileSync(join(target, "ARCHITECTURE_EXPORT_README.md"), md);
 }
 
+function patchContractsManifest(target) {
+  const starterManifest = join(templatesRoot, "manifest.starter.json");
+  const dest = join(target, "docs/architecture/contracts/manifest.json");
+  cpSync(starterManifest, dest);
+  console.log("  ✓ docs/architecture/contracts/manifest.json (platform-only)");
+}
+
 function patchLintRepoArtifacts(target) {
   const path = join(target, "scripts/lint-repo-artifacts.mjs");
   let text = readFileSync(path, "utf8");
@@ -313,8 +380,10 @@ function patchLintRepoArtifacts(target) {
   "docs/architecture/contracts/fileExchange.contract.md",
   "docs/architecture/contracts/consolidatedExports.contract.md",
   "docs/architecture/contracts/prePushDevLog.contract.md",
+  "docs/architecture/contracts/planningPhase.contract.md",
   "docs/architecture/contracts/apiDocumentationRegistry.contract.md",
   "backend/src/shared/contracts/prePushDevLog.contract.js",
+  "backend/src/shared/contracts/planningPhase.contract.js",
   "backend/src/shared/contracts/consolidatedExports.contract.js",
   "work-log/dev-logs/schemas/dev-log-agent.v1.schema.json",
   "work-log/dev-logs/human",
@@ -375,10 +444,13 @@ function main() {
   copyFileExchange(target);
   copyWorkLog(target);
   copyCursor(target);
+  copyGithubCi(target);
+  copyPlatformArchitectureDoc(target);
 
   console.log("\nRoot:");
   writeStarterRootFiles(target);
   patchStarterScripts(target);
+  patchContractsManifest(target);
   patchLintRepoArtifacts(target);
   writeManifest(target);
   writeExportReadme(target);

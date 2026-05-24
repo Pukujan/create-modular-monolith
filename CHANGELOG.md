@@ -2,6 +2,19 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.2.5] - 2026-05-24
+
+### Added
+
+- **Planning gate** — `plan:finalize`, `plan:gate`, `work-log/planning/` manifests; study log required before build (`planningPhase` contract)
+- **Architecture push logs** — `arch-log:push` / `arch-log:verify` contract docs in template (product repo runs export audit)
+- `formatHumanReadableUtc` for work-log headers; `fileExchangeCleanup`, `zipDirectory` platform utils
+- Starter templates: planning study-log command, updated `AGENTS.md` and work-log README
+
+### Changed
+
+- Export script sync from `legal-prmpt-eng` @ `d696d6e` (planning + arch-push contracts)
+
 ## [2.2.3] - 2026-05-23
 
 ### Fixed

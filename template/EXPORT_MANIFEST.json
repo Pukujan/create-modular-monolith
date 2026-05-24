@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-05-23T17:53:29.141Z",
+  "exportedAt": "2026-05-24T15:04:25.432Z",
   "sourceRepo": "legal-prmpt-eng",
   "description": "Architecture-only starter — no domain modules, no build artifacts",
   "included": {
@@ -29,6 +29,8 @@
       "consolidated-output.mjs",
       "write-pre-push-dev-log.mjs",
       "verify-dev-log.mjs",
+      "plan-finalize.mjs",
+      "plan-gate.mjs",
       "import-to-file-exchange.mjs",
       "resolve-import-stamp.mjs",
       "export-consolidated-models.mjs",
@@ -54,7 +56,6 @@
       "build",
       "coverage",
       "packages",
-      "export",
       "data",
       "eval-bundles",
       "case-exports",
@@ -65,7 +66,7 @@
     "scripts": "ingest-golden-*, rerun-batch-evals, run-module-evals"
   },
   "nextSteps": [
-    "Review export/ARCHITECTURE_EXPORT_README.md",
+    "Review file-exchange/exports/architecture-starter/ARCHITECTURE_EXPORT_README.md",
     "npm install in backend/ and frontend/",
     "npm run lint:contracts && npm run lint:architecture",
     "node scripts/new-module.mjs my-feature --label \"My Feature\"",

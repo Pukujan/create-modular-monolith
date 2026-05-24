@@ -15,7 +15,7 @@ The goal is simple:
 > Build fast with AI agents, but make the repo remember the work.
 
 ```bash
-npm create @pukujan/modular-monolith@2.2.3 my-platform
+npm create @pukujan/modular-monolith@2.2.5 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
@@ -194,7 +194,7 @@ flowchart TB
 ## Quick start
 
 ```bash
-npm create @pukujan/modular-monolith@2.2.3 my-platform
+npm create @pukujan/modular-monolith@2.2.5 my-platform
 cd my-platform
 
 npm install --prefix backend
