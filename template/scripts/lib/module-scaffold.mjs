@@ -77,6 +77,27 @@ export function createHealthRoutes({ config }) {
 
   add("repositories/.gitkeep", "");
   add(
+    "agents/README.md",
+    `# Agents — ${title}
+
+State machine definitions for module AI agents. Pure transition tables only — no HTTP, DB, or LLM calls.
+
+See docs/architecture/contracts/moduleAgentStateMachine.contract.md and docs/architecture/templates/module-agent-state-machine/README.md.
+`
+  );
+  add(
+    "agents/manifest.json",
+    JSON.stringify(
+      {
+        module: moduleName,
+        version: "v001",
+        agents: []
+      },
+      null,
+      2
+    ) + "\n"
+  );
+  add(
     "domain/README.md",
     `# Domain — ${title}
 
@@ -261,7 +282,9 @@ See [Module internal contract](../../../docs/architecture/MODULE_INTERNAL_CONTRA
 
 ## Layout
 
-\`routes\` → \`services\` → \`repositories\` / \`domain\` / \`adapters\`
+\`routes\` → \`services\` → \`repositories\` / \`domain\` / \`adapters\` / \`agents\`
+
+\`agents/\` holds FSM definitions; \`services/agent-runner.service.js\` owns lifecycle (see moduleAgentStateMachine contract).
 
 \`prompts\` + \`evals\` for AI workflows. \`tests/\` for unit and integration coverage.
 `
@@ -294,9 +317,9 @@ export default {
 
 export function ${componentName}Page() {
   return (
-    <section className="card">
+    <section>
       <h2>${label}</h2>
-      <p className="muted">Module shell — extend pages, hooks, and services.</p>
+      <p>Module shell — extend pages, hooks, and services.</p>
       <ModuleHealthCard />
     </section>
   );
@@ -311,8 +334,8 @@ export function ${componentName}Page() {
 export function ModuleHealthCard() {
   const { data, error, loading } = useModuleHealth();
 
-  if (loading) return <p className="muted">Checking backend…</p>;
-  if (error) return <p className="muted">Backend unavailable: {error.message}</p>;
+  if (loading) return <p>Checking backend…</p>;
+  if (error) return <p>Backend unavailable: {error.message}</p>;
 
   return (
     <p>

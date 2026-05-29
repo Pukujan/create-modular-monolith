@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.2.5",
+  "version": "2.3.0",
   "description": "Scaffold a modular monolith with architecture contracts, file-exchange, agent dev logs, and lint automation for Cursor-scale engineering.",
   "type": "module",
   "bin": {

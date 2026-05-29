@@ -15,7 +15,8 @@ export const CONSOLIDATED_FOLDER_LABEL = "consolidated";
 export const CONSOLIDATED_FILENAMES = {
   models: "consolidated-models.json",
   prompts: "consolidated-prompts.json",
-  fileStructure: "consolidated-file-structure.json"
+  fileStructure: "consolidated-file-structure.json",
+  contracts: "consolidated-contracts.json"
 };
 
 export const CONSOLIDATED_MANIFEST_FILENAME = "manifest.json";

@@ -4,7 +4,7 @@ Canonical paths for runtime data, golden fixtures, and human↔agent exchange.
 
 ## External artifact root (optional)
 
-Copy `local-artifacts.example.json` → `local-artifacts.json` (gitignored) and set `artifactRoot` to a folder **outside** the repo for heavy runtime data.
+Copy [`local-artifacts.example.json`](../../local-artifacts.example.json) → `local-artifacts.json` (gitignored) and set `artifactRoot` to a folder **outside** the repo for heavy runtime data.
 
 **Resolver:** `backend/src/shared/config/resolveArtifactPaths.js`  
 **Precedence:** per-path `ENV` > `local-artifacts.json` > in-repo defaults below.
@@ -16,8 +16,11 @@ Copy `local-artifacts.example.json` → `local-artifacts.json` (gitignored) and 
 | `evalBundles` | `{root}/eval-bundles` | `EVAL_BUNDLE_ROOT_DIR` |
 | `caseExports` | `{root}/case-exports` | `CASE_EXPORT_ROOT_DIR` |
 | `docExports` | `{root}/doc-exports` | — |
+| `uploads` | `{root}/uploads` | `UPLOADS_ROOT` |
 
 **Stays in-repo:** `evals/golden/`, `data/court-rules/fixtures/`, `work-log/dev-logs/`, authored `docs/`, application code.
+
+**Runtime uploads (not file-exchange):** see [documentPersistence.contract.md](./contracts/documentPersistence.contract.md). Default in-repo root: `data/uploads/{documentId}/`.
 
 In-repo `file-exchange/imports/` and `exports/` may remain as `.gitkeep` stubs when using an external root; agents should print **resolved absolute paths** from the import script output.
 
@@ -30,6 +33,7 @@ In-repo `file-exchange/imports/` and `exports/` may remain as `.gitkeep` stubs w
 | `data/court-rules/fixtures/` | — | No |
 | `eval-bundles/` | `EVAL_BUNDLE_ROOT_DIR` | Yes (export API) |
 | `case-exports/` | `CASE_EXPORT_ROOT_DIR` | Yes (export API) |
+| `data/uploads/` | `UPLOADS_ROOT` | Yes (runtime upload blobs) |
 | `file-exchange/imports\|exports/` | — | Yes (human triage) |
 | `work-log/dev-logs/human\|agent/` | — | Yes (pre-push audit) |
 | `consolidated-files/consolidated-*.json` | — | Yes (latest mirror for all condense outputs) |
@@ -87,6 +91,7 @@ Manifest: [contracts/manifest.json](./contracts/manifest.json) · Changelog: [co
 | Consolidated exports | [consolidatedExports.contract.md](./contracts/consolidatedExports.contract.md) |
 | Pre-push dev log | [prePushDevLog.contract.md](./contracts/prePushDevLog.contract.md) |
 | API registry | [apiDocumentationRegistry.contract.md](./contracts/apiDocumentationRegistry.contract.md) |
+| Document persistence | [documentPersistence.contract.md](./contracts/documentPersistence.contract.md) |
 | Case filing storage | `backend/src/modules/case-filing-ai/contracts/storageLayout.contract.js` |
 | Parsed artifacts | `parsedDocumentArtifacts.contract.js` |
 | Pipeline versions | `pipelineVersions.js` |

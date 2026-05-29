@@ -19,6 +19,7 @@
     "new:module": "node scripts/new-module.mjs",
     "condense-prompts": "node scripts/condense-prompts.mjs",
     "condense-file-structure": "node scripts/condense-file-structure.mjs",
+    "condense-contracts": "node scripts/condense-contracts.mjs",
     "condense:all": "node scripts/condense-all.mjs",
     "plan:finalize": "node scripts/plan-finalize.mjs",
     "plan:gate": "node scripts/plan-gate.mjs",

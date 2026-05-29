@@ -24,6 +24,7 @@ Every feature module lives at `backend/src/modules/<module-name>/` and **must** 
 ├── repositories/         # Persistence & query access
 ├── domain/               # Entities, value objects, domain rules (no I/O)
 ├── adapters/             # External systems (courts, e-file, storage, LLM clients)
+├── agents/               # State machine definitions per AI agent (pure, no I/O)
 ├── events/               # Subscribe/emit helpers for this module
 ├── schemas/              # Request/response validation & DTO shapes
 ├── prompts/              # Versioned LLM prompt templates + manifest
@@ -46,9 +47,10 @@ Every feature module lives at `backend/src/modules/<module-name>/` and **must** 
 | **routes** | HTTP mapping, status codes, call services | `services`, `schemas`, `shared`, npm |
 
 **HTTP API docs:** Every route must be listed in `docs/<module-name>/API.md` and `docs/API.md` (endpoint registry). See [API documentation contract](./API_DOCUMENTATION_CONTRACT.md). Enforced via `npm run lint:api-docs`.
-| **services** | Business logic, transactions, AI orchestration | `domain`, `repositories`, `adapters`, `prompts`, `schemas`, `events`, `utils`, `config`, `shared`, npm |
+| **services** | Business logic, transactions, AI orchestration | `domain`, `repositories`, `adapters`, `prompts`, `schemas`, `events`, `agents`, `utils`, `config`, `shared`, npm |
 | **repositories** | DB/files/API persistence | `domain`, `adapters`, `schemas`, `utils`, `shared`, npm |
 | **adapters** | Third-party APIs, SDK wrappers | `domain`, `schemas`, `utils`, `shared`, npm |
+| **agents** | FSM definitions for module AI agents (pure transition tables) | `schemas`, `utils`, `shared`, npm |
 | **domain** | Pure rules and types | `utils` (pure only), `shared` (types/helpers only), npm |
 | **events** | Module event handlers | `services`, `schemas`, `shared`, npm |
 | **prompts** | Prompt templates & metadata (no side effects) | `schemas`, `utils`, npm |
@@ -70,6 +72,7 @@ The layer linter (`npm run lint:layers`) rejects imports that skip layers or cre
 4. **repositories** must not import `services` or `routes`.
 5. **utils** stay leaf nodes — no `services`, `routes`, `repositories`, etc.
 6. **evals** exercise behavior through **services** (and `prompts`/`schemas`), not HTTP.
+7. **agents** stay declarative — no `services`, `routes`, `repositories`, `adapters`, `events`, or `prompts`. Side effects live in `services/agent-actions.js`; lifecycle in `services/agent-runner.service.js` ([moduleAgentStateMachine contract](./contracts/moduleAgentStateMachine.contract.md)).
 
 `index.js` is the only composition root and may wire everything.
 

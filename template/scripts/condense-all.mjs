@@ -43,6 +43,8 @@ async function main() {
     });
   });
 
+  await runNpm("condense-contracts");
+
   console.log(`Done → ${session.exportDir}/ (latest copies also at file-exchange/exports/consolidated-*.json)`);
 }
 

@@ -4,6 +4,8 @@
 **Code:** `backend/src/shared/contracts/architecturePushDevLog.contract.js`  
 **Agent schema:** `work-log/architecture-push-logs/schemas/arch-push-agent.v1.schema.json` (`1.0.0`)
 
+> **Starter package scope:** This spec is **not** registered in [manifest.json](./manifest.json) for the npm boilerplate. The template ships the contract markdown/JS for export sync only; `arch-log:push` / `arch-log:verify` scripts live in the **maintainer** repo ([create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) root), not in generated apps.
+
 ## Purpose
 
 When syncing **legal-prmpt-eng** → **[create-modular-monolith](https://github.com/Pukujan/create-modular-monolith)** (architecture export + npm publish), record a **separate** paired audit from product pre-push dev logs.

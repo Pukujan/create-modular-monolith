@@ -14,3 +14,7 @@
 {"time":"2026-05-24T01:30:00Z","contract":"repoArtifactLayout","from":"v001","to":"v001","reason":"consolidated-files/ replaces models/ for latest consolidated JSON mirror","author":"agent"}
 {"time":"2026-05-24T02:00:00Z","contract":"fileExchange","from":"v001","to":"v001","reason":"POST /api/file-exchange/clear and clear-file-exchange CLI for dated folder cleanup","author":"agent"}
 {"time":"2026-05-24T15:00:00Z","contract":"architecturePushDevLog","from":null,"to":"v001","reason":"Paired arch-push logs for create-modular-monolith/npm; formatHumanReadableUtc headers","author":"agent"}
+{"time":"2026-05-29T13:45:00Z","contract":"documentPersistence","from":null,"to":"v001","reason":"Runtime upload + DB persistence contract; templates; separate from file-exchange","author":"agent"}
+{"time":"2026-05-29T14:00:00Z","contract":"moduleAgentStateMachine","from":null,"to":"v001","reason":"Per-module agent FSM controller contract, shared runtime, implementation templates","author":"agent"}
+{"time":"2026-05-29T14:30:00Z","contract":"asyncJobQueue","from":null,"to":"v001","reason":"BullMQ + Redis for async jobs; SQL remains source of truth","author":"agent"}
+{"time":"2026-05-29T15:30:00Z","contract":"architecturePushDevLog","from":"v001","to":"v001","reason":"Documented as maintainer-repo-only; omitted from starter manifest.json until arch-log scripts ship in template","author":"agent"}

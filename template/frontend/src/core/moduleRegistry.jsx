@@ -20,9 +20,9 @@ export const moduleRoutes = Object.entries(files)
 
 export function EmptyModulePage() {
   return (
-    <div className="card">
+    <div>
       <h2>No modules yet</h2>
-      <p className="muted">
+      <p>
         Add a module with: <strong>node scripts/new-module.mjs my-module --label "My Module"</strong>
       </p>
     </div>
@@ -31,9 +31,9 @@ export function EmptyModulePage() {
 
 export function MissingPage() {
   return (
-    <div className="card">
+    <div>
       <h2>Not Found</h2>
-      <p className="muted">This route is not registered by any module.</p>
+      <p>This route is not registered by any module.</p>
     </div>
   );
 }

@@ -1,0 +1,10 @@
+{
+  "layout": {
+    "fileExchange": "file-exchange",
+    "uploads": "uploads",
+    "batches": "batches",
+    "evalBundles": "eval-bundles",
+    "caseExports": "case-exports",
+    "docExports": "doc-exports"
+  }
+}

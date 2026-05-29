@@ -32,14 +32,16 @@ flowchart TB
   subgraph define [Define]
     manifest[manifest.json]
     md[contracts/*.contract.md]
-    js[*.contract.js in backend]
+    js[backend/src/shared/contracts/*.contract.js]
   end
 
   subgraph use [Use at runtime / workflow]
-    batch[Batch pipeline writes pipelineVersions]
     exchange[file-exchange imports/exports]
+    planning[work-log/planning]
     devlog[pre-push dev logs]
     condense[condense:all snapshots]
+    uploads[data/uploads + SQL]
+    agents[module agents + job queue]
   end
 
   subgraph enforce [Enforce]
@@ -51,9 +53,13 @@ flowchart TB
   manifest --> md
   manifest --> js
   md --> exchange
+  md --> planning
   md --> devlog
   md --> condense
-  js --> batch
+  md --> uploads
+  md --> agents
+  js --> uploads
+  js --> agents
   manifest --> lintC
   manifest --> lintR
   md --> lintApi
@@ -79,11 +85,12 @@ Code exports version strings and path constants so services and scripts share on
 
 | File | Exports |
 |------|---------|
-| `pipelineVersions.js` | `buildPipelineVersions()` on batch outputs |
-| `storageLayout.contract.js` | `BATCH_LAYOUT_VERSION`, folder names |
-| `parsedDocumentArtifacts.contract.js` | Parsed cache filenames |
+| `planningPhase.contract.js` | Planning artifact paths, gate/finalize scripts |
 | `prePushDevLog.contract.js` | Dev-log paths, tree ignores, npm scripts |
 | `consolidatedExports.contract.js` | `file-exchange/exports/consolidated-*.json` |
+| `documentPersistence.contract.js` | Upload roots, DB table names |
+| `moduleAgentStateMachine.contract.js` | Agent FSM events, tables, `createAgentRuntime` |
+| `asyncJobQueue.contract.js` | BullMQ queue names, `REDIS_URL`, default job options |
 
 ### 4. Record changes — `changelog.jsonl`
 
@@ -99,41 +106,31 @@ One JSON line per bump: `contract`, `from`, `to`, `reason`, `time`.
 
 ---
 
-## Contract catalog (current)
+## Contract catalog (starter manifest)
+
+These nine IDs are the only entries in [manifest.json](./contracts/manifest.json):
 
 | ID | Version | What it governs |
 |----|---------|-----------------|
-| **repoArtifactLayout** | v001 | All canonical roots (`data/`, `evals/`, `file-exchange/`, `work-log/`) |
+| **repoArtifactLayout** | v001 | Canonical roots (`data/`, `file-exchange/`, `work-log/`, optional `local-artifacts.json`) |
 | **fileExchange** | v001 | `imports/{stamp}/`, `exports/{stamp}/`, human-readable UTC stamps |
 | **consolidatedExports** | v001 | `exports/consolidated-*.json` + `consolidated-files/` mirror, `condense:all` |
+| **planningPhase** | v001 | `work-log/planning/` study logs, plan gate/finalize |
 | **prePushDevLog** | v001 | Paired `human/*.md` + `agent/*.json`, tree/API/test audits |
 | **apiDocumentationRegistry** | v001 | `docs/API.md`, active/stub/deprecated routes |
-| **caseFilingStorageLayout** | v001 | `batches/batch-NNN/` folder layout |
-| **parsedDocumentArtifacts** | v001 | `parsed-documents/doc-NNN/` file names |
-| **pipelineVersions** | v001 | Version blob on batch outputs (prompt, parser, golden, …) |
-| **ruleAuthority** | v001 | Court rule authority ranks |
+| **documentPersistence** | v001 | Runtime uploads (`data/uploads/`) + DB tables; not file-exchange |
+| **moduleAgentStateMachine** | v001 | Per-module agent FSM controller + shared runtime |
+| **asyncJobQueue** | v001 | BullMQ + Redis for background jobs (SQL remains source of truth) |
 
 Per-contract detail: follow the `doc` link in [manifest.json](./contracts/manifest.json).
 
----
+### Specs synced but not in the starter manifest
 
-## Case-filing **processing** pipeline (runtime)
+| Doc | Notes |
+|-----|--------|
+| [architecturePushDevLog.contract.md](./contracts/architecturePushDevLog.contract.md) | Maintainer-repo `arch-log:push` when exporting starter → npm; not linted in generated apps |
 
-This is separate from the **contract** pipeline above but uses contract versions:
-
-```mermaid
-flowchart LR
-  import[file-exchange import] --> upload[POST process-batch]
-  upload --> parse[Parsed doc cache v001]
-  parse --> llm[Master prompt v1 / v001]
-  llm --> out[outputs + case-snapshot]
-  out --> eval[Golden evals]
-  eval --> export[exports/ or eval-bundles]
-```
-
-Version defaults come from `pipelineVersions.js` + env `MASTER_PROMPT_VERSION`.  
-Batch folders follow `storageLayout.contract.js`.  
-HTTP entrypoint: `POST /api/case-filing-ai/process-batch` ([API.md](../API.md)).
+Domain-specific contracts (e.g. case-filing batch layout, pipeline versions) belong in **product** repos that extend this starter, not in the boilerplate manifest.
 
 ---
 
@@ -145,7 +142,7 @@ HTTP entrypoint: `POST /api/case-filing-ai/process-batch` ([API.md](../API.md)).
 | Before push | `npm run dev-log:pre-push` | prePushDevLog |
 | Snapshot handoff | `npm run condense:all` | consolidatedExports |
 | Clear dated exchange folders | `npm run clear:file-exchange` or `POST /api/file-exchange/clear` | fileExchange |
-| Golden refresh | `npm run ingest:golden-*` | fileExchange + pipelineVersions |
+| Plan gate / finalize | `npm run plan:gate` · `npm run plan:finalize` | planningPhase |
 
 ---
 

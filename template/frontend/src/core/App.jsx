@@ -5,9 +5,9 @@ import { moduleRoutes, EmptyModulePage, MissingPage } from "./moduleRegistry.jsx
 export function App() {
   return (
     <BrowserRouter>
-      <nav className="nav">
+      <nav>
         <strong>Modular Litigation Starter</strong>
-        <span className="badge">{moduleRoutes.length} modules</span>
+        <span>{moduleRoutes.length} modules</span>
         {moduleRoutes.map((entry) => (
           <NavLink key={entry.route} to={entry.route}>
             {entry.label}
@@ -15,7 +15,7 @@ export function App() {
         ))}
       </nav>
 
-      <main className="container">
+      <main>
         <Routes>
           {moduleRoutes.length > 0 ? (
             <Route path="/" element={<Navigate to={moduleRoutes[0].route} replace />} />

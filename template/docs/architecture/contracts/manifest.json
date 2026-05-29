@@ -45,5 +45,27 @@
     "registry": "docs/API.md",
     "lintScript": "scripts/check-api-docs.mjs",
     "architectureDoc": "docs/architecture/API_DOCUMENTATION_CONTRACT.md"
+  },
+  "documentPersistence": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/documentPersistence.contract.md",
+    "file": "backend/src/shared/contracts/documentPersistence.contract.js",
+    "utility": "backend/src/shared/storage/resolveDocumentStoragePaths.js",
+    "userDoc": "docs/architecture/templates/document-persistence/README.md",
+    "schema": "docs/architecture/templates/document-persistence/migrations/001_document_persistence.sql"
+  },
+  "moduleAgentStateMachine": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/moduleAgentStateMachine.contract.md",
+    "file": "backend/src/shared/contracts/moduleAgentStateMachine.contract.js",
+    "utility": "backend/src/shared/agent-runtime/createAgentRuntime.js",
+    "userDoc": "docs/architecture/templates/module-agent-state-machine/README.md",
+    "schema": "docs/architecture/templates/module-agent-state-machine/migrations/001_agent_state_machine.sql"
+  },
+  "asyncJobQueue": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/asyncJobQueue.contract.md",
+    "file": "backend/src/shared/contracts/asyncJobQueue.contract.js",
+    "userDoc": "docs/architecture/templates/async-job-queue/README.md"
   }
 }

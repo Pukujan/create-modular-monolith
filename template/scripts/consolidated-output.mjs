@@ -33,12 +33,16 @@ export const CONSOLIDATED_ARTIFACTS = {
   fileStructure: {
     filename: CONSOLIDATED_FILENAMES.fileStructure,
     mirrorPath: `${CONSOLIDATED_FILES_DIR}/${CONSOLIDATED_FILENAMES.fileStructure}`
+  },
+  contracts: {
+    filename: CONSOLIDATED_FILENAMES.contracts,
+    mirrorPath: `${CONSOLIDATED_FILES_DIR}/${CONSOLIDATED_FILENAMES.contracts}`
   }
 };
 
 /**
  * Write JSON to dated file-exchange/exports/{stamp}_consolidated/ and consolidated-files/ mirror.
- * @param {"models"|"prompts"|"fileStructure"} kind
+ * @param {"models"|"prompts"|"fileStructure"|"contracts"} kind
  * @param {object} doc
  */
 export async function writeConsolidatedArtifact(kind, doc) {

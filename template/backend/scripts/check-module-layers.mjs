@@ -10,6 +10,7 @@ const LAYERS = [
   "repositories",
   "adapters",
   "domain",
+  "agents",
   "events",
   "prompts",
   "evals",
@@ -19,16 +20,17 @@ const LAYERS = [
 ];
 
 const FORBIDDEN_IMPORTS = {
-  domain: ["services", "routes", "repositories", "adapters", "events", "prompts", "evals"],
-  routes: ["repositories", "adapters", "domain", "events", "prompts", "evals"],
-  repositories: ["services", "routes", "events", "evals", "prompts"],
-  prompts: ["services", "routes", "repositories", "adapters", "events", "evals"],
-  utils: ["services", "routes", "repositories", "adapters", "domain", "events", "prompts", "evals"],
-  schemas: ["services", "routes", "repositories", "adapters", "domain", "events", "evals", "prompts"],
-  adapters: ["services", "routes", "events", "evals", "prompts"],
-  events: ["routes", "repositories", "adapters", "prompts", "evals"],
-  evals: ["routes", "events", "repositories", "adapters"],
-  config: ["routes", "services", "repositories", "adapters", "domain", "events", "prompts", "evals"]
+  domain: ["services", "routes", "repositories", "adapters", "agents", "events", "prompts", "evals"],
+  routes: ["repositories", "adapters", "domain", "agents", "events", "prompts", "evals"],
+  repositories: ["services", "routes", "agents", "events", "evals", "prompts"],
+  prompts: ["services", "routes", "repositories", "adapters", "agents", "events", "evals"],
+  utils: ["services", "routes", "repositories", "adapters", "domain", "agents", "events", "prompts", "evals"],
+  schemas: ["services", "routes", "repositories", "adapters", "domain", "agents", "events", "evals", "prompts"],
+  adapters: ["services", "routes", "agents", "events", "evals", "prompts"],
+  agents: ["services", "routes", "repositories", "adapters", "domain", "events", "evals", "prompts"],
+  events: ["routes", "repositories", "adapters", "agents", "prompts", "evals"],
+  evals: ["routes", "events", "repositories", "adapters", "agents"],
+  config: ["routes", "services", "repositories", "adapters", "domain", "agents", "events", "prompts", "evals"]
 };
 
 if (!existsSync(modulesDir)) {

@@ -19,5 +19,6 @@ export const CONSOLIDATED_NPM_SCRIPTS = {
   models: "condense-models",
   prompts: "condense-prompts",
   fileStructure: "condense-file-structure",
+  contracts: "condense-contracts",
   all: "condense:all"
 };

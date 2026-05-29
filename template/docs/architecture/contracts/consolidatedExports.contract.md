@@ -16,10 +16,11 @@ file-exchange/exports/{2026-05-23_15-59-43Z}_consolidated/
   consolidated-models.json
   consolidated-prompts.json
   consolidated-file-structure.json
+  consolidated-contracts.json
   manifest.json                 ← artifact index for the run
 ```
 
-`npm run condense:all` uses one shared stamp for all three files in a single folder.
+`npm run condense:all` uses one shared stamp for all four JSON files in a single folder.
 
 ## Latest pointers (agents / API)
 
@@ -36,6 +37,7 @@ Every condense run writes **dated folder + latest copies**.
 npm run condense:all
 npm run condense-prompts
 npm run condense-file-structure
+npm run condense-contracts
 npm --prefix backend run condense-models   # or POST /api/model-condenser/condense
 ```
 
@@ -46,6 +48,7 @@ npm --prefix backend run condense-models   # or POST /api/model-condenser/conden
 | `consolidated-models.json` | Model condenser — schema inventory |
 | `consolidated-prompts.json` | All `.prompt.md` / `.prompt.js` + manifests |
 | `consolidated-file-structure.json` | ASCII `treeText` only + `stats` (not nested JSON / flat path lists) |
+| `consolidated-contracts.json` | Full architecture contracts from `manifest.json` (markdown + JS constants) |
 
 ## File tree ignore (consolidated-file-structure)
 

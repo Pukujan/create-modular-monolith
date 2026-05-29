@@ -26,15 +26,16 @@ file-exchange/
 npm run condense:all
 ```
 
-Writes all three artifacts into **one dated folder** `{stamp}_consolidated/` and refreshes latest copies:
+Writes all four artifacts into **one dated folder** `{stamp}_consolidated/` and refreshes latest copies:
 
 | Audit (dated folder) | Latest (`exports/` + `consolidated-files/`) |
 |----------------------|----------------------------------|
 | `{stamp}_consolidated/consolidated-models.json` | `exports/consolidated-models.json`, `consolidated-files/consolidated-models.json` |
 | `{stamp}_consolidated/consolidated-prompts.json` | same pattern |
 | `{stamp}_consolidated/consolidated-file-structure.json` | same pattern |
+| `{stamp}_consolidated/consolidated-contracts.json` | same pattern |
 
-Individual runs (`npm run condense-prompts`, etc.) create their own `{stamp}_consolidated/` folder for that artifact (plus `manifest.json`).
+Individual runs (`npm run condense-prompts`, `npm run condense-contracts`, etc.) create their own `{stamp}_consolidated/` folder for that artifact (plus `manifest.json`).
 
 ## Clear dated folders
 
