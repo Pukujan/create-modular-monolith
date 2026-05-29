@@ -9,8 +9,12 @@
   "files": [
     "index.js",
     "LICENSE",
+    "scripts/postinstall-message.mjs",
     "template"
   ],
+  "scripts": {
+    "postinstall": "node scripts/postinstall-message.mjs"
+  },
   "keywords": [
     "modular-monolith",
     "express",

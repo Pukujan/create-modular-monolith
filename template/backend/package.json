@@ -14,7 +14,8 @@
     "condense-models": "node ../scripts/condense-models.mjs",
     "condense-prompts": "node ../scripts/condense-prompts.mjs",
     "condense-file-structure": "node ../scripts/condense-file-structure.mjs",
-    "test:evals": "node ../scripts/run-module-evals.mjs"
+    "test:evals": "node ../scripts/run-module-evals.mjs",
+    "postinstall": "node ../scripts/postinstall-message.mjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.0",

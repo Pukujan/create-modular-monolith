@@ -33,6 +33,9 @@ if (existsSync(target) && existsSync(join(target, "package.json"))) {
 mkdirSync(target, { recursive: true });
 cpSync(templateDir, target, { recursive: true });
 
+const REPO_URL = "https://github.com/Pukujan/create-modular-monolith";
+const NPM_URL = "https://www.npmjs.com/package/@pukujan/create-modular-monolith";
+
 console.log(`
 Created modular monolith at ${target}
 
@@ -43,5 +46,13 @@ Next steps:
   npm run lint:contracts
 
 Read docs/architecture/CONTRACTS_OVERVIEW.md and AGENTS.md before adding modules.
+  npm run new:module -- my-feature --label "My Feature"
+
+──────────────────────────────────────────────────────────────────
+  Platform repo (star, docs, issues):
+  ${REPO_URL}
+
+  npm package:
+  ${NPM_URL}
+──────────────────────────────────────────────────────────────────
 `);
-console.log(`  npm run new:module -- my-feature --label "My Feature"\n`);
