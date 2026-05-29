@@ -2,6 +2,14 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.3.2] - 2026-05-29
+
+### Changed
+
+- **License** — root and `template/` switched from proprietary platform license to **MIT** (Copyright (c) 2026 Pukujan)
+- `package.json` `license` field set to `MIT`
+- `template/NOTICE` — optional scaffold credit (no longer required attribution)
+
 ## [2.3.1] - 2026-05-29
 
 ### Changed

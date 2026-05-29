@@ -64,6 +64,6 @@ npm run new:module -- billing --label "Billing"
 
 ---
 
-## License & attribution
+## License
 
-Platform files from [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith). See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+[MIT](LICENSE) — Copyright (c) 2026 Pukujan. Scaffolded from [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith). Optional credit: [NOTICE](NOTICE).

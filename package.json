@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Scaffold an agent-first modular monolith (Express + React): 9 architecture contracts, file-exchange, dev logs, FSM/agent templates, condense-contracts, and CI lint gates.",
   "type": "module",
   "bin": {
@@ -26,7 +26,7 @@
     "file-exchange"
   ],
   "author": "Pukujan",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Pukujan/create-modular-monolith.git"

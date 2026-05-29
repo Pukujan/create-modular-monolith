@@ -31,7 +31,7 @@ npm run test:ci
 | **Stack** | Express (backend) + React/Vite (frontend) |
 | **Default ports** | Backend `3001`, frontend `5173` (Vite) |
 | **Source** | [github.com/Pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) |
-| **License** | Proprietary — attribution required if you keep substantial platform files ([LICENSE](./LICENSE)) |
+| **License** | [MIT](./LICENSE) — Copyright (c) 2026 Pukujan |
 
 ### Install
 
@@ -458,8 +458,6 @@ Product-repo architecture export audit (separate from this package): see `templa
 
 ## License
 
-Proprietary. All rights reserved.
+[MIT License](./LICENSE) — Copyright (c) 2026 Pukujan.
 
-You may use the npm scaffold to build your own apps. Attribution is required if you keep substantial platform files from the template.
-
-See `LICENSE` and `template/NOTICE`.
+Scaffolded projects receive the same `LICENSE` in `template/`. Optional credit: `template/NOTICE`.
