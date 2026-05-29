@@ -15,11 +15,30 @@ The goal is simple:
 > Build fast with AI agents, but make the repo remember the work.
 
 ```bash
-npm create @pukujan/modular-monolith@2.2.5 my-platform
+npm create @pukujan/modular-monolith@2.3.0 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
 ```
+
+## What's new in 2.3.0
+
+Architecture contracts and templates for the next layer of agent-ready apps (spec only — you wire runtime when ready):
+
+| Contract | What you get |
+| --- | --- |
+| **documentPersistence** | Uploads on disk (`data/uploads/`) + SQL metadata/parsed text; separate from file-exchange |
+| **moduleAgentStateMachine** | Per-module FSM in `agents/*.machine.js` + shared `createAgentRuntime` |
+| **asyncJobQueue** | BullMQ + Redis pattern for background jobs; SQL stays source of truth |
+
+Also in this release:
+
+- `npm run condense-contracts` (and `condense:all`) exports a full **consolidated-contracts.json** handoff bundle
+- `local-artifacts.example.json` for moving heavy folders outside the repo
+- Module scaffold adds an **`agents/`** layer; `CONTRACTS_OVERVIEW` lists all **9** starter manifest contracts
+- Implementation guides under `docs/architecture/templates/{document-persistence,module-agent-state-machine,async-job-queue}/`
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full list.
 
 ## What this is
 
@@ -194,7 +213,7 @@ flowchart TB
 ## Quick start
 
 ```bash
-npm create @pukujan/modular-monolith@2.2.5 my-platform
+npm create @pukujan/modular-monolith@2.3.0 my-platform
 cd my-platform
 
 npm install --prefix backend
@@ -221,7 +240,8 @@ cd frontend && npm run dev
 | `npm run test:ci` | Run all local CI gates |
 | `npm run new:module -- <name>` | Scaffold backend + frontend module |
 | `npm run import:file-exchange -- <path>` | Import inbound files into stamped folder |
-| `npm run condense:all` | Generate consolidated snapshots |
+| `npm run condense:all` | Generate consolidated snapshots (models, prompts, file tree, contracts) |
+| `npm run condense-contracts` | Export full architecture contract bundle only |
 | `npm run dev-log:pre-push -- --slug <topic>` | Create human + agent dev log pair |
 | `npm run lint:architecture` | Check architecture boundaries, layers, and API docs |
 | `npm run lint:contracts` | Check registered architecture contract paths |
@@ -250,15 +270,21 @@ Add those per project when you curate real fixtures.
 
 ## Contract catalog
 
-Registered in `template/docs/architecture/contracts/manifest.json`:
+Registered in `template/docs/architecture/contracts/manifest.json` (**9** starter contracts):
 
 | Contract | Purpose |
 |---|---|
+| `repoArtifactLayout` | Canonical roots + optional `local-artifacts.json` |
 | `fileExchange` | Dated imports and exports |
-| `consolidatedExports` | Snapshot output paths |
+| `consolidatedExports` | `condense:all` / `condense-contracts` output paths |
+| `planningPhase` | `work-log/planning/`, `plan:gate`, `plan:finalize` |
 | `prePushDevLog` | Paired human markdown + agent JSON |
 | `apiDocumentationRegistry` | `docs/API.md` registry |
-| `repoArtifactLayout` | Canonical project roots |
+| `documentPersistence` | Runtime uploads + DB (not file-exchange) |
+| `moduleAgentStateMachine` | Per-module agent FSM + shared runtime |
+| `asyncJobQueue` | BullMQ + Redis for async jobs |
+
+Detail: `template/docs/architecture/CONTRACTS_OVERVIEW.md` after scaffold.
 
 Add domain contracts inside your modules when you introduce project-specific pipelines, prompt layouts, eval folders, or storage rules.
 

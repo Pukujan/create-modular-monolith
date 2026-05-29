@@ -42,6 +42,6 @@ Next steps:
   npm install --prefix frontend
   npm run lint:contracts
 
-Read docs/architecture/PLATFORM_ARCHITECTURE.md and AGENTS.md before adding modules.
+Read docs/architecture/CONTRACTS_OVERVIEW.md and AGENTS.md before adding modules.
 `);
 console.log(`  npm run new:module -- my-feature --label "My Feature"\n`);

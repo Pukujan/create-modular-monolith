@@ -2,6 +2,28 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.3.0] - 2026-05-29
+
+### Added
+
+- **Architecture contracts (v001)** — `documentPersistence`, `moduleAgentStateMachine`, `asyncJobQueue` in `manifest.json` with implementation templates under `docs/architecture/templates/`
+- **Shared agent runtime** — `backend/src/shared/agent-runtime/createAgentRuntime.js` + tests
+- **Document storage helpers** — `resolveDocumentStoragePaths.js` + tests; `data/uploads/.gitkeep`
+- **`npm run condense-contracts`** — bundles all manifest contracts into `file-exchange/exports/consolidated-contracts.json` (wired into `condense:all`)
+- **`local-artifacts.example.json`** — optional external artifact root + layout keys
+- **Module scaffold** — `agents/` layer in `new:module` output; `lint:layers` recognizes `agents/`
+
+### Changed
+
+- **CONTRACTS_OVERVIEW** — starter catalog lists 9 manifest IDs only; product-only contracts moved out of boilerplate table
+- **condense-contracts** — repo-relative paths in export JSON; `repositoryRoot: "."`
+- **architecturePushDevLog** — documented as maintainer-repo-only (not in starter `manifest.json`)
+- Frontend starter — removed default `index.css` / `className` styling from reference module shell
+
+### Notes
+
+- Contracts are **spec + templates** only — no `documents` module, BullMQ deps, or upload API wired in yet (Phase 1 is your project’s job).
+
 ## [2.2.5] - 2026-05-24
 
 ### Added
