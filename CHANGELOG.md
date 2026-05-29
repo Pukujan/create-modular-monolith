@@ -2,6 +2,14 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.3.1] - 2026-05-29
+
+### Changed
+
+- Expanded root **README** for npm: install, requirements, post-scaffold layout, env vars, implementing 2.3.0 contracts, maintainer publish steps
+- Corrected `npm create` package name to `@pukujan/create-modular-monolith`
+- `package.json` description and keywords for registry search
+
 ## [2.3.0] - 2026-05-29
 
 ### Added

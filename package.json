@@ -1,7 +1,7 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.3.0",
-  "description": "Scaffold a modular monolith with architecture contracts, file-exchange, agent dev logs, and lint automation for Cursor-scale engineering.",
+  "version": "2.3.1",
+  "description": "Scaffold an agent-first modular monolith (Express + React): 9 architecture contracts, file-exchange, dev logs, FSM/agent templates, condense-contracts, and CI lint gates.",
   "type": "module",
   "bin": {
     "create-modular-monolith": "index.js"
@@ -19,7 +19,11 @@
     "cursor",
     "architecture",
     "scaffold",
-    "create-app"
+    "create-app",
+    "bullmq",
+    "agent",
+    "state-machine",
+    "file-exchange"
   ],
   "author": "Pukujan",
   "license": "SEE LICENSE IN LICENSE",

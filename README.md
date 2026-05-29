@@ -15,13 +15,90 @@ The goal is simple:
 > Build fast with AI agents, but make the repo remember the work.
 
 ```bash
-npm create @pukujan/modular-monolith@2.3.0 my-platform
+npm create @pukujan/create-modular-monolith@2.3.1 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
 ```
 
-## What's new in 2.3.0
+## At a glance
+
+| | |
+| --- | --- |
+| **npm package** | [`@pukujan/create-modular-monolith`](https://www.npmjs.com/package/@pukujan/create-modular-monolith) |
+| **CLI binary** | `create-modular-monolith` |
+| **Node** | 20+ (`engines` in `package.json`) |
+| **Stack** | Express (backend) + React/Vite (frontend) |
+| **Default ports** | Backend `3001`, frontend `5173` (Vite) |
+| **Source** | [github.com/Pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) |
+| **License** | Proprietary — attribution required if you keep substantial platform files ([LICENSE](./LICENSE)) |
+
+### Install
+
+```bash
+# Recommended (create-app style)
+npm create @pukujan/create-modular-monolith@2.3.1 my-platform
+
+# Equivalent
+npx @pukujan/create-modular-monolith@2.3.1 my-platform
+```
+
+Pin a version in production docs (`@2.3.1`) so scaffolds do not change silently when `latest` moves.
+
+### After scaffold — required setup
+
+```bash
+cd my-platform
+
+# 1. Dependencies (if you skipped install above)
+npm install --prefix backend && npm install --prefix frontend
+
+# 2. Environment
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+
+# 3. Optional: move heavy data outside the repo
+cp local-artifacts.example.json local-artifacts.json
+# edit artifactRoot + layout keys
+
+# 4. Quality gate before first push
+npm run test:ci
+```
+
+### What you get on disk
+
+```text
+my-platform/
+├── AGENTS.md                 ← required reading for Cursor / agents
+├── backend/src/
+│   ├── core/                 ← module loader, server
+│   ├── modules/_reference/   ← health-check example module
+│   ├── modules/model-condenser/
+│   └── shared/               ← contracts, agent-runtime, artifact paths
+├── frontend/src/core/ + modules/_reference/
+├── docs/architecture/        ← contracts, guardrails, templates/
+├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
+├── work-log/                 ← dev-logs, planning/
+├── local-artifacts.example.json
+└── package.json              ← root scripts (test:ci, condense:all, new:module, …)
+```
+
+Read **`docs/architecture/CONTRACTS_OVERVIEW.md`** and **`AGENTS.md`** before adding domain modules.
+
+### Implementing 2.3.0 contracts (your code)
+
+The npm package ships **specs + copy-paste templates**, not a running upload queue or BullMQ install:
+
+| Goal | Start here |
+| --- | --- |
+| User uploads + DB | `docs/architecture/templates/document-persistence/` |
+| Module AI agents (FSM) | `docs/architecture/templates/module-agent-state-machine/` + `backend/src/shared/agent-runtime/` |
+| Background jobs | `docs/architecture/templates/async-job-queue/` (add `bullmq` + Redis when you wire workers) |
+| Agent handoff bundle | `npm run condense-contracts` → `file-exchange/exports/consolidated-contracts.json` |
+
+## What's new in 2.3.x
+
+### 2.3.0 — architecture contracts
 
 Architecture contracts and templates for the next layer of agent-ready apps (spec only — you wire runtime when ready):
 
@@ -37,6 +114,11 @@ Also in this release:
 - `local-artifacts.example.json` for moving heavy folders outside the repo
 - Module scaffold adds an **`agents/`** layer; `CONTRACTS_OVERVIEW` lists all **9** starter manifest contracts
 - Implementation guides under `docs/architecture/templates/{document-persistence,module-agent-state-machine,async-job-queue}/`
+
+### 2.3.1 — documentation
+
+- Expanded npm **README** (install, env vars, post-scaffold layout, maintainer publish steps)
+- Registry `description` / `keywords` updated in `package.json`
 
 See [CHANGELOG.md](./CHANGELOG.md) for the full list.
 
@@ -213,7 +295,7 @@ flowchart TB
 ## Quick start
 
 ```bash
-npm create @pukujan/modular-monolith@2.3.0 my-platform
+npm create @pukujan/create-modular-monolith@2.3.1 my-platform
 cd my-platform
 
 npm install --prefix backend
@@ -245,6 +327,20 @@ cd frontend && npm run dev
 | `npm run dev-log:pre-push -- --slug <topic>` | Create human + agent dev log pair |
 | `npm run lint:architecture` | Check architecture boundaries, layers, and API docs |
 | `npm run lint:contracts` | Check registered architecture contract paths |
+| `npm run plan:gate` | Planning phase gate (study log required) |
+| `npm run plan:finalize` | Finalize planning artifacts |
+
+## Environment variables (starter)
+
+| Variable | Where | Purpose |
+| --- | --- | --- |
+| `PORT` | `backend/.env` | API port (default `3001`) |
+| `DATABASE_URL` | `backend/.env` | Postgres/SQLite when you add persistence |
+| `REDIS_URL` | `backend/.env` | BullMQ backend when you implement `asyncJobQueue` |
+| `UPLOADS_ROOT` | `backend/.env` | Override upload path (see `documentPersistence` contract) |
+| `VITE_API_BASE_URL` | `frontend/.env` | Frontend → backend URL |
+
+See `backend/.env.example` and `docs/architecture/REPO_ARTIFACT_LAYOUT.md` after scaffold.
 
 ## What ships in `template/`
 
@@ -258,6 +354,7 @@ cd frontend && npm run dev
 | CI | `.github/workflows/ci.yml` |
 | Cursor | `AGENTS.md`, `.cursor/rules`, `.cursor/commands` |
 | Scripts | Contract linting, module scaffolding, file exchange, condenser, dev logs |
+| Shared runtime | `createAgentRuntime`, `resolveArtifactPaths`, `resolveDocumentStoragePaths` |
 
 Not included:
 
@@ -318,16 +415,46 @@ create-modular-monolith/
     └── frontend/
 ```
 
-## Publishing
+## Publishing (maintainers)
 
-Maintainers can sync platform changes from product repos through an architecture export workflow.
+### Sync template from a product repo (optional)
 
 ```bash
-npm version patch
-npm publish --access public
+# In legal-prmpt-eng (or your product repo)
+npm run export:architecture-starter -- --to /absolute/path/to/create-modular-monolith/template
 ```
 
-Requires npm authentication with publish access.
+### Publish to npm
+
+npm shows **`README.md` from the package root** on [the package page](https://www.npmjs.com/package/@pukujan/create-modular-monolith). You cannot edit that page in the browser — **publish a new version** with an updated root `README.md`.
+
+```bash
+cd create-modular-monolith
+
+# 1. Edit README.md + CHANGELOG.md, bump version in package.json
+# 2. Commit and push to GitHub
+git add README.md CHANGELOG.md package.json
+git commit -m "docs: release notes for v2.3.x"
+git push origin main
+
+# 3. Login (browser flow is fine)
+npm login
+
+# 4. Publish — README ships inside the tarball automatically
+npm publish --access public
+# If npm asks for a code: use authenticator OTP or complete the CLI browser link
+```
+
+Verify:
+
+```bash
+npm view @pukujan/create-modular-monolith version
+npm view @pukujan/create-modular-monolith readme | head -20
+```
+
+**Patch release tip:** If `2.3.0` is already on npm without the latest README, bump to `2.3.1`, publish again — registry README updates with the new version’s tarball.
+
+Product-repo architecture export audit (separate from this package): see `template/docs/architecture/contracts/architecturePushDevLog.contract.md` (maintainer repo only).
 
 ## License
 
