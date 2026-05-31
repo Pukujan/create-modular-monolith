@@ -45,6 +45,22 @@ npx @pukujan/create-modular-monolith@2.3.3 my-platform
 
 Pin a version in production docs (`@2.3.3`) so scaffolds do not change silently when `latest` moves.
 
+### 2.3.3 — fixes in this release (2026-05-31)
+
+These bugs affected **2.3.2 and earlier** scaffolds. **2.3.3** corrects them:
+
+| Issue | Symptom | Fix |
+| --- | --- | --- |
+| **`plan:gate` CLI parsing** | Running `npm run plan:gate -- --slug my-plan` without `--plan-id` failed with a nonsense manifest path (e.g. `node.exe.json` on Windows) | Safe flag parsing in `parse-cli-args.mjs`; `--plan-id` now defaults to `--slug` |
+| **`dev-log:pre-push` on starter** | `npm run dev-log:pre-push` crashed with `Cannot read properties of null` (pipeline / prompt registry) | Dev log generator handles boilerplate with no domain pipeline registry |
+| **Planning folder split** | Study logs lived in `work-log/study-docs/` while manifests lived in `work-log/planning/` | All planning markdown + JSON manifests under **`work-log/planning/`** |
+| **Manifest paths on Windows** | Finalize wrote backslash paths into planning manifests | Paths normalized to `work-log/planning/...` forward slashes |
+| **`agent:push` on Windows** | `git commit -m "dev log: …"` failed with `pathspec 'log:' did not match` | Git subprocess runs without shell word-splitting |
+
+**Also new in 2.3.3:** `npm run agent:push` (dev logs then push for Cursor agents), Cursor hook blocking bare agent `git push`, and `npm run smoke:gates` to verify planning + push gates. Terminal push by you stays optional without dev logs.
+
+**Upgrade from 2.3.2:** scaffold a fresh app with `@2.3.3`, or copy the script/hook changes and move any `work-log/study-docs/*` files into `work-log/planning/`, then re-run `npm run plan:finalize`.
+
 ### After scaffold — required setup
 
 ```bash
@@ -98,6 +114,21 @@ The npm package ships **specs + copy-paste templates**, not a running upload que
 
 ## What's new in 2.3.x
 
+### 2.3.3 — planning folder + agent push gate (2026-05-31)
+
+**Fixed**
+
+- **`plan:gate` without `--plan-id`** — no longer resolves plan id to `process.argv[0]` (broken manifest paths on Windows)
+- **`dev-log:pre-push` on boilerplate** — no crash when pipeline/prompt registries are absent
+- **Planning paths** — study logs, plan packages, and finalize manifests all under `work-log/planning/` (removed split with `study-docs/`)
+- **Windows path + git commit issues** — planning manifest paths and `agent:push` commit messages
+
+**Added**
+
+- `npm run agent:push` — create dev logs, commit pair, push (for Cursor agent workflows)
+- `.cursor/hooks.json` — blocks bare agent `git push` until paired dev logs exist on `HEAD`
+- `npm run smoke:gates` — smoke tests for planning gate and push gate
+
 ### 2.3.0 — architecture contracts
 
 Architecture contracts and templates for the next layer of agent-ready apps (spec only — you wire runtime when ready):
@@ -114,12 +145,6 @@ Also in this release:
 - `local-artifacts.example.json` for moving heavy folders outside the repo
 - Module scaffold adds an **`agents/`** layer; `CONTRACTS_OVERVIEW` lists all **9** starter manifest contracts
 - Implementation guides under `docs/architecture/templates/{document-persistence,module-agent-state-machine,async-job-queue}/`
-
-### 2.3.3 — planning folder + agent push gate
-
-- **Planning** — all planning markdown + manifests under `work-log/planning/`; fixed `plan:gate` CLI bug
-- **Agent push** — `npm run agent:push`, Cursor hook, and `npm run smoke:gates` for regression checks
-- **Dev logs** — starter-safe generator (no domain pipeline registry required)
 
 ### 2.3.1 — documentation
 

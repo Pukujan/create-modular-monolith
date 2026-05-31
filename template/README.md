@@ -5,8 +5,31 @@
 | | |
 |---|---|
 | **Architecture** | This repo layout and contracts |
-| **npm package** | [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) |
+| **npm package** | [@pukujan/create-modular-monolith](https://www.npmjs.com/package/@pukujan/create-modular-monolith) |
 | **Example product** | [litigation-prompt-engineering](https://github.com/Pukujan/litigation-prompt-engineering) (domain-filled reference) |
+
+---
+
+## Updates (platform v2.3.3)
+
+Scaffolded from `@pukujan/create-modular-monolith@2.3.3` includes the fixes below plus agent push tooling.
+
+### Fixed in 2.3.3
+
+| Issue | What you saw | What we fixed |
+| --- | --- | --- |
+| **`plan:gate`** | `npm run plan:gate -- --slug x` failed without `--plan-id` (wrong manifest name, e.g. `node.exe.json`) | Safe CLI parsing; `--plan-id` defaults to `--slug` |
+| **`dev-log:pre-push`** | Crash: `Cannot read properties of null` on starter apps | Generator works without domain pipeline/prompt registries |
+| **Planning layout** | Study logs in `study-docs/`, manifests in `planning/` | Everything under **`work-log/planning/`** |
+| **Windows** | Bad manifest slashes; `agent:push` git commit split on spaces | Forward-slash manifest paths; git without shell splitting |
+
+### Added in 2.3.3
+
+- **`npm run agent:push`** — dev logs first, then push (when Cursor agent pushes for you)
+- **`.cursor/hooks.json`** — blocks bare agent `git push` without paired dev logs on `HEAD`
+- **`npm run smoke:gates`** — quick check that planning gate + push gate work
+
+Your terminal `git push` is still allowed without dev logs. Only agent shell pushes are enforced.
 
 ---
 
@@ -54,7 +77,10 @@ cd frontend && npm install && npm run dev
 ## Daily commands
 
 ```bash
+npm run agent:push -- --slug your-topic    # agent push: dev logs then git push
 npm run dev-log:pre-push -- --slug your-topic
+npm run plan:gate -- --slug your-plan-slug
+npm run smoke:gates
 npm run test:ci
 npm run import:file-exchange -- "/path/to/bundle"
 npm run condense:all
@@ -66,4 +92,4 @@ npm run new:module -- billing --label "Billing"
 
 ## License
 
-[MIT](LICENSE) — Copyright (c) 2026 Pukujan. Scaffolded from [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith). Optional credit: [NOTICE](NOTICE).
+[MIT](LICENSE) — Copyright (c) 2026 Pukujan. Scaffolded from [@pukujan/create-modular-monolith](https://www.npmjs.com/package/@pukujan/create-modular-monolith). Optional credit: [NOTICE](NOTICE).

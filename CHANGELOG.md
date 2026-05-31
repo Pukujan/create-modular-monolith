@@ -4,18 +4,19 @@ All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
 ## [2.3.3] - 2026-05-31
 
+### Fixed
+
+- **`plan:gate` / `plan:finalize`** — omitting `--plan-id` no longer reads `process.argv[0]` as the plan id (manifest paths like `node.exe.json` on Windows)
+- **`dev-log:pre-push`** — starter boilerplate no longer crashes when pipeline/prompt registries are null
+- **Planning paths** — consolidated study logs, design, and plan packages into `work-log/planning/` (removed `study-docs/` split)
+- **Windows** — planning manifest paths use forward slashes; `agent:push` git commit no longer splits on spaces in the message
+
 ### Added
 
 - **`npm run agent:push`** — agent workflow: create dev logs, commit pair, then push
 - **`npm run smoke:gates`** — smoke tests for planning gate and agent push gate
 - **Cursor hooks** — `.cursor/hooks.json` blocks bare agent `git push` without paired dev logs
 - **`.cursor/commands/push.md`** and **`agent-push-dev-log`** rule for push requests
-
-### Changed
-
-- **Planning artifacts** — study logs, design, and plan packages live under `work-log/planning/` (with finalize manifests)
-- **`plan:gate` / `plan:finalize`** — fixed CLI parsing when `--plan-id` is omitted (no longer reads `process.argv[0]`)
-- **Dev log generator** — starter template works without domain pipeline/prompt registries
 
 ### Notes
 
