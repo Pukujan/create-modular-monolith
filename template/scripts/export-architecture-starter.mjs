@@ -51,9 +51,11 @@ const SCRIPTS_KEEP = new Set([
   "condense-all.mjs",
   "consolidated-output.mjs",
   "write-pre-push-dev-log.mjs",
+  "agent-push.mjs",
   "verify-dev-log.mjs",
   "plan-finalize.mjs",
   "plan-gate.mjs",
+  "smoke-gates.mjs",
   "import-to-file-exchange.mjs",
   "resolve-import-stamp.mjs",
   "export-consolidated-models.mjs",
@@ -160,7 +162,7 @@ function copyWorkLog(target) {
   }
   writeFileSync(
     join(dest, "INDEX.md"),
-    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs, study-docs, and dev-log rows as you work.\n`
+    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs, planning, and dev-log rows as you work.\n`
   );
   copyFiltered(join(repoRoot, "work-log/dev-logs"), join(dest, "dev-logs"), (p) => {
     const base = p.split(/[/\\]/).pop() || "";
@@ -171,10 +173,8 @@ function copyWorkLog(target) {
   });
   mkdirSync(join(dest, "handoffs"), { recursive: true });
   cpSync(join(repoRoot, "work-log/handoffs/README.md"), join(dest, "handoffs/README.md"));
-  mkdirSync(join(dest, "study-docs"), { recursive: true });
-  cpSync(join(repoRoot, "work-log/study-docs/README.md"), join(dest, "study-docs/README.md"));
   mkdirSync(join(dest, "planning"), { recursive: true });
-  writeFileSync(join(dest, "planning/.gitkeep"), "");
+  cpSync(join(repoRoot, "work-log/planning/README.md"), join(dest, "planning/README.md"));
   console.log("  ✓ work-log/ (structure, planning/, no domain handoffs)");
 }
 

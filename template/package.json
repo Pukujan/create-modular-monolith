@@ -25,6 +25,8 @@
     "plan:gate": "node scripts/plan-gate.mjs",
     "dev-log:pre-push": "node scripts/write-pre-push-dev-log.mjs",
     "dev-log:verify": "node scripts/verify-dev-log.mjs",
+    "agent:push": "node scripts/agent-push.mjs",
+    "smoke:gates": "node scripts/smoke-gates.mjs",
     "import:file-exchange": "node scripts/import-to-file-exchange.mjs"
   }
 }

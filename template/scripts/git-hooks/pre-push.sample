@@ -1,9 +1,11 @@
 #!/bin/sh
-# Optional pre-push reminder — install:
+# Optional pre-push reminder for terminal pushes — install:
 #   cp scripts/git-hooks/pre-push.sample .git/hooks/pre-push && chmod +x .git/hooks/pre-push
 #
-# Enforce agent log for HEAD (strict):
+# Block terminal push without dev logs (off by default):
 #   DEVLOG_STRICT=1 npm run dev-log:pre-push -- --check
+#
+# Agent pushes are enforced separately via .cursor/hooks.json (not this hook).
 
 if [ "$DEVLOG_STRICT" = "1" ]; then
   npm run dev-log:pre-push -- --check || exit 1

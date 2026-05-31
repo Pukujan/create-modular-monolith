@@ -115,7 +115,7 @@ These nine IDs are the only entries in [manifest.json](./contracts/manifest.json
 | **repoArtifactLayout** | v001 | Canonical roots (`data/`, `file-exchange/`, `work-log/`, optional `local-artifacts.json`) |
 | **fileExchange** | v001 | `imports/{stamp}/`, `exports/{stamp}/`, human-readable UTC stamps |
 | **consolidatedExports** | v001 | `exports/consolidated-*.json` + `consolidated-files/` mirror, `condense:all` |
-| **planningPhase** | v001 | `work-log/planning/` study logs, plan gate/finalize |
+| **planningPhase** | v001 | `work-log/planning/` study logs, plan packages, gate/finalize |
 | **prePushDevLog** | v001 | Paired `human/*.md` + `agent/*.json`, tree/API/test audits |
 | **apiDocumentationRegistry** | v001 | `docs/API.md`, active/stub/deprecated routes |
 | **documentPersistence** | v001 | Runtime uploads (`data/uploads/`) + DB tables; not file-exchange |

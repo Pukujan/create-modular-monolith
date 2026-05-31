@@ -1,11 +1,14 @@
 # Pre-push dev log (human + agent audit)
 
-Create **two** dev logs before every push: one for humans, one structured JSON for agents.
+Create **two** dev logs before every **agent-initiated** push: one for humans, one structured JSON for agents.
+
+Terminal `git push` by the user is allowed without dev logs. Agent shell `git push` is blocked by `.cursor/hooks.json` until paired logs exist for `HEAD`.
 
 ## When to run
 
-- Before `git push` (or when the user asks to “write dev log” / “pre-push log”).
-- After a meaningful slice of work — same session as the push.
+- Before **agent** `git push` (required — hook enforces paired logs for `HEAD`).
+- When the user asks to “write dev log” / “pre-push log”.
+- Optional before terminal push by the user.
 
 ## Steps
 

@@ -6,12 +6,14 @@
 
 ## Purpose
 
-Before each git push, produce a **paired audit**:
+Before each git push, produce a **paired audit** (required for **agent** pushes; optional for terminal pushes):
 
 | Audience | Path | Format |
 |----------|------|--------|
 | Human | `work-log/dev-logs/human/` | Markdown — Part I summary + Part II detail |
 | Agent | `work-log/dev-logs/agent/` | JSON — machine-readable audit |
+
+**Agent enforcement:** `.cursor/hooks.json` runs `beforeShellExecution` on `git push` and denies the command unless paired logs exist for `HEAD` (`scripts/lib/check-dev-log-for-head.mjs`). Terminal pushes are not blocked.
 
 ## Commands
 
@@ -67,3 +69,4 @@ Implemented in `scripts/lib/repo-tree.mjs`. `.DS_Store` files also excluded.
 - [work-log/dev-logs/README.md](../../../work-log/dev-logs/README.md)
 - [AGENTS.md](../../../AGENTS.md) — pre-push section
 - `.cursor/commands/pre-push-dev-log.md`
+- `.cursor/hooks.json` — agent `git push` gate

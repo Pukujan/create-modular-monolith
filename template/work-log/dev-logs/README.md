@@ -55,7 +55,7 @@ Agents should read the **JSON** first when resuming work; humans read **markdown
 | Folder | Audience | Content |
 |--------|----------|---------|
 | **handoffs/** | Implementers | Spec — what to build |
-| **study-docs/** | You + recruiters | Why — planning conversation |
+| **planning/** | You + recruiters | Why — planning conversation |
 | **dev-logs/** | You + agents + reviewers | What landed — audit per push |
 
 ## vs `docs/DEVLOG_V2.md`
@@ -83,14 +83,24 @@ Older single-file logs at `dev-logs/*.md` (repo root of this folder) predate the
 | `HH-MM` | Finish time (24h) |
 | `slug` | Kebab-case topic |
 
-## Git hook (optional)
+## Agent push enforcement (Cursor)
+
+Agent shell `git push` is blocked by `.cursor/hooks.json` until paired dev logs exist for `HEAD`:
+
+```bash
+npm run dev-log:pre-push -- --check
+```
+
+Terminal `git push` by the user is **not** blocked.
+
+## Git hook (optional, terminal)
 
 ```bash
 cp scripts/git-hooks/pre-push.sample .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
 
-Reminds you to run `dev-log:pre-push`; use `--check` to enforce agent log for current `HEAD`.
+Reminds you to run `dev-log:pre-push`; set `DEVLOG_STRICT=1` to block **terminal** push without logs (off by default).
 
 ## GitHub
 

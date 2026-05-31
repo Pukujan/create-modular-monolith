@@ -25,7 +25,8 @@
     "gate": "scripts/plan-gate.mjs",
     "artifacts": "scripts/lib/plan-artifacts.mjs",
     "studyLogCommand": ".cursor/commands/planning-study-log.md",
-    "planningDir": "work-log/planning"
+    "planningDir": "work-log/planning",
+    "workLogReadme": "work-log/planning/README.md"
   },
   "prePushDevLog": {
     "version": "v001",

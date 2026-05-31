@@ -1,17 +1,17 @@
-# Study docs
+# Planning
 
-Design rationale, planning conversations, and portfolio study logs. Parent: [work-log](../README.md).
+Design rationale, planning conversations, study logs, and plan packages. Parent: [work-log](../README.md).
 
 Implementation specs are in **[../handoffs/](../handoffs/)**.
 
-## Planning trio (before build)
+## Planning artifacts (before build)
 
 For each program tier, commit **in this order** before implementation:
 
 1. **Study log** — `*_study-log_{slug}.md` — your messages verbatim + Cursor summaries ([planning-study-log](../../.cursor/commands/planning-study-log.md))
 2. **Design** (optional) — `*_design_{slug}.md`
 3. **Plan package** — `*_plan_{slug}*.md`
-4. **Manifest** — `npm run plan:finalize -- --slug {slug} --plan-id {NNN}-{slug}` → `work-log/planning/{planId}.json`
+4. **Manifest** — `npm run plan:finalize -- --slug {slug} --plan-id {NNN}-{slug}` → `{planId}.json` in this folder
 
 Gate: `npm run plan:gate -- --slug {slug} --plan-id {planId}`
 

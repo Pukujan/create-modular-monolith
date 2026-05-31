@@ -1,13 +1,13 @@
 import { readdir } from "fs/promises";
-import { join } from "path";
+import { PLANNING_DIR } from "../../backend/src/shared/contracts/planningPhase.contract.js";
 
 /**
- * Resolve planning artifact paths under work-log/study-docs for a slug.
- * @param {string} studyDocsDir absolute path
+ * Resolve planning artifact paths under work-log/planning for a slug.
+ * @param {string} planningDir absolute path
  * @param {string} slug
  */
-export async function resolvePlanArtifacts(studyDocsDir, slug) {
-  const entries = await readdir(studyDocsDir);
+export async function resolvePlanArtifacts(planningDir, slug) {
+  const entries = await readdir(planningDir);
   const studyLog = entries.find(
     (f) => f.includes(slug) && f.includes("_study-log_") && f.endsWith(".md")
   );
@@ -20,11 +20,11 @@ export async function resolvePlanArtifacts(studyDocsDir, slug) {
   return { studyLog, design, planPkg };
 }
 
-export function artifactPaths(repoRoot, files) {
-  const base = "work-log/study-docs";
+export function artifactPaths(_repoRoot, files) {
+  const rel = (name) => `${PLANNING_DIR}/${name}`.replace(/\\/g, "/");
   return {
-    studyLogMd: files.studyLog ? join(base, files.studyLog) : null,
-    designMd: files.design ? join(base, files.design) : null,
-    planPackageMd: files.planPkg ? join(base, files.planPkg) : null
+    studyLogMd: files.studyLog ? rel(files.studyLog) : null,
+    designMd: files.design ? rel(files.design) : null,
+    planPackageMd: files.planPkg ? rel(files.planPkg) : null
   };
 }

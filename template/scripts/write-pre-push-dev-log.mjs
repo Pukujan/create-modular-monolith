@@ -5,9 +5,9 @@
  * Usage:
  *   npm run dev-log:pre-push -- --slug consolidated-exports
  *   npm run dev-log:pre-push -- --slug my-topic --program 005 --no-tests
- *   npm run dev-log:pre-push -- --check   # verify agent log exists for HEAD
+ *   npm run dev-log:pre-push -- --check   # verify paired dev logs exist for HEAD
  */
-import { readFile, writeFile, mkdir, readdir } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { formatWorkLogTimestamp } from "../backend/src/shared/utils/formatExchangeTimestamp.js";
@@ -16,6 +16,7 @@ import { collectGitSnapshot } from "./lib/git-snapshot.mjs";
 import { runTestSuite } from "./lib/run-tests.mjs";
 import { collectApiInventory, formatApisMarkdown } from "./lib/api-inventory.mjs";
 import { buildHumanDevLog } from "./lib/dev-log-human-format.mjs";
+import { checkDevLogForHead } from "./lib/check-dev-log-for-head.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const humanDir = join(repoRoot, "work-log/dev-logs/human");
@@ -59,32 +60,19 @@ function classifyChangedFiles(changedFiles) {
   return { byArea, added, modified, deleted };
 }
 
-async function findAgentLogForSha(sha) {
-  let files;
-  try {
-    files = await readdir(agentDir);
-  } catch {
-    return null;
-  }
-  for (const f of files.filter((x) => x.endsWith(".json")).sort().reverse()) {
-    const raw = await readFile(join(agentDir, f), "utf8");
-    const doc = JSON.parse(raw);
-    if (doc.git?.sha === sha) return join(agentDir, f);
-  }
-  return null;
-}
-
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const git = await collectGitSnapshot(repoRoot);
 
   if (args.check) {
-    const found = await findAgentLogForSha(git.sha);
-    if (!found) {
-      console.error(`No agent dev-log for HEAD (${git.shortSha}). Run: npm run dev-log:pre-push -- --slug <topic>`);
+    const result = await checkDevLogForHead(repoRoot);
+    if (!result.ok) {
+      console.error(result.reason);
       process.exit(1);
     }
-    console.log(`OK: agent dev-log matches HEAD → ${found.replace(repoRoot + "/", "")}`);
+    console.log(`OK: paired dev logs for HEAD (${result.sha})`);
+    console.log(`  agent: ${result.agentPath}`);
+    console.log(`  human: ${result.humanPath}`);
     return;
   }
 

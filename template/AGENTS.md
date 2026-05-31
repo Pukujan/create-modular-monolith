@@ -20,7 +20,7 @@ See [file-exchange/README.md](file-exchange/README.md) and [docs/architecture/CO
 
 Before building a tier-L feature:
 
-1. Append a **study log** under `work-log/study-docs/` (You raw + Cursor summary per turn) — see `.cursor/commands/planning-study-log.md`
+1. Append a **study log** under `work-log/planning/` (You raw + Cursor summary per turn) — see `.cursor/commands/planning-study-log.md`
 2. Add a **plan package** `*_plan_{slug}*.md` in the same folder
 3. Finalize and gate:
 
@@ -33,14 +33,17 @@ Manifest → `work-log/planning/{planId}.json`. See [planningPhase contract](doc
 
 ## Pre-push dev log
 
-Before each push:
+When the user asks you to **push**, use **`npm run agent:push`** (creates dev logs, fills them, commits, pushes). Do not run bare `git push`.
 
 ```bash
-npm run dev-log:pre-push -- --slug <topic>
-npm run dev-log:verify
+npm run agent:push -- --slug <topic>
+# fill FILL sections if exit 2
+npm run agent:push -- --slug <topic> --commit
 ```
 
-Paired logs: `work-log/dev-logs/human/` + `work-log/dev-logs/agent/`. See `.cursor/commands/pre-push-dev-log.md`.
+Manual dev log only (no push): `npm run dev-log:pre-push -- --slug <topic>` · verify: `npm run dev-log:verify`
+
+**Enforcement:** `.cursor/hooks.json` blocks bare agent `git push`. Terminal pushes by the user are not blocked.
 
 ## Architecture checks
 
