@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "schemaVersion": "1.0.0",
+    "entryId": "005",
+    "slug": "planning-push-gates",
+    "generatedAt": "2026-05-31T04:44:47.368Z",
+    "humanLogPath": "work-log/dev-logs/human/005_2026-05-31_04-44_dev-log_planning-push-gates.md",
+    "audience": "agent",
+    "filledBy": "agent",
+    "handoffRefs": []
+  },
+  "summary": "Shipped planning artifact consolidation into work-log/planning/, fixed plan:gate CLI parsing (plan-id no longer defaults to node.exe), added agent:push with Cursor beforeShellExecution hook to require paired dev logs before agent git push, fixed starter-template dev-log generator null crashes, and added npm run smoke:gates. Commit 6284b77 on main; smoke:gates passes. Tests skipped for this log (--no-tests).",
+  "apis": {
+    "capturedAt": "2026-05-31T04:44:47.365Z",
+    "sourceDocs": [
+      "docs/API.md"
+    ],
+    "http": {
+      "active": [
+        {
+          "method": "GET",
+          "path": "/api/_reference/health",
+          "module": "Reference",
+          "description": "Example module health"
+        },
+        {
+          "method": "GET",
+          "path": "/api/model-condenser/health",
+          "module": "Model condenser",
+          "description": "Module health"
+        },
+        {
+          "method": "POST",
+          "path": "/api/model-condenser/condense",
+          "module": "Model condenser",
+          "description": "Regenerate consolidated-models.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/model-condenser/consolidated",
+          "module": "Model condenser",
+          "description": "Read consolidated schema inventory"
+        }
+      ],
+      "stub": [],
+      "deprecated": []
+    },
+    "moduleStatus": [
+      {
+        "module": "Reference",
+        "basePath": "/api/_reference",
+        "status": "Example layout"
+      },
+      {
+        "module": "Model condenser",
+        "basePath": "/api/model-condenser",
+        "status": "Active — schema inventory export"
+      }
+    ],
+    "versioned": {
+      "pipeline": null,
+      "prompts": null,
+      "storage": null,
+      "app": {
+        "packageJson": "2.0.0"
+      }
+    },
+    "deprecated": {
+      "http": [],
+      "cli": [],
+      "prompts": [],
+      "notes": []
+    },
+    "cli": [
+      {
+        "command": "npm run dev-log:pre-push",
+        "purpose": "Paired human + agent dev logs"
+      },
+      {
+        "command": "npm run condense:all",
+        "purpose": "consolidated snapshots → file-exchange/exports/{stamp}_consolidated/"
+      },
+      {
+        "command": "npm run import:file-exchange",
+        "purpose": "Inbound bundle → file-exchange/imports/{stamp}/"
+      },
+      {
+        "command": "npm --prefix backend run condense-models",
+        "purpose": "Regenerate consolidated-models.json"
+      }
+    ]
+  },
+  "git": {
+    "branch": "main",
+    "sha": "6284b77c7e1e43e39b715c77ab39e7db6c666e2c",
+    "shortSha": "6284b77",
+    "changedFiles": [],
+    "diffStatAgainstHead": "",
+    "diffCachedStat": "",
+    "recentCommits": [
+      "6284b77 feat: consolidate planning artifacts and enforce agent push dev logs",
+      "cd2d6e4 feat: postinstall message linking to GitHub and npm",
+      "b938fd7 license: switch to MIT and release v2.3.2",
+      "37e9768 release: v2.3.1 npm README and package metadata",
+      "3797ab3 docs: add 2.3.0 release notes to README and CHANGELOG"
+    ]
+  },
+  "tests": {
+    "ran": false,
+    "exitCode": null,
+    "summary": "skipped (--no-tests)",
+    "passed": [],
+    "failed": [],
+    "commands": []
+  },
+  "repositoryTree": {
+    "capturedAt": "2026-05-31T04:44:47.368Z",
+    "excludeDirs": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      ".DS_Store"
+    ],
+    "excludePrefixes": [
+      "data"
+    ],
+    "treeIgnoreFlag": "tree -I \"node_modules|.git|dist|build\"",
+    "stats": {
+      "fileCount": 198,
+      "directoryCount": 98,
+      "pathCount": 198,
+      "byExtension": {
+        ".js": 77,
+        ".md": 44,
+        ".mjs": 37,
+        ".json": 12,
+        "(no extension)": 11,
+        ".jsx": 6,
+        ".mdc": 3,
+        ".example": 2,
+        ".sql": 2,
+        ".yml": 1,
+        ".jsonl": 1,
+        ".html": 1,
+        ".sample": 1
+      }
+    },
+    "treeText": "C:\\Users\\pujan\\OneDrive\\Desktop\\web dev\\webdev 2.0\\create-modular-monolith\\template/\n├── .gitignore\n├── AGENTS.md\n├── ARCHITECTURE_EXPORT_README.md\n├── EXPORT_MANIFEST.json\n├── LICENSE\n├── local-artifacts.example.json\n├── NOTICE\n├── package.json\n├── README.md\n├── .cursor/\n│   ├── hooks.json\n│   ├── commands/\n│   │   ├── architecture-push-log.md\n│   │   ├── planning-study-log.md\n│   │   ├── pre-push-dev-log.md\n│   │   └── push.md\n│   ├── hooks/\n│   │   └── before-agent-push.mjs\n│   └── rules/\n│       ├── agent-push-dev-log.mdc\n│       ├── api-documentation.mdc\n│       └── file-exchange-inbox.mdc\n├── .github/\n│   └── workflows/\n│       └── ci.yml\n├── backend/\n│   ├── .env.example\n│   ├── package-lock.json\n│   ├── package.json\n│   ├── db/\n│   │   └── migrations/\n│   │       └── .gitkeep\n│   ├── scripts/\n│   │   ├── check-module-boundaries.mjs\n│   │   └── check-module-layers.mjs\n│   └── src/\n│       ├── core/\n│       │   ├── module-loader.js\n│       │   └── server.js\n│       ├── modules/\n│       │   ├── .gitkeep\n│       │   ├── _reference/\n│       │   │   ├── index.js\n│       │   │   ├── README.md\n│       │   │   ├── adapters/\n│       │   │   │   └── README.md\n│       │   │   ├── config/\n│       │   │   │   └── index.js\n│       │   │   ├── domain/\n│       │   │   │   └── README.md\n│       │   │   ├── events/\n│       │   │   │   └── index.js\n│       │   │   ├── prompts/\n│       │   │   │   ├── manifest.json\n│       │   │   │   └── templates/\n│       │   │   │       └── example.prompt.js\n│       │   │   ├── repositories/\n│       │   │   │   └── .gitkeep\n│       │   │   ├── routes/\n│       │   │   │   ├── health.routes.js\n│       │   │   │   └── index.js\n│       │   │   ├── schemas/\n│       │   │   │   └── health.schema.js\n│       │   │   ├── services/\n│       │   │   │   └── health.service.js\n│       │   │   ├── tests/\n│       │   │   │   ├── integration/\n│       │   │   │   │   └── health.routes.test.js\n│       │   │   │   └── unit/\n│       │   │   │       └── health.service.test.js\n│       │   │   └── utils/\n│       │   │       └── index.js\n│       │   └── model-condenser/\n│       │       ├── index.js\n│       │       ├── README.md\n│       │       ├── config/\n│       │       │   └── index.js\n│       │       ├── events/\n│       │       │   └── index.js\n│       │       ├── routes/\n│       │       │   ├── health.routes.js\n│       │       │   ├── index.js\n│       │       │   └── modelCondenser.routes.js\n│       │       ├── services/\n│       │       │   ├── health.service.js\n│       │       │   ├── modelCondenser.facade.js\n│       │       │   └── modelCondenser.service.js\n│       │       ├── tests/\n│       │       │   ├── integration/\n│       │       │   │   └── modelCondenser.routes.test.js\n│       │       │   └── unit/\n│       │       │       └── modelCondenser.service.test.js\n│       │       └── utils/\n│       │           └── index.js\n│       └── shared/\n│           ├── agent-runtime/\n│           │   ├── createAgentRuntime.js\n│           │   ├── createAgentRuntime.test.js\n│           │   └── createAgentRuntime.types.js\n│           ├── ai/\n│           │   └── prompt-registry.js\n│           ├── config/\n│           │   ├── resolveArtifactPaths.js\n│           │   ├── resolveArtifactPaths.test.js\n│           │   └── resolveArtifactPaths.types.js\n│           ├── contracts/\n│           │   ├── architecturePushDevLog.contract.js\n│           │   ├── asyncJobQueue.contract.js\n│           │   ├── consolidatedExports.contract.js\n│           │   ├── documentPersistence.contract.js\n│           │   ├── moduleAgentStateMachine.contract.js\n│           │   ├── planningPhase.contract.js\n│           │   └── prePushDevLog.contract.js\n│           ├── domain/\n│           │   └── case-filing/\n│           │       └── core-models.js\n│           ├── events/\n│           │   └── index.js\n│           ├── http/\n│           │   └── errors.js\n│           ├── storage/\n│           │   ├── resolveDocumentStoragePaths.js\n│           │   ├── resolveDocumentStoragePaths.test.js\n│           │   └── resolveDocumentStoragePaths.types.js\n│           ├── testing/\n│           │   └── create-test-app.js\n│           └── utils/\n│               ├── consolidatedExport.js\n│               ├── consolidatedExport.test.js\n│               ├── fileExchangeCleanup.js\n│               ├── fileExchangeCleanup.test.js\n│               ├── formatExchangeTimestamp.js\n│               ├── formatExchangeTimestamp.test.js\n│               ├── traceId.js\n│               └── zipDirectory.js\n├── docs/\n│   ├── API.md\n│   ├── DEVLOG_V2.md\n│   ├── PUBLISHING.md\n│   ├── README.md\n│   ├── STARTER_PACK.md\n│   ├── architecture/\n│   │   ├── API_DOCUMENTATION_CONTRACT.md\n│   │   ├── ARCHITECTURE_GUARDRAILS.md\n│   │   ├── CONTRACTS_OVERVIEW.md\n│   │   ├── EVAL_AND_CI.md\n│   │   ├── MODULE_INTERNAL_CONTRACT.md\n│   │   ├── REPO_ARTIFACT_LAYOUT.md\n│   │   ├── contracts/\n│   │   │   ├── apiDocumentationRegistry.contract.md\n│   │   │   ├── architecturePushDevLog.contract.md\n│   │   │   ├── asyncJobQueue.contract.md\n│   │   │   ├── changelog.jsonl\n│   │   │   ├── consolidatedExports.contract.md\n│   │   │   ├── documentPersistence.contract.md\n│   │   │   ├── fileExchange.contract.md\n│   │   │   ├── manifest.json\n│   │   │   ├── moduleAgentStateMachine.contract.md\n│   │   │   ├── planningPhase.contract.md\n│   │   │   └── prePushDevLog.contract.md\n│   │   └── templates/\n│   │       ├── async-job-queue/\n│   │       │   ├── createQueueConnection.template.js\n│   │       │   ├── enqueue.template.js\n│   │       │   ├── inMemoryQueue.adapter.template.js\n│   │       │   ├── parse-document.worker.template.js\n│   │       │   ├── README.md\n│   │       │   └── run-agent-action.worker.template.js\n│   │       ├── document-persistence/\n│   │       │   ├── README.md\n│   │       │   ├── adapters/\n│   │       │   │   ├── file-storage.adapter.template.js\n│   │       │   │   └── parser.adapter.template.js\n│   │       │   ├── migrations/\n│   │       │   │   └── 001_document_persistence.sql\n│   │       │   ├── repositories/\n│   │       │   │   └── document.repository.template.js\n│   │       │   ├── routes/\n│   │       │   │   └── upload.routes.template.js\n│   │       │   └── services/\n│   │       │       └── document-ingest.service.template.js\n│   │       └── module-agent-state-machine/\n│   │           ├── README.md\n│   │           ├── agents/\n│   │           │   ├── example-agent.machine.template.js\n│   │           │   └── manifest.template.json\n│   │           ├── events/\n│   │           │   └── agent-triggers.template.js\n│   │           ├── migrations/\n│   │           │   └── 001_agent_state_machine.sql\n│   │           ├── repositories/\n│   │           │   └── agent-run.repository.template.js\n│   │           ├── routes/\n│   │           │   └── agent.routes.template.js\n│   │           └── services/\n│   │               ├── agent-actions.template.js\n│   │               └── agent-runner.service.template.js\n│   └── model-condenser/\n│       └── API.md\n├── file-exchange/\n│   ├── README.md\n│   ├── exports/\n│   │   └── .gitkeep\n│   └── imports/\n│       └── .gitkeep\n├── frontend/\n│   ├── .env.example\n│   ├── index.html\n│   ├── package-lock.json\n│   ├── package.json\n│   ├── vite.config.js\n│   └── src/\n│       ├── main.jsx\n│       ├── core/\n│       │   ├── App.jsx\n│       │   └── moduleRegistry.jsx\n│       ├── modules/\n│       │   └── _reference/\n│       │       ├── index.jsx\n│       │       ├── README.md\n│       │       ├── components/\n│       │       │   └── ModuleHealthCard.jsx\n│       │       ├── hooks/\n│       │       │   └── use-module-health.js\n│       │       ├── pages/\n│       │       │   └── _referencePage.jsx\n│       │       ├── prompts/\n│       │       │   └── README.md\n│       │       ├── schemas/\n│       │       │   └── health.schema.js\n│       │       ├── services/\n│       │       │   └── health-api.js\n│       │       ├── tests/\n│       │       │   └── unit/\n│       │       │       └── health.schema.test.js\n│       │       └── utils/\n│       │           └── index.js\n│       └── shared/\n│           └── api/\n│               └── client.js\n├── scripts/\n│   ├── agent-push.mjs\n│   ├── check-api-docs.mjs\n│   ├── condense-all.mjs\n│   ├── condense-contracts.mjs\n│   ├── condense-file-structure.mjs\n│   ├── condense-models.mjs\n│   ├── condense-prompts.mjs\n│   ├── consolidated-output.mjs\n│   ├── export-architecture-starter.mjs\n│   ├── export-consolidated-models.mjs\n│   ├── import-to-file-exchange.mjs\n│   ├── lint-contracts.mjs\n│   ├── lint-repo-artifacts.mjs\n│   ├── new-module.mjs\n│   ├── plan-finalize.mjs\n│   ├── plan-gate.mjs\n│   ├── postinstall-message.mjs\n│   ├── resolve-import-stamp.mjs\n│   ├── run-module-evals.mjs\n│   ├── smoke-gates.mjs\n│   ├── sync-cli-template.mjs\n│   ├── verify-dev-log.mjs\n│   ├── write-pre-push-dev-log.mjs\n│   ├── git-hooks/\n│   │   └── pre-push.sample\n│   └── lib/\n│       ├── api-inventory.mjs\n│       ├── arch-push-human-format.mjs\n│       ├── check-dev-log-for-head.mjs\n│       ├── collect-starter-export-changes.mjs\n│       ├── dev-log-human-format.mjs\n│       ├── git-snapshot.mjs\n│       ├── module-scaffold.mjs\n│       ├── parse-cli-args.mjs\n│       ├── plan-artifacts.mjs\n│       ├── repo-tree.mjs\n│       └── run-tests.mjs\n└── work-log/\n    ├── INDEX.md\n    ├── README.md\n    ├── dev-logs/\n    │   ├── README.md\n    │   ├── agent/\n    │   │   └── .gitkeep\n    │   ├── human/\n    │   │   └── .gitkeep\n    │   ├── schemas/\n    │   │   └── dev-log-agent.v1.schema.json\n    │   └── templates/\n    │       └── dev-log-human.template.md\n    ├── handoffs/\n    │   └── README.md\n    └── planning/\n        ├── .gitkeep\n        └── README.md",
+    "flatPathCount": 198
+  },
+  "changes": {
+    "byArea": {},
+    "added": [],
+    "modified": [],
+    "deleted": [],
+    "narrative": [
+      "Moved planning study logs, design, and plan packages from work-log/study-docs/ to work-log/planning/",
+      "Fixed plan-gate and plan-finalize --plan-id parsing when flag omitted (was reading process.argv[0])",
+      "Added agent:push, check-dev-log-for-head, Cursor hooks.json, and agent-push-dev-log rule",
+      "Fixed dev-log-human-format for starter template without pipeline/prompt registries",
+      "Added smoke:gates script covering planning gate and agent push gate"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D1",
+      "decision": "Consolidate all planningPhase markdown under work-log/planning/",
+      "rationale": "Single folder for study logs, plan packages, and finalize manifests matches user expectation",
+      "alternativesRejected": ["Keep study-docs/ for markdown and planning/ for JSON only"],
+      "tradeoff": "Existing repos must move files and re-run plan:finalize"
+    },
+    {
+      "id": "D2",
+      "decision": "Enforce dev logs only for agent shell push via Cursor hook, not terminal push",
+      "rationale": "User wants freedom for manual pushes but mandatory audit when Cursor agent pushes",
+      "alternativesRejected": ["Git pre-push hook blocking all pushes", "Optional reminder-only hook"],
+      "tradeoff": "Cursor UI Push button bypasses beforeShellExecution"
+    }
+  ],
+  "iterations": [
+    {
+      "attempt": 1,
+      "action": "Diagnosed plan:gate looking for node.exe.json manifest path",
+      "outcome": "Fixed with shared parse-cli-args.mjs",
+      "blockedBy": ""
+    },
+    {
+      "attempt": 2,
+      "action": "Ran smoke:gates; fixed dev-log generator null pipeline crashes",
+      "outcome": "All smoke checks pass",
+      "blockedBy": ""
+    }
+  ],
+  "tradeoffs": [
+    "Agent push enforcement relies on Cursor hooks loading; user must reload IDE",
+    "Dev log HEAD check uses git log on file paths, not embedded json git.sha"
+  ],
+  "improvements": [
+    "npm run agent:push orchestrates dev log creation then push",
+    "npm run smoke:gates for regression testing both gates"
+  ],
+  "regressions": [],
+  "risks": [
+    "Projects with old study-docs/ paths need migration",
+    "Cursor Source Control push bypasses shell hook"
+  ],
+  "followUps": [
+    "Run smoke:gates in CI optional job",
+    "Consider hook or rule for plan:gate before tier-L implementation"
+  ]
+}

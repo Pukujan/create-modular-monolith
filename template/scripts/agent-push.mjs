@@ -56,11 +56,11 @@ function slugFromBranch(branch) {
     .replace(/^-|-$/g, "");
 }
 
-function run(cmd, args, { allowFail = false } = {}) {
+function run(cmd, args, { allowFail = false, shell = false } = {}) {
   const result = spawnSync(cmd, args, {
     cwd: repoRoot,
     stdio: "inherit",
-    shell: process.platform === "win32"
+    shell
   });
   if (result.status !== 0 && !allowFail) {
     process.exit(result.status ?? 1);
@@ -68,17 +68,21 @@ function run(cmd, args, { allowFail = false } = {}) {
   return result.status ?? 1;
 }
 
+function runGit(args, opts = {}) {
+  return run("git", args, { ...opts, shell: false });
+}
+
 function generateDevLogs(args) {
   const genArgs = ["run", "dev-log:pre-push", "--", "--slug", args.slug, "--program", args.program];
   if (args.noTests) genArgs.push("--no-tests");
   if (args.title) genArgs.push("--title", args.title);
-  return run(process.platform === "win32" ? "npm.cmd" : "npm", genArgs);
+  return run(process.platform === "win32" ? "npm.cmd" : "npm", genArgs, { shell: true });
 }
 
 function commitDevLogs(slug) {
-  run("git", ["add", DEV_LOG_HUMAN_DIR, DEV_LOG_AGENT_DIR]);
+  runGit(["add", DEV_LOG_HUMAN_DIR, DEV_LOG_AGENT_DIR]);
   const message = `dev log: ${slug}`;
-  const status = run("git", ["commit", "-m", message], { allowFail: true });
+  const status = runGit(["commit", "-m", message], { allowFail: true });
   if (status !== 0) {
     console.error("Nothing to commit under work-log/dev-logs/ — fill FILL sections first.");
     process.exit(1);
@@ -109,7 +113,7 @@ async function main() {
   if (check.ok) {
     const pushArgs = args.pushArgs.length ? args.pushArgs : [];
     console.log(`Pushing (${check.sha}) with paired dev logs…`);
-    run("git", ["push", ...pushArgs]);
+    runGit(["push", ...pushArgs]);
     return;
   }
 
@@ -121,7 +125,7 @@ async function main() {
     if (check.ok) {
       const pushArgs = args.pushArgs.length ? args.pushArgs : [];
       console.log(`Pushing (${check.sha}) with paired dev logs…`);
-      run("git", ["push", ...pushArgs]);
+      runGit(["push", ...pushArgs]);
       return;
     }
     console.error(check.reason);
