@@ -15,7 +15,7 @@ The goal is simple:
 > Build fast with AI agents, but make the repo remember the work.
 
 ```bash
-npm create @pukujan/create-modular-monolith@2.3.3 my-platform
+npm create @pukujan/create-modular-monolith@2.3.4 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
@@ -37,13 +37,24 @@ npm run test:ci
 
 ```bash
 # Recommended (create-app style)
-npm create @pukujan/create-modular-monolith@2.3.3 my-platform
+npm create @pukujan/create-modular-monolith@2.3.4 my-platform
 
 # Equivalent
-npx @pukujan/create-modular-monolith@2.3.3 my-platform
+npx @pukujan/create-modular-monolith@2.3.4 my-platform
 ```
 
-Pin a version in production docs (`@2.3.3`) so scaffolds do not change silently when `latest` moves.
+Pin a version in production docs (`@2.3.4`) so scaffolds do not change silently when `latest` moves.
+
+### 2.3.4 — dated plan folders + study logs (2026-05-31)
+
+| Change | What you get |
+| --- | --- |
+| **Plan folders** | Each planning phase → `work-log/planning/{NNN}_{date}_{time}_{slug}/` with `audit-log.md` + `plan.md` (+ optional `design.md`) |
+| **Manifest** | `work-log/planning/{folder-name}.json` from `npm run plan:finalize`; `--plan-id` defaults to folder name |
+| **Study logs** | Owner-only notes in **`work-log/study-logs/`** — in repo, **not** used by agents or `plan:gate` |
+| **Legacy** | Flat `*_audit-log_*` files at `planning/` root still resolve for migration |
+
+**Upgrade from 2.3.3:** scaffold fresh with `@2.3.4`, or move existing flat planning files into a dated folder with `audit-log.md` / `plan.md`, then re-run `npm run plan:finalize`.
 
 ### 2.3.3 — fixes in this release (2026-05-31)
 
@@ -53,7 +64,7 @@ These bugs affected **2.3.2 and earlier** scaffolds. **2.3.3** corrects them:
 | --- | --- | --- |
 | **`plan:gate` CLI parsing** | Running `npm run plan:gate -- --slug my-plan` without `--plan-id` failed with a nonsense manifest path (e.g. `node.exe.json` on Windows) | Safe flag parsing in `parse-cli-args.mjs`; `--plan-id` now defaults to `--slug` |
 | **`dev-log:pre-push` on starter** | `npm run dev-log:pre-push` crashed with `Cannot read properties of null` (pipeline / prompt registry) | Dev log generator handles boilerplate with no domain pipeline registry |
-| **Planning folder split** | Study logs lived in `work-log/study-docs/` while manifests lived in `work-log/planning/` | All planning markdown + JSON manifests under **`work-log/planning/`** |
+| **Planning folder split** | Planning notes lived in `work-log/study-docs/` while manifests lived in `work-log/planning/` | All planning markdown + JSON manifests under **`work-log/planning/`** |
 | **Manifest paths on Windows** | Finalize wrote backslash paths into planning manifests | Paths normalized to `work-log/planning/...` forward slashes |
 | **`agent:push` on Windows** | `git commit -m "dev log: …"` failed with `pathspec 'log:' did not match` | Git subprocess runs without shell word-splitting |
 
@@ -94,7 +105,7 @@ my-platform/
 ├── frontend/src/core/ + modules/_reference/
 ├── docs/architecture/        ← contracts, guardrails, templates/
 ├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
-├── work-log/                 ← dev-logs, planning/
+├── work-log/                 ← dev-logs, planning/{folder}/, study-logs/ (owner only)
 ├── local-artifacts.example.json
 └── package.json              ← root scripts (test:ci, condense:all, new:module, …)
 ```
@@ -114,13 +125,27 @@ The npm package ships **specs + copy-paste templates**, not a running upload que
 
 ## What's new in 2.3.x
 
+### 2.3.4 — dated plan folders + study logs (2026-05-31)
+
+**Changed**
+
+- **Planning layout** — one folder per phase: `planning/{NNN}_{date}_{time}_{slug}/audit-log.md` + `plan.md`
+- **`plan:gate` / `plan:finalize`** — `--plan-id` defaults to latest plan folder for slug
+- **Study logs** — separate `work-log/study-logs/` for owner portfolio notes; agents must not touch
+
+**Added**
+
+- `.cursor/rules/study-logs-user-only.mdc` — always-on agent boundary for study logs
+- `/planning-audit-log` command (replaces planning-study-log)
+
 ### 2.3.3 — planning folder + agent push gate (2026-05-31)
 
 **Fixed**
 
 - **`plan:gate` without `--plan-id`** — no longer resolves plan id to `process.argv[0]` (broken manifest paths on Windows)
 - **`dev-log:pre-push` on boilerplate** — no crash when pipeline/prompt registries are absent
-- **Planning paths** — study logs, plan packages, and finalize manifests all under `work-log/planning/` (removed split with `study-docs/`)
+- **Planning paths** — planning audit logs, plan packages, and finalize manifests all under `work-log/planning/` (removed split with `study-docs/`)
+- **Terminology** — planning conversation files are **audit logs** (`*_audit-log_*`), not study logs; study logs are a separate concept
 - **Windows path + git commit issues** — planning manifest paths and `agent:push` commit messages
 
 **Added**
@@ -326,7 +351,7 @@ flowchart TB
 ## Quick start
 
 ```bash
-npm create @pukujan/create-modular-monolith@2.3.3 my-platform
+npm create @pukujan/create-modular-monolith@2.3.4 my-platform
 cd my-platform
 
 npm install --prefix backend
@@ -358,7 +383,7 @@ cd frontend && npm run dev
 | `npm run dev-log:pre-push -- --slug <topic>` | Create human + agent dev log pair |
 | `npm run lint:architecture` | Check architecture boundaries, layers, and API docs |
 | `npm run lint:contracts` | Check registered architecture contract paths |
-| `npm run plan:gate` | Planning phase gate (study log required) |
+| `npm run plan:gate` | Planning phase gate (planning audit log required) |
 | `npm run plan:finalize` | Finalize planning artifacts |
 
 ## Environment variables (starter)
@@ -381,7 +406,7 @@ See `backend/.env.example` and `docs/architecture/REPO_ARTIFACT_LAYOUT.md` after
 | Frontend | `frontend/src/core/`, `modules/_reference` |
 | Docs | `docs/architecture/`, guardrails, contracts, platform docs |
 | Exchange | `file-exchange/imports/`, `file-exchange/exports/` |
-| Work log | `work-log/dev-logs/human/`, `work-log/dev-logs/agent/`, JSON schema |
+| Work log | `work-log/dev-logs/`, `work-log/planning/{folder}/`, `work-log/study-logs/` (owner only) |
 | CI | `.github/workflows/ci.yml` |
 | Cursor | `AGENTS.md`, `.cursor/rules`, `.cursor/commands` |
 | Scripts | Contract linting, module scaffolding, file exchange, condenser, dev logs |
@@ -405,7 +430,7 @@ Registered in `template/docs/architecture/contracts/manifest.json` (**9** starte
 | `repoArtifactLayout` | Canonical roots + optional `local-artifacts.json` |
 | `fileExchange` | Dated imports and exports |
 | `consolidatedExports` | `condense:all` / `condense-contracts` output paths |
-| `planningPhase` | `work-log/planning/`, `plan:gate`, `plan:finalize` |
+| `planningPhase` | Dated `work-log/planning/{folder}/`, `plan:gate`, `plan:finalize` |
 | `prePushDevLog` | Paired human markdown + agent JSON |
 | `apiDocumentationRegistry` | `docs/API.md` registry |
 | `documentPersistence` | Runtime uploads + DB (not file-exchange) |

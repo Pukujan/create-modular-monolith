@@ -2,7 +2,7 @@
 
 Implementation specs and starter packs. Parent folder: [work-log](../README.md).
 
-Study logs and planning notes live in **[../planning/](../planning/)** — not here.
+Planning audit logs and plan notes live in **[../planning/](../planning/)** — not here.
 
 ## Layout
 
@@ -27,7 +27,7 @@ Full index: [../INDEX.md](../INDEX.md).
 | Time | `10-49` (24h, optional) |
 | Kind | `handoff`, `handoff-v2`, `handoff-v3`, `handoff-original` |
 
-Same pattern in [planning](../planning/README.md) (`study-log`, `design`, `plan`) and [dev-logs](../dev-logs/README.md) (`dev-log`).
+Same pattern in [planning](../planning/README.md) (`audit-log`, `design`, `plan`) and [dev-logs](../dev-logs/README.md) (`dev-log`).
 
 ## 005 execution order
 

@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import { access, readFile } from "fs/promises";
 import { join } from "path";
-import { artifactPaths, resolvePlanArtifacts } from "./lib/plan-artifacts.mjs";
+import {
+  artifactPaths,
+  findLatestPlanFolder,
+  resolveAuditLogMd,
+  resolvePlanArtifacts
+} from "./lib/plan-artifacts.mjs";
 import { getCliArg } from "./lib/parse-cli-args.mjs";
 
 const repoRoot = join(import.meta.dirname, "..");
@@ -13,7 +18,11 @@ if (!slug) {
   process.exit(1);
 }
 
-const planId = getCliArg(argv, "--plan-id") ?? slug;
+const planningDir = join(repoRoot, "work-log/planning");
+const planId =
+  getCliArg(argv, "--plan-id")
+  ?? (await findLatestPlanFolder(planningDir, slug))
+  ?? slug;
 const errors = [];
 
 async function fileExists(relPath) {
@@ -38,10 +47,14 @@ if (manifest) {
   if (manifest.status !== "approved") {
     errors.push(`Manifest status is ${manifest.status}, expected approved`);
   }
-  if (!manifest.artifacts?.studyLogMd) {
-    errors.push("Manifest missing artifacts.studyLogMd — re-run npm run plan:finalize");
-  } else if (!(await fileExists(manifest.artifacts.studyLogMd))) {
-    errors.push(`Study log not found: ${manifest.artifacts.studyLogMd}`);
+  const files = await resolvePlanArtifacts(planningDir, slug);
+  const paths = artifactPaths(repoRoot, files);
+  const auditLogMd = resolveAuditLogMd(manifest, paths);
+
+  if (!auditLogMd) {
+    errors.push("Manifest missing artifacts.auditLogMd — re-run npm run plan:finalize");
+  } else if (!(await fileExists(auditLogMd))) {
+    errors.push(`Planning audit log not found: ${auditLogMd}`);
   }
   if (!manifest.artifacts?.planPackageMd) {
     errors.push("Manifest missing artifacts.planPackageMd");
@@ -52,11 +65,14 @@ if (manifest) {
     errors.push(`Design MD not found: ${manifest.artifacts.designMd}`);
   }
 } else {
-  const planningDir = join(repoRoot, "work-log/planning");
   const files = await resolvePlanArtifacts(planningDir, slug);
   const paths = artifactPaths(repoRoot, files);
-  if (!paths.studyLogMd) errors.push(`Missing study log in work-log/planning for slug ${slug}`);
-  if (!paths.planPackageMd) errors.push(`Missing plan package MD in work-log/planning for slug ${slug}`);
+  if (!paths.auditLogMd) {
+    errors.push(`Missing audit-log.md in work-log/planning/{NNN}_{date}_{time}_${slug}/ for slug ${slug}`);
+  }
+  if (!paths.planPackageMd) {
+    errors.push(`Missing plan.md in the same plan folder for slug ${slug}`);
+  }
 }
 
 if (errors.length) {

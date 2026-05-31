@@ -1,44 +1,55 @@
 # Work log
 
-Planning artifacts for this repo: **what to build** (handoffs) and **how we decided** (planning).
+Planning artifacts for this repo: **what to build** (handoffs) and **how we decided** (planning folders).
 
 ```text
 work-log/
-  README.md       ← you are here
-  INDEX.md        ← full index (handoffs + planning + dev-logs + checkpoints)
-  handoffs/       ← numbered specs, starter packs (002, 005, …)
-  planning/       ← study logs, plan packages, and plan:finalize JSON manifests — BEFORE build
-  checkpoints/    ← runtime proof only (e.g. batch-002 eval evidence), not conversation
-  dev-logs/       ← pre-push audit: human/ + agent/ (paired per push) — what shipped
-  architecture-push-logs/  ← npm export to create-modular-monolith only (separate from dev-logs)
+  README.md
+  INDEX.md
+  handoffs/           ← implementation specs
+  planning/           ← one folder per phase: audit-log.md + plan.md (+ manifest JSON)
+  study-logs/         ← owner-only portfolio notes (agents must not touch)
+  checkpoints/        ← runtime proof
+  dev-logs/           ← pre-push: what shipped
+  architecture-push-logs/
 ```
+
+## Planning phase folder
+
+Each plan is a **dated folder** inside `planning/`:
+
+```text
+planning/{NNN}_{YYYY-MM-DD}_{HH-MM}_{short-slug}/
+  audit-log.md    ← Cursor planning conversation (agents write here)
+  plan.md         ← plan package
+  design.md       ← optional
+```
+
+Manifest: `planning/{folder-name}.json` from `npm run plan:finalize`.
+
+## Artifact roles
+
+| Artifact | Location | Agents? | Gate? |
+|----------|----------|---------|-------|
+| **Planning audit log** | `planning/…/audit-log.md` | Yes | `plan:gate` |
+| **Plan package** | `planning/…/plan.md` | Yes | `plan:gate` |
+| **Study log** | `study-logs/` | **No — owner only** | No |
+| **Dev log** | `dev-logs/` | Yes (push) | Agent push hook |
 
 ## When to use which folder
 
 | Folder | Put here |
 |--------|----------|
-| **handoffs/** | Implementation specs, second/third handoffs, starter pack snapshots |
-| **planning/** | **Plan + conversation** — study logs (`You` verbatim + `Cursor` summary), plan packages, and finalize manifests; write **before** implementation ([planning-study-log](../.cursor/commands/planning-study-log.md)) |
-| **checkpoints/** | Post-run evidence (batch evals, pass/fail tables) — supplements study log, does not replace it |
-| **dev-logs/** | What shipped — **paired human MD + agent JSON** before each product push |
-| **architecture-push-logs/** | Platform/npm sync — paired logs before pushing [create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) |
+| **handoffs/** | Implementation specs, starter packs |
+| **planning/** | Dated plan folders before build ([planning-audit-log](../.cursor/commands/planning-audit-log.md)) |
+| **study-logs/** | Your personal study / portfolio notes — **not for Cursor** |
+| **checkpoints/** | Batch eval evidence |
+| **dev-logs/** | Paired human + agent audit per push |
 
-## Filename convention (all three folders)
-
-```text
-{NNN}_{YYYY-MM-DD}_{HH-MM}_{kind}_{short-slug}.md
-```
-
-| Folder | `kind` value | Example |
-|--------|----------------|---------|
-| handoffs/ | `handoff`, `handoff-v2`, `handoff-original`, … | `005_2026-05-23_10-49_handoff-original_…` |
-| planning/ | `study-log`, `design`, `plan` | `006_2026-05-23_11-21_study-log_cursor-planning-phase` |
-| dev-logs/ | `dev-log` (fixed) | `001_2026-05-24_14-30_dev-log_work-log-reorg` |
-
-Details: [handoffs/README.md](./handoffs/README.md) · [planning/README.md](./planning/README.md) · [dev-logs/README.md](./dev-logs/README.md) · [architecture-push-logs/README.md](./architecture-push-logs/README.md)
+Details: [handoffs](./handoffs/README.md) · [planning](./planning/README.md) · [study-logs](./study-logs/README.md) · [dev-logs](./dev-logs/README.md)
 
 ## 005 program order
 
-1. Original spec → [handoffs/005_…_handoff-original_…](./handoffs/005_2026-05-23_10-49_handoff-original_parsed-cache-rule-authority.md)
-2. v3 architecture → [handoffs/005_…_handoff-v3_…](./handoffs/005_2026-05-23_11-20_handoff-v3_filing-structure-architecture.md)
-3. v2 pipeline → [handoffs/005_…_handoff-v2_…](./handoffs/005_2026-05-23_11-14_handoff-v2_planned-review-in-cursor.md)
+1. [Original handoff](./handoffs/005_2026-05-23_10-49_handoff-original_parsed-cache-rule-authority.md)
+2. [v3 architecture](./handoffs/005_2026-05-23_11-20_handoff-v3_filing-structure-architecture.md)
+3. [v2 pipeline](./handoffs/005_2026-05-23_11-14_handoff-v2_planned-review-in-cursor.md)

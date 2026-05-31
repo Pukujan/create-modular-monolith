@@ -2,13 +2,28 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.3.4] - 2026-05-31
+
+### Changed
+
+- **Planning layout** — each phase is a dated folder `work-log/planning/{NNN}_{date}_{time}_{slug}/` containing `audit-log.md`, `plan.md`, and optional `design.md`; manifest JSON stays at `planning/` root
+- **`plan:gate` / `plan:finalize`** — default `--plan-id` resolves to the latest matching plan folder for the slug (legacy flat `*_audit-log_*` files still work)
+- **Terminology** — planning conversation command is `/planning-audit-log`; study logs are a separate owner-only folder, not gated by `plan:gate`
+
+### Added
+
+- **`work-log/study-logs/`** — personal portfolio notes; included in repo but agents must not read or write (`.cursor/rules/study-logs-user-only.mdc`)
+- **`scripts/lib/plan-folder.mjs`** — folder naming helpers for planning artifacts
+- Starter export copies `study-logs/` README
+
 ## [2.3.3] - 2026-05-31
 
 ### Fixed
 
 - **`plan:gate` / `plan:finalize`** — omitting `--plan-id` no longer reads `process.argv[0]` as the plan id (manifest paths like `node.exe.json` on Windows)
 - **`dev-log:pre-push`** — starter boilerplate no longer crashes when pipeline/prompt registries are null
-- **Planning paths** — consolidated study logs, design, and plan packages into `work-log/planning/` (removed `study-docs/` split)
+- **Planning paths** — consolidated planning audit logs, design, and plan packages into `work-log/planning/` (removed `study-docs/` split)
+- **Terminology** — planning gate files are **audit logs** (`*_audit-log_*`, `/planning-audit-log`); study logs are a separate concept, not gated by `plan:gate`
 - **Windows** — planning manifest paths use forward slashes; `agent:push` git commit no longer splits on spaces in the message
 
 ### Added

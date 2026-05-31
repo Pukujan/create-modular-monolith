@@ -13,23 +13,28 @@ if (!slug) {
   process.exit(1);
 }
 
-const planId = getCliArg(argv, "--plan-id") ?? slug;
-
 const planningDir = join(repoRoot, "work-log/planning");
 const files = await resolvePlanArtifacts(planningDir, slug);
 const paths = artifactPaths(repoRoot, files);
 
+const planId = getCliArg(argv, "--plan-id") ?? files.folder ?? slug;
+
 const missing = [];
-if (!paths.studyLogMd) missing.push(`study-log (*_study-log_*${slug}*.md)`);
-if (!paths.planPackageMd) missing.push(`plan package (*_plan_*${slug}*.md)`);
+if (!paths.auditLogMd) {
+  missing.push(`audit-log.md in work-log/planning/{NNN}_{date}_{time}_${slug}/`);
+}
+if (!paths.planPackageMd) {
+  missing.push(`plan.md in the same plan folder`);
+}
 
 if (missing.length) {
   console.error(`Cannot finalize — missing in work-log/planning/:\n  - ${missing.join("\n  - ")}`);
-  console.error("\nRun /planning-study-log or add files manually, then retry.");
+  console.error("\nCreate a dated plan folder with audit-log.md + plan.md, then retry.");
+  console.error("See .cursor/commands/planning-audit-log.md");
   process.exit(1);
 }
 
-const artifacts = { studyLogMd: paths.studyLogMd, planPackageMd: paths.planPackageMd };
+const artifacts = { auditLogMd: paths.auditLogMd, planPackageMd: paths.planPackageMd };
 if (paths.designMd) artifacts.designMd = paths.designMd;
 
 const manifest = {
@@ -37,6 +42,7 @@ const manifest = {
   slug,
   status: "approved",
   finalizedAt: new Date().toISOString(),
+  planFolder: paths.planFolder,
   artifacts
 };
 
@@ -44,6 +50,7 @@ const dir = join(repoRoot, "work-log/planning");
 await mkdir(dir, { recursive: true });
 await writeFile(join(dir, `${planId}.json`), JSON.stringify(manifest, null, 2));
 console.log(`Wrote work-log/planning/${planId}.json`);
-console.log(`  studyLog:  ${paths.studyLogMd}`);
-console.log(`  design:    ${paths.designMd}`);
+if (paths.planFolder) console.log(`  folder:    ${paths.planFolder}`);
+console.log(`  auditLog:  ${paths.auditLogMd}`);
+console.log(`  design:    ${paths.designMd ?? "(none)"}`);
 console.log(`  plan:      ${paths.planPackageMd}`);

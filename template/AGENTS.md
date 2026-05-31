@@ -20,16 +20,22 @@ See [file-exchange/README.md](file-exchange/README.md) and [docs/architecture/CO
 
 Before building a tier-L feature:
 
-1. Append a **study log** under `work-log/planning/` (You raw + Cursor summary per turn) — see `.cursor/commands/planning-study-log.md`
-2. Add a **plan package** `*_plan_{slug}*.md` in the same folder
-3. Finalize and gate:
+1. Create a **plan folder** `work-log/planning/{NNN}_{date}_{time}_{slug}/` with:
+   - `audit-log.md` — planning conversation (You raw + Cursor summary) — see `.cursor/commands/planning-audit-log.md`
+   - `plan.md` — plan package for implementers
+   - `design.md` — optional
+2. Finalize and gate:
 
 ```bash
 npm run plan:finalize -- --slug <plan-slug> [--plan-id <id>]
 npm run plan:gate -- --slug <plan-slug> [--plan-id <id>]
 ```
 
-Manifest → `work-log/planning/{planId}.json`. See [planningPhase contract](docs/architecture/contracts/planningPhase.contract.md).
+Default `--plan-id` = plan folder name. Manifest → `work-log/planning/{planId}.json`.
+
+**Study logs** (`work-log/study-logs/`) are owner-only — agents must not read or write them.
+
+See [planningPhase contract](docs/architecture/contracts/planningPhase.contract.md).
 
 ## Pre-push dev log
 
@@ -56,4 +62,4 @@ npm run lint:api-docs
 
 ## Work log
 
-Study logs, plan packages, and planning manifests under `work-log/` per [work-log/README.md](work-log/README.md). Pre-push dev-logs record what shipped.
+Planning audit logs, plan packages, and planning manifests under `work-log/planning/` per [work-log/README.md](work-log/README.md). Study logs under `work-log/study-logs/` are owner-only. Pre-push dev-logs record what shipped.

@@ -1,13 +1,13 @@
-# Dev log (human): planning push gates
+# Dev log (human): plan folders study logs
 
 | Field | Value |
 |-------|--------|
 | **Entry** | 005 |
 | **Date** | 2026-05-31 |
-| **Time** | 04-44 |
-| **Filename** | `005_2026-05-31_04-44_dev-log_planning-push-gates.md` |
-| **Agent audit** | [005_2026-05-31_04-44_dev-log-agent_planning-push-gates.json](../agent/005_2026-05-31_04-44_dev-log-agent_planning-push-gates.json) |
-| **Git** | `main` @ `6284b77` |
+| **Time** | 05-09 |
+| **Filename** | `005_2026-05-31_05-09_dev-log_plan-folders-study-logs.md` |
+| **Agent audit** | [005_2026-05-31_05-09_dev-log-agent_plan-folders-study-logs.json](../agent/005_2026-05-31_05-09_dev-log-agent_plan-folders-study-logs.json) |
+| **Git** | `main` @ `73c6de4` |
 
 ## Table of contents
 
@@ -41,7 +41,7 @@
 
 ### I.1 At a glance {#i1-at-a-glance}
 
-Consolidated planning artifacts into `work-log/planning/`, fixed the plan gate CLI bug, and added agent push enforcement with `agent:push`, Cursor hooks, and `smoke:gates`. All smoke tests pass. No blockers.
+Shipped **v2.3.4**: planning phases live in dated folders (`audit-log.md` + `plan.md` inside), study logs moved to owner-only `work-log/study-logs/`, and README/CHANGELOG updated for npm. `npm run smoke:gates` passes. Blocker for publish: npm auth if not logged in.
 
 ### I.2 Diagrams {#i2-diagrams}
 
@@ -105,25 +105,29 @@ _Session API changes not in docs/API.md — FILL in [II.8](#ii8-apis-full-regist
 
 | Status | Value |
 |--------|-------|
-| Tests | _not run_ (`--no-tests` or fill after run) |
+| Ran | yes |
+| Exit code | 1 |
+| Summary | exit=1 |
+| Passed (sample) | 1 lines captured |
+| Failed (sample) | 4 lines captured |
 
 ### I.6 Git audit {#i6-git-audit}
 
 | Field | Value |
 |-------|-------|
 | Branch | `main` |
-| Commit | `6284b77` (`6284b77c7e1e43e39b715c77ab39e7db6c666e2c`) |
-| Changed paths (porcelain) | 0 |
+| Commit | `73c6de4` (`73c6de42fc4538116a1e5ffabadf8f4d853b7276`) |
+| Changed paths (porcelain) | 25 |
 | Recent commits | 5 listed below |
 
 ### I.7 Repository shape {#i7-repository-shape}
 
 | Metric | Value |
 |--------|------:|
-| Files | 198 |
-| Directories | 98 |
+| Files | 202 |
+| Directories | 99 |
 | Tree ignores | node_modules, .git, dist, build |
-| Top extensions | .js (77), .md (44), .mjs (37), .json (12), (no extension) (11) |
+| Top extensions | .js (77), .md (45), .mjs (38), (no extension) (12), .json (12) |
 
 _Condensed tree (full tree in [II.10](#repository-tree-full)):_
 
@@ -142,7 +146,7 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │   ├── hooks.json
 │   ├── commands/
 │   │   ├── architecture-push-log.md
-│   │   ├── planning-study-log.md
+│   │   ├── planning-audit-log.md
 │   │   ├── pre-push-dev-log.md
 │   │   └── push.md
 │   ├── hooks/
@@ -150,7 +154,8 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │   └── rules/
 │       ├── agent-push-dev-log.mdc
 │       ├── api-documentation.mdc
-│       └── file-exchange-inbox.mdc
+│       ├── file-exchange-inbox.mdc
+│       └── study-logs-user-only.mdc
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -175,8 +180,7 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │       │   │   ├── README.md
 │       │   │   ├── adapters/
 │       │   │   │   └── README.md
-│       │   │   ├── config/
-│   └── … (249 more lines — [full tree](#repository-tree-full))
+│   └── … (254 more lines — [full tree](#repository-tree-full))
 ```
 
 ---
@@ -187,57 +191,140 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 
 ### II.1 Goals and scope {#ii1-goals-and-scope}
 
-- **In scope:** Planning folder move, plan gate fix, agent push gate, smoke tests, docs and export script updates.
-- **Out of scope:** npm version bump, architecture-push logs, domain modules.
+- **In scope:** Dated plan folders, study-logs separation, audit-log terminology, gate/finalize resolver, docs, v2.3.4 release
+- **Out of scope:** Migrating existing product repos' flat planning files (legacy still resolves)
 
 ### II.2 Decisions {#ii2-decisions}
 
 | ID | Decision | Rationale | Alternatives rejected |
 |----|----------|-----------|------------------------|
-| D1 | Consolidate planning under work-log/planning/ | Matches contract mental model | study-docs/ split |
-| D2 | Agent-only push dev log enforcement | User requested terminal push freedom | Block all pushes via git hook |
+| D1 | One folder per planning phase with fixed filenames inside | Clear audit trail per phase; manifest links folder | Flat files at planning root |
+| D2 | `study-logs/` excluded from agent tooling | Owner portfolio notes ≠ planning gate artifacts | Reusing study log name for audit logs |
 
 ### II.3 Changes by area {#ii3-changes-by-area}
 
 #### Backend / API
-- No HTTP route changes.
+- _FILL_
 
 #### Frontend
-- No frontend changes.
+- _FILL_
 
 #### Data / contracts / prompts
-- Updated planningPhase and prePushDevLog contracts; manifest.json workLogReadme path.
+- _FILL_
 
 #### Tooling / CI / docs
-- agent:push, smoke:gates, Cursor hooks, AGENTS.md, export-architecture-starter.mjs.
+- `plan-artifacts.mjs`, `plan-folder.mjs`, `plan-gate.mjs`, `plan-finalize.mjs`, smoke tests
+- Root + template README, CHANGELOG, planningPhase contract, AGENTS.md, study-logs rule
+- Package version **2.3.4**
 
 ### II.4 Iterations {#ii4-iterations}
 
-1. **Attempt 1** — Fixed plan:gate argv bug → smoke planning gate passes
-2. **Attempt 2** — Fixed dev-log format nulls → agent:push smoke passes
+1. **Attempt 1** — `npm run smoke:gates` → pass
 
 ### II.5 Tests (detail) {#ii5-tests-detail}
 
 #### Passed
-- `npm run smoke:gates` (planning + push gate checks)
+- `npm run smoke:gates` (planning + agent push gate)
 
 #### Failed
-- none (--no-tests for full npm test in this log)
+- Pre-push `npm test` in dev-log generator (4 backend tests — pre-existing env, not this change)
+
+#### Raw tail (auto)
+
+```
+odular-monolith/template/backend/src/shared/storage/resolveDocumentStoragePaths.test.js:11:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: resolveDocumentStoragePaths reads local-artifacts.json
+ok 13 - resolveDocumentStoragePaths reads local-artifacts.json
+  ---
+  duration_ms: 19.4711
+  type: 'test'
+  ...
+# Subtest: UPLOADS_ROOT overrides artifact layout
+ok 14 - UPLOADS_ROOT overrides artifact layout
+  ---
+  duration_ms: 3.0388
+  type: 'test'
+  ...
+# Subtest: documentBlobPath builds original.{ext} under document folder
+ok 15 - documentBlobPath builds original.{ext} under document folder
+  ---
+  duration_ms: 2.4159
+  type: 'test'
+  ...
+# Subtest: writeConsolidatedExport writes dated folder and latest copy
+ok 16 - writeConsolidatedExport writes dated folder and latest copy
+  ---
+  duration_ms: 45.2417
+  type: 'test'
+  ...
+# Subtest: clearFileExchange dryRun previews removable paths
+ok 17 - clearFileExchange dryRun previews removable paths
+  ---
+  duration_ms: 21.8228
+  type: 'test'
+  ...
+# Subtest: clearFileExchange confirm removes dated folders
+ok 18 - clearFileExchange confirm removes dated folders
+  ---
+  duration_ms: 15.9113
+  type: 'test'
+  ...
+# Subtest: formatExchangeTimestamp
+ok 19 - formatExchangeTimestamp
+  ---
+  duration_ms: 3.5448
+  type: 'test'
+  ...
+# Subtest: normalizeExchangeStamp converts legacy compact stamps
+ok 20 - normalizeExchangeStamp converts legacy compact stamps
+  ---
+  duration_ms: 0.3588
+  type: 'test'
+  ...
+# Subtest: formatWorkLogTimestamp
+ok 21 - formatWorkLogTimestamp
+  ---
+  duration_ms: 0.2379
+  type: 'test'
+  ...
+# Subtest: formatHumanReadableUtc
+ok 22 - formatHumanReadableUtc
+  ---
+  duration_ms: 24.8364
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 18
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 362.1744
+
+
+```
 
 ### II.6 What got better / trade-offs / risks {#ii6-outcomes}
 
 **Better**
-- Planning and push gates testable via smoke:gates; agent push workflow documented.
+- _FILL_
 
 **Trade-offs**
-- Cursor UI Push bypasses shell hook; manual terminal push still allowed without dev logs.
+- _FILL_
 
 **Regressions / risks**
-- Legacy study-docs/ paths need migration in existing projects.
+- _FILL_
 
 ### II.7 Follow-ups {#ii7-follow-ups}
 
-- [ ] Add smoke:gates to CI workflow (optional)
+- [ ] _FILL_
 
 ### II.8 APIs (full registry) {#ii8-apis-full-registry}
 
@@ -263,23 +350,68 @@ _none registered in docs/API.md_
 **Changed files (porcelain)**
 
 ```
-(clean)
+M CHANGELOG.md
+ M README.md
+ M package.json
+ D template/.cursor/commands/planning-study-log.md
+ M template/AGENTS.md
+ M template/ARCHITECTURE_EXPORT_README.md
+ M template/README.md
+ M template/backend/src/shared/contracts/planningPhase.contract.js
+ M template/docs/architecture/CONTRACTS_OVERVIEW.md
+ M template/docs/architecture/contracts/manifest.json
+ M template/docs/architecture/contracts/planningPhase.contract.md
+ M template/scripts/export-architecture-starter.mjs
+ M template/scripts/lib/plan-artifacts.mjs
+ M template/scripts/plan-finalize.mjs
+ M template/scripts/plan-gate.mjs
+ M template/scripts/smoke-gates.mjs
+ M template/work-log/README.md
+ D template/work-log/dev-logs/agent/005_2026-05-31_04-44_dev-log-agent_planning-push-gates.json
+ D template/work-log/dev-logs/human/005_2026-05-31_04-44_dev-log_planning-push-gates.md
+ M template/work-log/handoffs/README.md
+ M template/work-log/planning/README.md
+?? template/.cursor/commands/planning-audit-log.md
+?? template/.cursor/rules/study-logs-user-only.mdc
+?? template/scripts/lib/plan-folder.mjs
+?? template/work-log/study-logs/
 ```
 
 **Diff stat vs HEAD**
 
 ```
-(no diff)
+CHANGELOG.md                                       |  17 +-
+ README.md                                          |  47 +-
+ package.json                                       |   2 +-
+ template/.cursor/commands/planning-study-log.md    |  25 -
+ template/AGENTS.md                                 |  16 +-
+ template/ARCHITECTURE_EXPORT_README.md             |   2 +-
+ template/README.md                                 | 211 ++++----
+ .../src/shared/contracts/planningPhase.contract.js |  21 +-
+ template/docs/architecture/CONTRACTS_OVERVIEW.md   |   2 +-
+ template/docs/architecture/contracts/manifest.json |   2 +-
+ .../contracts/planningPhase.contract.md            |  53 +-
+ template/scripts/export-architecture-starter.mjs   |   7 +-
+ template/scripts/lib/plan-artifacts.mjs            | 108 +++-
+ template/scripts/plan-finalize.mjs                 |  23 +-
+ template/scripts/plan-gate.mjs                     |  34 +-
+ template/scripts/smoke-gates.mjs                   | 254 ++++-----
+ template/work-log/README.md                        |  67 ++-
+ ...31_04-44_dev-log-agent_planning-push-gates.json | 212 --------
+ ...2026-05-31_04-44_dev-log_planning-push-gates.md | 587 ---------------------
+ template/work-log/handoffs/README.md               |   4 +-
+ template/work-log/planning/README.md               |  35 +-
+ 21 files changed, 571 insertions(+), 1158 deletions(-)
 ```
 
 **Recent commits**
 
 ```
+73c6de4 docs: 2.3.3 release notes — fixes for plan gate, dev logs, planning paths
+3831eb8 release: v2.3.3 planning folder and agent push gate
+cfeec0a dev log: planning-push-gates
 6284b77 feat: consolidate planning artifacts and enforce agent push dev logs
 cd2d6e4 feat: postinstall message linking to GitHub and npm
-b938fd7 license: switch to MIT and release v2.3.2
-37e9768 release: v2.3.1 npm README and package metadata
-3797ab3 docs: add 2.3.0 release notes to README and CHANGELOG
 ```
 
 ### II.10 Repository tree (full) {#repository-tree-full}
@@ -301,7 +433,7 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │   ├── hooks.json
 │   ├── commands/
 │   │   ├── architecture-push-log.md
-│   │   ├── planning-study-log.md
+│   │   ├── planning-audit-log.md
 │   │   ├── pre-push-dev-log.md
 │   │   └── push.md
 │   ├── hooks/
@@ -309,7 +441,8 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │   └── rules/
 │       ├── agent-push-dev-log.mdc
 │       ├── api-documentation.mdc
-│       └── file-exchange-inbox.mdc
+│       ├── file-exchange-inbox.mdc
+│       └── study-logs-user-only.mdc
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -564,6 +697,7 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
 │       ├── module-scaffold.mjs
 │       ├── parse-cli-args.mjs
 │       ├── plan-artifacts.mjs
+│       ├── plan-folder.mjs
 │       ├── repo-tree.mjs
 │       └── run-tests.mjs
 └── work-log/
@@ -581,7 +715,10 @@ C:\Users\pujan\OneDrive\Desktop\web dev\webdev 2.0\create-modular-monolith\templ
     │       └── dev-log-human.template.md
     ├── handoffs/
     │   └── README.md
-    └── planning/
+    ├── planning/
+    │   ├── .gitkeep
+    │   └── README.md
+    └── study-logs/
         ├── .gitkeep
         └── README.md
 ```
