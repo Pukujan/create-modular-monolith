@@ -15,7 +15,7 @@ The goal is simple:
 > Build fast with AI agents, but make the repo remember the work.
 
 ```bash
-npm create @pukujan/create-modular-monolith@2.3.1 my-platform
+npm create @pukujan/create-modular-monolith@2.3.3 my-platform
 cd my-platform
 npm install --prefix backend && npm install --prefix frontend
 npm run test:ci
@@ -37,13 +37,13 @@ npm run test:ci
 
 ```bash
 # Recommended (create-app style)
-npm create @pukujan/create-modular-monolith@2.3.1 my-platform
+npm create @pukujan/create-modular-monolith@2.3.3 my-platform
 
 # Equivalent
-npx @pukujan/create-modular-monolith@2.3.1 my-platform
+npx @pukujan/create-modular-monolith@2.3.3 my-platform
 ```
 
-Pin a version in production docs (`@2.3.1`) so scaffolds do not change silently when `latest` moves.
+Pin a version in production docs (`@2.3.3`) so scaffolds do not change silently when `latest` moves.
 
 ### After scaffold — required setup
 
@@ -114,6 +114,12 @@ Also in this release:
 - `local-artifacts.example.json` for moving heavy folders outside the repo
 - Module scaffold adds an **`agents/`** layer; `CONTRACTS_OVERVIEW` lists all **9** starter manifest contracts
 - Implementation guides under `docs/architecture/templates/{document-persistence,module-agent-state-machine,async-job-queue}/`
+
+### 2.3.3 — planning folder + agent push gate
+
+- **Planning** — all planning markdown + manifests under `work-log/planning/`; fixed `plan:gate` CLI bug
+- **Agent push** — `npm run agent:push`, Cursor hook, and `npm run smoke:gates` for regression checks
+- **Dev logs** — starter-safe generator (no domain pipeline registry required)
 
 ### 2.3.1 — documentation
 
@@ -295,7 +301,7 @@ flowchart TB
 ## Quick start
 
 ```bash
-npm create @pukujan/create-modular-monolith@2.3.1 my-platform
+npm create @pukujan/create-modular-monolith@2.3.3 my-platform
 cd my-platform
 
 npm install --prefix backend
