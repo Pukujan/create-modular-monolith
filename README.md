@@ -1,519 +1,201 @@
 # @pukujan/create-modular-monolith
 
-Architecture for agent-first modular monoliths.
+**You hired an AI teammate that types 100x faster than you. Now you need a repo that can keep up.**
 
-This is not just an Express + React starter.
+You know the feeling. You come back to a project after the weekend, and Cursor has touched forty files. Some of the changes are brilliant. Some of them quietly broke your API conventions. And the "why" for all of it is buried in a chat history you can't find.
 
-AI agents build fast. Really fast. But most repo structures still assume the old workflow: one human slowly edits code, remembers the context, and keeps the architecture from drifting.
+This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
-That breaks down when Cursor agents, ChatGPT, OpenRouter models, prompt pipelines, eval scripts, generated files, and human review all work across the same project.
+## The problem nobody warned you about
 
-`@pukujan/create-modular-monolith` scaffolds a modular monolith built for that new workflow.
+AI agents are amazing at velocity and terrible at memory.
 
-The goal is simple:
+- **Context dies between sessions.** Yesterday's agent knew why you refactored the auth layer. Today's agent doesn't. It will happily undo that work if you aren't watching.
+- **You can't review everything.** A human writes a few files a day. An agent writes dozens. You cannot read every diff deeply. Something *will* slip through.
+- **Architecture drifts in silence.** Without guardrails, every agent session invents its own folder structure, error-handling pattern, and testing style. In two weeks your codebase looks like it was designed by twelve different people. Because it was.
+- **Handoff is a mess.** You exported a JSON fixture for the agent. It generated three new files. Where are they? Which version of the prompt produced them? Did anyone write down what failed?
 
-> Build fast with AI agents, but make the repo remember the work.
+You didn't switch to agent-first coding to spend your afternoons playing detective.
 
-```bash
-npm create @pukujan/create-modular-monolith@2.3.4 my-platform
-cd my-platform
-npm install --prefix backend && npm install --prefix frontend
-npm run test:ci
-```
+## What this actually does
 
-## At a glance
+`create-modular-monolith` scaffolds a repo that **remembers the work so you don't have to**.
 
-| | |
-| --- | --- |
-| **npm package** | [`@pukujan/create-modular-monolith`](https://www.npmjs.com/package/@pukujan/create-modular-monolith) |
-| **CLI binary** | `create-modular-monolith` |
-| **Node** | 20+ (`engines` in `package.json`) |
-| **Stack** | Express (backend) + React/Vite (frontend) |
-| **Default ports** | Backend `3001`, frontend `5173` (Vite) |
-| **Source** | [github.com/Pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) |
-| **License** | [MIT](./LICENSE) — Copyright (c) 2026 Pukujan |
+It is not a framework. It is a set of conventions, scripts, and boundaries that turn your repository into the team's shared memory — for both humans and agents.
 
-### Install
+- **Modules keep agents bounded.** Each feature lives in its own backend + frontend pair. The agent knows where it is allowed to work.
+- **Contracts prevent drift.** Your folder structure, API patterns, and file-exchange rules are written down where agents can read them. Not in a Notion doc. In the repo.
+- **Dev logs capture intent.** Before you push, one command generates a human-readable summary (what changed, what failed, what to watch) and a machine-readable audit trail (files touched, test results, API inventory). The next agent starts with context instead of guessing.
+- **File exchange makes handoffs traceable.** Every input bundle and every generated output gets a timestamp and a folder. No more "where did I put that fixture?"
+- **CI gates catch structural rot.** Linting for architecture, not just syntax. Did someone move a file outside the module boundary? The gate fails before the PR is opened.
 
-```bash
-# Recommended (create-app style)
-npm create @pukujan/create-modular-monolith@2.3.4 my-platform
+The goal is simple: **build fast with AI agents, but make the repo remember the work.**
 
-# Equivalent
-npx @pukujan/create-modular-monolith@2.3.4 my-platform
-```
+## Who this is for
 
-Pin a version in production docs (`@2.3.4`) so scaffolds do not change silently when `latest` moves.
+- Teams where Cursor, Claude Code, or custom agents commit code daily.
+- Solo developers who switch between projects and need their past self (or their past agent) to leave good notes.
+- Anyone who has looked at a diff and thought, *"I have no idea if this is correct or if the agent just made it up."*
 
-### 2.3.4 — dated plan folders + study logs (2026-05-31)
+If you are still writing every line by hand, this is probably overkill.
 
-| Change | What you get |
-| --- | --- |
-| **Plan folders** | Each planning phase → `work-log/planning/{NNN}_{date}_{time}_{slug}/` with `audit-log.md` + `plan.md` (+ optional `design.md`) |
-| **Manifest** | `work-log/planning/{folder-name}.json` from `npm run plan:finalize`; `--plan-id` defaults to folder name |
-| **Study logs** | Owner-only notes in **`work-log/study-logs/`** — in repo, **not** used by agents or `plan:gate` |
-| **Legacy** | Flat `*_audit-log_*` files at `planning/` root still resolve for migration |
-
-**Upgrade from 2.3.3:** scaffold fresh with `@2.3.4`, or move existing flat planning files into a dated folder with `audit-log.md` / `plan.md`, then re-run `npm run plan:finalize`.
-
-### 2.3.3 — fixes in this release (2026-05-31)
-
-These bugs affected **2.3.2 and earlier** scaffolds. **2.3.3** corrects them:
-
-| Issue | Symptom | Fix |
-| --- | --- | --- |
-| **`plan:gate` CLI parsing** | Running `npm run plan:gate -- --slug my-plan` without `--plan-id` failed with a nonsense manifest path (e.g. `node.exe.json` on Windows) | Safe flag parsing in `parse-cli-args.mjs`; `--plan-id` now defaults to `--slug` |
-| **`dev-log:pre-push` on starter** | `npm run dev-log:pre-push` crashed with `Cannot read properties of null` (pipeline / prompt registry) | Dev log generator handles boilerplate with no domain pipeline registry |
-| **Planning folder split** | Planning notes lived in `work-log/study-docs/` while manifests lived in `work-log/planning/` | All planning markdown + JSON manifests under **`work-log/planning/`** |
-| **Manifest paths on Windows** | Finalize wrote backslash paths into planning manifests | Paths normalized to `work-log/planning/...` forward slashes |
-| **`agent:push` on Windows** | `git commit -m "dev log: …"` failed with `pathspec 'log:' did not match` | Git subprocess runs without shell word-splitting |
-
-**Also new in 2.3.3:** `npm run agent:push` (dev logs then push for Cursor agents), Cursor hook blocking bare agent `git push`, and `npm run smoke:gates` to verify planning + push gates. Terminal push by you stays optional without dev logs.
-
-**Upgrade from 2.3.2:** scaffold a fresh app with `@2.3.3`, or copy the script/hook changes and move any `work-log/study-docs/*` files into `work-log/planning/`, then re-run `npm run plan:finalize`.
-
-### After scaffold — required setup
+## Get started
 
 ```bash
+# Scaffold the project
+npm create @pukujan/create-modular-monolith@latest my-platform
+
 cd my-platform
 
-# 1. Dependencies (if you skipped install above)
+# Install dependencies
 npm install --prefix backend && npm install --prefix frontend
 
-# 2. Environment
+# Copy environment files
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-# 3. Optional: move heavy data outside the repo
-cp local-artifacts.example.json local-artifacts.json
-# edit artifactRoot + layout keys
-
-# 4. Quality gate before first push
+# Run the quality gate
 npm run test:ci
 ```
 
-### What you get on disk
-
-```text
-my-platform/
-├── AGENTS.md                 ← required reading for Cursor / agents
-├── backend/src/
-│   ├── core/                 ← module loader, server
-│   ├── modules/_reference/   ← health-check example module
-│   ├── modules/model-condenser/
-│   └── shared/               ← contracts, agent-runtime, artifact paths
-├── frontend/src/core/ + modules/_reference/
-├── docs/architecture/        ← contracts, guardrails, templates/
-├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
-├── work-log/                 ← dev-logs, planning/{folder}/, study-logs/ (owner only)
-├── local-artifacts.example.json
-└── package.json              ← root scripts (test:ci, condense:all, new:module, …)
-```
-
-Read **`docs/architecture/CONTRACTS_OVERVIEW.md`** and **`AGENTS.md`** before adding domain modules.
-
-### Implementing 2.3.0 contracts (your code)
-
-The npm package ships **specs + copy-paste templates**, not a running upload queue or BullMQ install:
-
-| Goal | Start here |
-| --- | --- |
-| User uploads + DB | `docs/architecture/templates/document-persistence/` |
-| Module AI agents (FSM) | `docs/architecture/templates/module-agent-state-machine/` + `backend/src/shared/agent-runtime/` |
-| Background jobs | `docs/architecture/templates/async-job-queue/` (add `bullmq` + Redis when you wire workers) |
-| Agent handoff bundle | `npm run condense-contracts` → `file-exchange/exports/consolidated-contracts.json` |
-
-## What's new in 2.3.x
-
-### 2.3.4 — dated plan folders + study logs (2026-05-31)
-
-**Changed**
-
-- **Planning layout** — one folder per phase: `planning/{NNN}_{date}_{time}_{slug}/audit-log.md` + `plan.md`
-- **`plan:gate` / `plan:finalize`** — `--plan-id` defaults to latest plan folder for slug
-- **Study logs** — separate `work-log/study-logs/` for owner portfolio notes; agents must not touch
-
-**Added**
-
-- `.cursor/rules/study-logs-user-only.mdc` — always-on agent boundary for study logs
-- `/planning-audit-log` command (replaces planning-study-log)
-
-### 2.3.3 — planning folder + agent push gate (2026-05-31)
-
-**Fixed**
-
-- **`plan:gate` without `--plan-id`** — no longer resolves plan id to `process.argv[0]` (broken manifest paths on Windows)
-- **`dev-log:pre-push` on boilerplate** — no crash when pipeline/prompt registries are absent
-- **Planning paths** — planning audit logs, plan packages, and finalize manifests all under `work-log/planning/` (removed split with `study-docs/`)
-- **Terminology** — planning conversation files are **audit logs** (`*_audit-log_*`), not study logs; study logs are a separate concept
-- **Windows path + git commit issues** — planning manifest paths and `agent:push` commit messages
-
-**Added**
-
-- `npm run agent:push` — create dev logs, commit pair, push (for Cursor agent workflows)
-- `.cursor/hooks.json` — blocks bare agent `git push` until paired dev logs exist on `HEAD`
-- `npm run smoke:gates` — smoke tests for planning gate and push gate
-
-### 2.3.0 — architecture contracts
-
-Architecture contracts and templates for the next layer of agent-ready apps (spec only — you wire runtime when ready):
-
-| Contract | What you get |
-| --- | --- |
-| **documentPersistence** | Uploads on disk (`data/uploads/`) + SQL metadata/parsed text; separate from file-exchange |
-| **moduleAgentStateMachine** | Per-module FSM in `agents/*.machine.js` + shared `createAgentRuntime` |
-| **asyncJobQueue** | BullMQ + Redis pattern for background jobs; SQL stays source of truth |
-
-Also in this release:
-
-- `npm run condense-contracts` (and `condense:all`) exports a full **consolidated-contracts.json** handoff bundle
-- `local-artifacts.example.json` for moving heavy folders outside the repo
-- Module scaffold adds an **`agents/`** layer; `CONTRACTS_OVERVIEW` lists all **9** starter manifest contracts
-- Implementation guides under `docs/architecture/templates/{document-persistence,module-agent-state-machine,async-job-queue}/`
-
-### 2.3.1 — documentation
-
-- Expanded npm **README** (install, env vars, post-scaffold layout, maintainer publish steps)
-- Registry `description` / `keywords` updated in `package.json`
-
-See [CHANGELOG.md](./CHANGELOG.md) for the full list.
-
-## What this is
-
-`@pukujan/create-modular-monolith` copies the `template/` folder into your chosen directory.
-
-You get a platform for human + AI-agent engineering:
-
-- **Modular monolith** with backend and frontend feature modules
-- **Architecture contracts** so repo structure does not silently drift
-- **File exchange** with dated imports and exports for human ↔ agent handoff
-- **Versioned dev logs** for human-readable project memory
-- **Agent audit logs** for machine-readable context between sessions
-- **Prompt/versioning patterns** for prompt engineering workflows
-- **Eval and CI gates** for regression checks and merge confidence
-- **Cursor-native setup** with `AGENTS.md`, `.cursor/rules`, and `.cursor/commands`
-
-Domain logic is yours.
+Start developing:
 
 ```bash
-npm run new:module -- billing --label "Billing"
-```
-
-## Why this exists
-
-AI agents can now create APIs, refactor files, write tests, generate prompts, process data, and move through tickets quickly.
-
-That speed is useful.
-
-But without architecture, it creates new problems:
-
-| Problem | Why it matters |
-|---|---|
-| Agents lose context | A new session does not know what changed or failed before |
-| Humans cannot review everything deeply | Agents can generate more changes than a human can track manually |
-| File handoff gets messy | Inputs and outputs get scattered across random folders |
-| Module boundaries blur | Agents may edit too many areas at once |
-| Prompt changes disappear | Nobody knows why prompt v2 is better than v1 |
-| Eval results get lost | Terminal output and chat history are not enough |
-| Architecture decisions stay in chat | The repo does not remember why it is shaped that way |
-| Future agents repeat mistakes | There is no audit trail of what was rejected, fixed, or risky |
-
-This package addresses those problems by making the repo itself part of the workflow.
-
-## Core idea
-
-The repo should not just store code.
-
-It should store the memory of how the code was built.
-
-That means preserving:
-
-- what changed
-- why it changed
-- what failed
-- what tests ran
-- what files were imported
-- what outputs were exported
-- what prompt version was used
-- what eval result was produced
-- what the next agent should know
-
-## How the architecture helps
-
-| Architecture piece | What it solves |
-|---|---|
-| Modules | Keeps agent work bounded |
-| Contracts | Prevents repo layout drift |
-| Human dev logs | Explains decisions, risks, and failures |
-| Agent JSON audit logs | Gives future agents structured memory |
-| File exchange | Makes imports and exports traceable |
-| Prompt versioning | Tracks prompt changes and reasons |
-| Golden evals | Creates regression anchors for known fixtures |
-| CI gates | Checks structure, tests, and evals before merge |
-| Cursor rules | Gives coding agents project-specific instructions |
-
-## Agent-first workflow
-
-```mermaid
-flowchart TB
-    A["Human plans feature or module"] --> B["ChatGPT helps reason through architecture"]
-    B --> C["Cursor agent receives bounded task"]
-    C --> D["Agent works inside module boundary"]
-    D --> E["Tests, evals, and contracts run"]
-    E --> F["Human dev log records why"]
-    E --> G["Agent JSON audit records what"]
-    F --> H["Future human understands context"]
-    G --> I["Future agent understands context"]
-    H --> J["Next task starts cleaner"]
-    I --> J
-```
-
-## File exchange
-
-Agents should not guess where files are.
-
-Every inbound bundle should go through a stamped import folder.
-
-Every generated output should go through a stamped export folder.
-
-```text
-file-exchange/imports/{timestamp}/
-file-exchange/exports/{timestamp}_{label}/
-```
-
-Example:
-
-```bash
-npm run import:file-exchange -- "/path/to/bundle"
-npm run condense:all
-```
-
-This helps answer:
-
-- where did the input come from?
-- which version did the agent use?
-- where did the output go?
-- what should the next agent read?
-
-## Dev logs and audit trail
-
-Before pushing, run:
-
-```bash
-npm run dev-log:pre-push -- --slug my-feature
-```
-
-This creates two types of memory:
-
-| Log | Format | Purpose |
-|---|---|---|
-| Human dev log | Markdown | Summary, reasoning, risks, failures, and next notes |
-| Agent audit log | JSON | Changed files, test results, API inventory, metadata, machine-readable handoff |
-
-Humans need narrative context.
-
-Agents need structured context.
-
-This package supports both.
-
-## Prompt versioning and evals
-
-Prompt engineering needs the same discipline as code.
-
-A prompt version should not live only in a chat.
-
-A serious prompt workflow should preserve:
-
-- prompt version
-- change note
-- failure being fixed
-- model used
-- input fixture
-- output snapshot
-- eval result
-- confidence score
-- human review status
-
-Golden evals are treated as regression anchors for known fixtures, not universal truth for every future case.
-
-```mermaid
-flowchart TB
-    A["Prompt v1"] --> B["Run fixture"]
-    B --> C["Output v1"]
-    C --> D["Eval result"]
-    D --> E["Find failure"]
-    E --> F["Prompt v2"]
-    F --> G["Run same fixture"]
-    G --> H["Compare outputs"]
-    H --> I["Save audit trail"]
-```
-
-## Quick start
-
-```bash
-npm create @pukujan/create-modular-monolith@2.3.4 my-platform
-cd my-platform
-
-npm install --prefix backend
-npm install --prefix frontend
-
-npm run test:ci
-```
-
-Start development:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-
 cd backend && npm run dev
 # new terminal
 cd frontend && npm run dev
 ```
+
+Backend runs on `3001`. Frontend runs on `5173`.
+
+## What you get
+
+A working Express + React/Vite starter, plus the infrastructure to survive agent-driven development:
+
+| What | Why it matters |
+|---|---|
+| **Backend + frontend modules** | Each feature is self-contained. Agents can't accidentally refactor your billing layer while working on search. |
+| **Architecture contracts** | Written rules in `docs/architecture/` that agents read. Prevents "I didn't know we did it that way." |
+| **File exchange** | `file-exchange/imports/` and `exports/` with timestamps. Know exactly what went in and what came out. |
+| **Dev logs + audit trail** | One command before push: `npm run dev-log:pre-push -- --slug my-feature`. Humans get a story. Agents get structured JSON. |
+| **Planning gates** | `npm run plan:gate` forces a planning audit log before big refactors. Prevents "I asked the agent to just clean up a little and it rewrote half the app." |
+| **Condensed handoffs** | `npm run condense:all` exports a snapshot of your contracts, file tree, and current state. Drop it into the next agent session. |
+| **Cursor-native setup** | `AGENTS.md`, `.cursor/rules`, and `.cursor/commands` give your coding agent project-specific instructions from day one. |
+
+Domain logic is yours. The scaffolding just makes sure your agents don't burn your house down while building it.
+
+## Daily workflow
+
+**Starting work:**
+```bash
+npm run condense:all
+# Paste file-exchange/exports/consolidated-contracts.json into your agent context
+```
+
+**Adding a feature:**
+```bash
+npm run new:module -- billing --label "Billing"
+# Agent works inside backend/src/modules/billing/ and frontend/src/modules/billing/
+```
+
+**Before you push:**
+```bash
+npm run dev-log:pre-push -- --slug billing-api
+# Creates human markdown + agent JSON audit log
+npm run test:ci
+```
+
+**Planning something big:**
+```bash
+npm run plan:gate -- --slug auth-refactor
+# Forces you to write a plan before the agent starts rewriting core code
+```
+
+## The stack
+
+- **Node 20+**
+- **Backend:** Express
+- **Frontend:** React + Vite
+- **Default ports:** 3001 (API), 5173 (UI)
+- **License:** MIT
+
+## What's in the box
+
+```
+my-platform/
+├── AGENTS.md                 ← Required reading for Cursor / agents
+├── backend/src/
+│   ├── core/                 ← Module loader, server
+│   ├── modules/_reference/   ← Example health-check module
+│   ├── modules/model-condenser/
+│   └── shared/               ← Contracts, agent-runtime, artifact paths
+├── frontend/src/core/ + modules/_reference/
+├── docs/architecture/        ← Contracts, guardrails, templates
+├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
+├── work-log/                 ← dev-logs, planning/{folder}/, study-logs/
+├── local-artifacts.example.json
+└── package.json              ← Root scripts (test:ci, condense:all, new:module, …)
+```
+
+Read `docs/architecture/CONTRACTS_OVERVIEW.md` and `AGENTS.md` before adding your own domain modules.
+
+## Architecture contracts (the boring-but-important part)
+
+The template ships with 9 starter contracts registered in `docs/architecture/contracts/manifest.json`. These are specs and templates, not running infrastructure:
+
+| Contract | What it covers |
+|---|---|
+| `repoArtifactLayout` | Canonical roots + optional `local-artifacts.json` |
+| `fileExchange` | Dated imports and exports |
+| `consolidatedExports` | Output paths for `condense:all` |
+| `planningPhase` | Dated planning folders, `plan:gate`, `plan:finalize` |
+| `prePushDevLog` | Paired human markdown + agent JSON |
+| `apiDocumentationRegistry` | `docs/API.md` registry |
+| `documentPersistence` | Uploads + DB pattern (you wire runtime) |
+| `moduleAgentStateMachine` | Per-module agent FSM + shared runtime |
+| `asyncJobQueue` | BullMQ + Redis pattern (you wire runtime) |
+
+You add domain-specific contracts inside your modules as your project grows.
 
 ## Key commands
 
 | Command | Purpose |
 |---|---|
 | `npm run test:ci` | Run all local CI gates |
-| `npm run new:module -- <name>` | Scaffold backend + frontend module |
-| `npm run import:file-exchange -- <path>` | Import inbound files into stamped folder |
-| `npm run condense:all` | Generate consolidated snapshots (models, prompts, file tree, contracts) |
-| `npm run condense-contracts` | Export full architecture contract bundle only |
-| `npm run dev-log:pre-push -- --slug <topic>` | Create human + agent dev log pair |
-| `npm run lint:architecture` | Check architecture boundaries, layers, and API docs |
-| `npm run lint:contracts` | Check registered architecture contract paths |
-| `npm run plan:gate` | Planning phase gate (planning audit log required) |
+| `npm run new:module -- &lt;name&gt;` | Scaffold backend + frontend module |
+| `npm run import:file-exchange -- &lt;path&gt;` | Import inbound files into stamped folder |
+| `npm run condense:all` | Generate consolidated snapshot for agent handoff |
+| `npm run condense-contracts` | Export architecture contract bundle only |
+| `npm run dev-log:pre-push -- --slug &lt;topic&gt;` | Create human + agent dev log pair |
+| `npm run lint:architecture` | Check architecture boundaries and layers |
+| `npm run lint:contracts` | Check registered contract paths |
+| `npm run plan:gate` | Planning phase gate (audit log required) |
 | `npm run plan:finalize` | Finalize planning artifacts |
+| `npm run agent:push` | Create dev logs, commit pair, push (Cursor workflows) |
+| `npm run smoke:gates` | Verify planning + push gates |
 
-## Environment variables (starter)
+## Environment variables
 
-| Variable | Where | Purpose |
-| --- | --- | --- |
-| `PORT` | `backend/.env` | API port (default `3001`) |
+| Variable | File | Purpose |
+|---|---|---|
+| `PORT` | `backend/.env` | API port (default 3001) |
 | `DATABASE_URL` | `backend/.env` | Postgres/SQLite when you add persistence |
-| `REDIS_URL` | `backend/.env` | BullMQ backend when you implement `asyncJobQueue` |
-| `UPLOADS_ROOT` | `backend/.env` | Override upload path (see `documentPersistence` contract) |
+| `REDIS_URL` | `backend/.env` | BullMQ backend when you implement async jobs |
+| `UPLOADS_ROOT` | `backend/.env` | Override upload path |
 | `VITE_API_BASE_URL` | `frontend/.env` | Frontend → backend URL |
 
 See `backend/.env.example` and `docs/architecture/REPO_ARTIFACT_LAYOUT.md` after scaffold.
 
-## What ships in `template/`
+## Package vs. product
 
-| Area | Contents |
-|---|---|
-| Backend | `backend/src/core/`, `modules/_reference`, `modules/model-condenser` |
-| Frontend | `frontend/src/core/`, `modules/_reference` |
-| Docs | `docs/architecture/`, guardrails, contracts, platform docs |
-| Exchange | `file-exchange/imports/`, `file-exchange/exports/` |
-| Work log | `work-log/dev-logs/`, `work-log/planning/{folder}/`, `work-log/study-logs/` (owner only) |
-| CI | `.github/workflows/ci.yml` |
-| Cursor | `AGENTS.md`, `.cursor/rules`, `.cursor/commands` |
-| Scripts | Contract linting, module scaffolding, file exchange, condenser, dev logs |
-| Shared runtime | `createAgentRuntime`, `resolveArtifactPaths`, `resolveDocumentStoragePaths` |
+This npm package is the reusable platform layer. It ships architecture, contracts, and conventions.
 
-Not included:
+For a reference product that stress-tests this architecture with real domain modules, prompts, evals, and case workflows, see the separate product repo.
 
-- domain batches
-- litigation prompts
-- committed golden evals
-- customer-specific workflows
+## Changelog
 
-Add those per project when you curate real fixtures.
-
-## Contract catalog
-
-Registered in `template/docs/architecture/contracts/manifest.json` (**9** starter contracts):
-
-| Contract | Purpose |
-|---|---|
-| `repoArtifactLayout` | Canonical roots + optional `local-artifacts.json` |
-| `fileExchange` | Dated imports and exports |
-| `consolidatedExports` | `condense:all` / `condense-contracts` output paths |
-| `planningPhase` | Dated `work-log/planning/{folder}/`, `plan:gate`, `plan:finalize` |
-| `prePushDevLog` | Paired human markdown + agent JSON |
-| `apiDocumentationRegistry` | `docs/API.md` registry |
-| `documentPersistence` | Runtime uploads + DB (not file-exchange) |
-| `moduleAgentStateMachine` | Per-module agent FSM + shared runtime |
-| `asyncJobQueue` | BullMQ + Redis for async jobs |
-
-Detail: `template/docs/architecture/CONTRACTS_OVERVIEW.md` after scaffold.
-
-Add domain contracts inside your modules when you introduce project-specific pipelines, prompt layouts, eval folders, or storage rules.
-
-## Package vs product repo
-
-| Repo | Role |
-|---|---|
-| `create-modular-monolith` | This npm package. Architecture platform only. |
-| `litigation-prompt-engineering` | Reference product with domain modules, prompts, evals, and case workflows. |
-
-The package is the reusable platform layer.
-
-The product repo stress-tests the architecture.
-
-## Repository layout
-
-```text
-create-modular-monolith/
-├── README.md
-├── package.json
-├── index.js
-├── CHANGELOG.md
-├── LICENSE
-└── template/
-    ├── README.md
-    ├── AGENTS.md
-    ├── docs/architecture/
-    ├── file-exchange/
-    ├── work-log/
-    ├── backend/
-    └── frontend/
-```
-
-## Publishing (maintainers)
-
-### Sync template from a product repo (optional)
-
-```bash
-# In legal-prmpt-eng (or your product repo)
-npm run export:architecture-starter -- --to /absolute/path/to/create-modular-monolith/template
-```
-
-### Publish to npm
-
-npm shows **`README.md` from the package root** on [the package page](https://www.npmjs.com/package/@pukujan/create-modular-monolith). You cannot edit that page in the browser — **publish a new version** with an updated root `README.md`.
-
-```bash
-cd create-modular-monolith
-
-# 1. Edit README.md + CHANGELOG.md, bump version in package.json
-# 2. Commit and push to GitHub
-git add README.md CHANGELOG.md package.json
-git commit -m "docs: release notes for v2.3.x"
-git push origin main
-
-# 3. Login (browser flow is fine)
-npm login
-
-# 4. Publish — README ships inside the tarball automatically
-npm publish --access public
-# If npm asks for a code: use authenticator OTP or complete the CLI browser link
-```
-
-Verify:
-
-```bash
-npm view @pukujan/create-modular-monolith version
-npm view @pukujan/create-modular-monolith readme | head -20
-```
-
-**Patch release tip:** If `2.3.0` is already on npm without the latest README, bump to `2.3.1`, publish again — registry README updates with the new version’s tarball.
-
-Product-repo architecture export audit (separate from this package): see `template/docs/architecture/contracts/architecturePushDevLog.contract.md` (maintainer repo only).
+See [CHANGELOG.md](./CHANGELOG.md) for version history, migration notes, and bug fixes.
 
 ## License
 
-[MIT License](./LICENSE) — Copyright (c) 2026 Pukujan.
-
-Scaffolded projects receive the same `LICENSE` in `template/`. Optional credit: `template/NOTICE`.
+MIT — Copyright (c) 2026 Pukujan.
