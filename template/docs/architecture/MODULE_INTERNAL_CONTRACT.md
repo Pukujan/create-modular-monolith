@@ -72,9 +72,43 @@ The layer linter (`npm run lint:layers`) rejects imports that skip layers or cre
 4. **repositories** must not import `services` or `routes`.
 5. **utils** stay leaf nodes — no `services`, `routes`, `repositories`, etc.
 6. **evals** exercise behavior through **services** (and `prompts`/`schemas`), not HTTP.
-7. **agents** stay declarative — no `services`, `routes`, `repositories`, `adapters`, `events`, or `prompts`. Side effects live in `services/agent-actions.js`; lifecycle in `services/agent-runner.service.js` ([moduleAgentStateMachine contract](./contracts/moduleAgentStateMachine.contract.md)).
+7. **agents** (FSM `*.machine.js` files) stay declarative — no I/O. Side effects live in each agent mini-module's `services/` or parent `services/agent-runner.service.js` ([moduleAgentStateMachine contract](./contracts/moduleAgentStateMachine.contract.md)).
 
 `index.js` is the only composition root and may wire everything.
+
+### Backend agent mini-modules (under `ai-ops/`)
+
+Agent workers and orchestrators are **mini-modules inside the ai-ops parent** — same barrel rules as frontend workspace modules. The parent owns run persistence and the shared FSM runner; agents are loaded via `services/agent-registry.service.js`.
+
+```text
+backend/src/modules/ai-ops/
+├── index.js                    ← /api/ai-ops mount, agent runner wiring
+├── services/                   ← agent-registry, agent-runner, health
+├── repositories/               ← agent_runs persistence
+├── rule-discovery-run/         ← pipeline orchestrator (calls worker agents)
+├── ocr-agent/                  ← OCR worker (classify + vision OCR)
+├── parser-agent/               ← PDF text-layer vs scan routing (parser worker)
+└── documents/                  ← separate top-level module (document vault)
+```
+
+Each agent mini-module follows the standard module layout:
+
+```text
+backend/src/modules/ai-ops/<agent-id>/
+├── index.js                    ← REQUIRED public barrel
+├── manifest.json               ← when registered as FSM agent
+├── agents/                     ← FSM (*.machine.js) — orchestrators + workers with runs
+├── services/                   ← action handlers
+├── routes/                     ← optional HTTP (e.g. classify)
+├── schemas/, prompts/, evals/, tests/, data/
+```
+
+**Rules:**
+
+1. Sibling code under `ai-ops/` imports agents ONLY via `../<agent-id>` or `../<agent-id>/index.js`.
+2. `parser-agent` is a worker capability; `ocr-agent` and future workers call it via the barrel — no deep imports into `parser-agent/services/`.
+3. Orchestrators (`rule-discovery-run`) assign work to worker agents via their barrels or agent runs — not by nesting code under the orchestrator folder.
+4. Enforced via `BACKEND_PARENT_MINI_MODULES` in `scripts/lib/parent-mini-modules.config.mjs` and `npm run lint:mini-modules`.
 
 ### Prompts & evals (platform / AI)
 
@@ -126,6 +160,57 @@ Pages and hooks talk to the backend; presentational components do not call `fetc
 
 ---
 
+## Parent modules and mini-modules (frontend)
+
+Some features (e.g. `case-management`, `ai-ops`) are **parent workspace modules**. They may omit `index.jsx` registry discovery; routes are registered manually in `frontend/src/app/router.jsx`.
+
+### Parent module layout
+
+```text
+<parent-module>/
+├── index.js                 # Optional public barrel (not the route registry entry)
+├── layout/                  # Shell components
+├── pages/                   # Dashboard + top-level routes
+├── context/                 # Cross-mini-module session providers
+├── services/                # Orchestration only — delegates to mini-modules
+├── data/                    # Cross-run seeds shared by multiple mini-modules
+└── <mini-module>/           # Internal capability (see below)
+```
+
+### Mini-module layout
+
+Each mini-module is **private to the parent** — not a sibling under `src/modules/`.
+
+```text
+<mini-module>/
+├── index.js                 # REQUIRED public surface for sibling imports
+├── components/
+├── services/
+├── data/                    # Mini-module-specific demo-*.json
+├── pages/                   # Optional sub-route screens
+├── hooks/
+└── utils/
+```
+
+### Mini-module rules
+
+1. **Public API:** Sibling code imports ONLY from `../<mini-module>` (the `index.js` barrel).
+2. **No deep imports:** Do not import `../other-mini-module/components/Foo.jsx`.
+3. **No upward leakage:** Mini-modules do not import from other top-level modules under `src/modules/`.
+4. **Shared code:** Cross-app helpers live in `frontend/src/shared/` or the parent `shared/` mini-module.
+5. **Layers inside mini-modules:** Same as flat modules (pages/hooks → services → data; components stay presentational).
+6. **Orchestration:** Only parent `services/` or a dedicated `state-machine/` mini-module sequences multiple mini-modules.
+7. **Extraction:** A mini-module becomes a top-level module only when it has its own route, API, and team boundary.
+
+### Workspace vs feature module
+
+| Type | Route registration | Example |
+|------|-------------------|---------|
+| Feature module | `index.jsx` + moduleRegistry or manual | `documents` |
+| Workspace parent | Manual nested routes in `app/router.jsx` | `case-management`, `ai-ops` |
+
+---
+
 ## Cross-cutting conventions
 
 ### Naming
@@ -153,10 +238,13 @@ Stay in one module until you have multiple unrelated subdomains or teams. Then a
 
 | Command | Checks |
 | --- | --- |
-| `npm run lint:boundaries` | No imports across `modules/<other>/` (backend `.js`/`.mjs`, frontend `.js`/`.jsx`) |
+| `npm run lint:boundaries` | Cross-top-level-module imports (absolute path strings + frontend relative imports with allowlist) |
+| `npm run lint:mini-modules` | Parent mini-module barrel-only imports (frontend + backend `ai-ops/<agent-id>/`) |
 | `npm run lint:layers` | Layer import rules inside each backend module |
 | `npm test` | Unit + integration tests (`node:test`) |
 | `npm run test:evals` | Module eval runners |
+
+Config: [`scripts/lib/parent-mini-modules.config.mjs`](../../scripts/lib/parent-mini-modules.config.mjs). Tests: [`backend/scripts/boundary-lint.test.mjs`](../../backend/scripts/boundary-lint.test.mjs).
 
 ---
 
@@ -166,4 +254,5 @@ Stay in one module until you have multiple unrelated subdomains or teams. Then a
 - `scripts/new-module.mjs` — scaffolds this layout
 - `backend/scripts/check-module-layers.mjs`
 - `backend/scripts/check-module-boundaries.mjs`
+- `backend/scripts/check-parent-mini-modules.mjs`
 - `backend/src/modules/_reference/` — living backend example

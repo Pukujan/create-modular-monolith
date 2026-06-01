@@ -2,12 +2,12 @@ import express from "express";
 
 /**
  * Minimal Express app for module integration tests.
- * Pass a register function from the module under test.
+ * Pass a register function from the module under test (sync or async).
  */
-export function createTestApp(register) {
+export async function createTestApp(register) {
   const app = express();
   app.use(express.json());
   const context = { eventBus: { emit() {}, on() {} } };
-  register(app, context);
+  await register(app, context);
   return app;
 }

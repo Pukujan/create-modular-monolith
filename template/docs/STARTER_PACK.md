@@ -33,7 +33,7 @@ git clone https://github.com/Pukujan/litigation-workflow-application.git
 | `docs/architecture/REPO_ARTIFACT_LAYOUT.md` | Data roots, file-exchange, golden paths |
 | `file-exchange/` | Dated imports/exports for human↔agent handoff |
 | `AGENTS.md` | **Mandatory** agent workflow (import stamp before `process-batch`) |
-| `work-log/` | Handoffs, planning, dev-logs |
+| `work-log/` | Handoffs, study-docs, dev-logs |
 | `backend/src/modules/_reference/` | Example layout (skipped by loaders) |
 
 Guardrails are **documented** and **automated** where practical. See [Architecture guardrails](./architecture/ARCHITECTURE_GUARDRAILS.md) and [Module internal contract](./architecture/MODULE_INTERNAL_CONTRACT.md).

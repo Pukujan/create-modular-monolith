@@ -1,31 +1,34 @@
-export const PLANNING_PHASE_VERSION = "v001";
+export const PLANNING_PHASE_VERSION = "v003";
+export const STUDY_DOCS_DIR = "work-log/study-docs";
 export const PLANNING_DIR = "work-log/planning";
 
-/** User-owned portfolio notes — not used by agents (see work-log/study-logs/README.md). */
-export const STUDY_LOGS_DIR = "work-log/study-logs";
+export const PLAN_LOG_FILE = "plan-log.md";
+export const AUDIT_LOG_FILE = "audit-log.md";
+export const DESIGN_LOG_FILE = "design-log.md";
+export const MANIFEST_FILE = "manifest.json";
 
 export const PLANNING_STATUSES = ["draft", "approved", "executing", "done"];
 
-/** Fixed filenames inside each `{NNN}_{date}_{time}_{slug}/` plan folder. */
-export const PLANNING_AUDIT_LOG_FILE = "audit-log.md";
-export const PLANNING_PLAN_FILE = "plan.md";
-export const PLANNING_DESIGN_FILE = "design.md";
-
-/** Plan folder: `{NNN}_{YYYY-MM-DD}_{HH-MM}_{slug}` */
-export const PLAN_FOLDER_PATTERN = "{NNN}_{YYYY-MM-DD}_{HH-MM}_{slug}";
-
-/** Required planning artifact kinds (audit log + plan; design optional). */
-export function requiredPlanningArtifactKinds() {
-  return ["auditLog", "plan", "design"];
+/** Phase folder name: {NNN}_{YYYY-MM-DD}_{HH-MM}_{slug} */
+export function planPhaseFolderPattern(slug) {
+  return `*_*_*_${slug}`;
 }
 
-/** @deprecated use requiredPlanningArtifactKinds */
-export function requiredStudyDocPatterns(slug) {
-  return requiredPlanningArtifactKinds();
+export function designFilenamePattern(slug) {
+  return `*_design_${slug}*.md`;
 }
 
-export function planningManifestFilename(planId) {
-  return `${planId}.json`;
+export function planningManifestPath(phaseDir) {
+  return `${phaseDir}/${MANIFEST_FILE}`;
 }
 
-export const PLANNING_AUDIT_LOG_KIND = "audit-log";
+export function artifactLocations() {
+  return {
+    studyLogMd: STUDY_DOCS_DIR,
+    phaseDir: PLANNING_DIR,
+    planLogMd: PLANNING_DIR,
+    auditLogMd: PLANNING_DIR,
+    designMd: PLANNING_DIR,
+    manifestJson: PLANNING_DIR
+  };
+}

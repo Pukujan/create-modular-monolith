@@ -5,9 +5,15 @@ import { getEventBus } from "../shared/events/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/**
+ * @typedef {{ name: string, detail?: string, children?: Array<{ id: string, role?: string, mount?: string }> }} LoadedModule
+ */
+
 export async function loadModules(app) {
   const modulesDir = join(__dirname, "../modules");
-  if (!existsSync(modulesDir)) return;
+  /** @type {LoadedModule[]} */
+  const loaded = [];
+  if (!existsSync(modulesDir)) return loaded;
 
   const moduleContext = { eventBus: getEventBus() };
   const names = readdirSync(modulesDir, { withFileTypes: true })
@@ -16,20 +22,43 @@ export async function loadModules(app) {
     .filter((d) => !d.name.startsWith("."))
     .map((d) => d.name);
 
-  for (const name of names) {
+  const loadFirst = ["documents", "ai-ops"];
+  const ordered = [
+    ...loadFirst.filter((n) => names.includes(n)),
+    ...names.filter((n) => !loadFirst.includes(n)).sort()
+  ];
+
+  console.log(`\nLoading ${ordered.length} backend module(s)...`);
+
+  for (const name of ordered) {
     const moduleEntry = join(modulesDir, name, "index.js");
-    if (!existsSync(moduleEntry)) continue;
+    if (!existsSync(moduleEntry)) {
+      console.warn(`! Module ignored (no index.js): ${name}`);
+      continue;
+    }
 
     try {
       const mod = await import(`../modules/${name}/index.js`);
-      if (typeof mod.register === "function") {
-        mod.register(app, moduleContext);
-        console.log(`✓ Module loaded: ${name}`);
-      } else {
+      if (typeof mod.register !== "function") {
         console.warn(`! Module ignored (missing register): ${name}`);
+        continue;
       }
+
+      const info = await mod.register(app, moduleContext);
+      if (info?.skipped) {
+        console.warn(`⊘ Module skipped: ${name}${info.reason ? ` — ${info.reason}` : ""}`);
+        continue;
+      }
+
+      loaded.push({
+        name,
+        detail: info?.detail,
+        children: info?.children
+      });
     } catch (error) {
       console.error(`✗ Module failed: ${name} —`, error.message);
     }
   }
+
+  return loaded;
 }

@@ -10,7 +10,7 @@ test("POST /api/model-condenser/condense regenerates consolidated file", async (
   process.env.MODEL_CONDENSER_OUTPUT_DIR = modelsDir;
 
   const { register } = await import("../../index.js");
-  const app = createTestApp(register);
+  const app = await createTestApp(register);
   const server = app.listen(0);
   const { port } = server.address();
 

@@ -18,15 +18,16 @@
     "utility": "backend/src/shared/utils/consolidatedExport.js"
   },
   "planningPhase": {
-    "version": "v001",
+    "version": "v003",
     "doc": "docs/architecture/contracts/planningPhase.contract.md",
     "file": "backend/src/shared/contracts/planningPhase.contract.js",
     "finalize": "scripts/plan-finalize.mjs",
     "gate": "scripts/plan-gate.mjs",
     "artifacts": "scripts/lib/plan-artifacts.mjs",
-    "auditLogCommand": ".cursor/commands/planning-audit-log.md",
-    "planningDir": "work-log/planning",
-    "workLogReadme": "work-log/planning/README.md"
+    "studyLogCommand": ".cursor/commands/planning-study-log.md",
+    "planPackageCommand": ".cursor/commands/planning-plan-package.md",
+    "studyDocsDir": "work-log/study-docs",
+    "planningDir": "work-log/planning"
   },
   "prePushDevLog": {
     "version": "v001",
@@ -47,14 +48,6 @@
     "lintScript": "scripts/check-api-docs.mjs",
     "architectureDoc": "docs/architecture/API_DOCUMENTATION_CONTRACT.md"
   },
-  "documentPersistence": {
-    "version": "v001",
-    "doc": "docs/architecture/contracts/documentPersistence.contract.md",
-    "file": "backend/src/shared/contracts/documentPersistence.contract.js",
-    "utility": "backend/src/shared/storage/resolveDocumentStoragePaths.js",
-    "userDoc": "docs/architecture/templates/document-persistence/README.md",
-    "schema": "docs/architecture/templates/document-persistence/migrations/001_document_persistence.sql"
-  },
   "moduleAgentStateMachine": {
     "version": "v001",
     "doc": "docs/architecture/contracts/moduleAgentStateMachine.contract.md",
@@ -68,5 +61,21 @@
     "doc": "docs/architecture/contracts/asyncJobQueue.contract.md",
     "file": "backend/src/shared/contracts/asyncJobQueue.contract.js",
     "userDoc": "docs/architecture/templates/async-job-queue/README.md"
+  },
+  "monorepoDeploy": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/monorepoDeploy.contract.md",
+    "file": "backend/src/shared/contracts/monorepoDeploy.contract.js",
+    "lintScript": "scripts/lint-deploy.mjs",
+    "userDoc": "docs/DEPLOY.md"
+  },
+  "pipelineAgentMiniModules": {
+    "version": "v001",
+    "doc": "docs/architecture/contracts/pipelineAgentMiniModules.contract.md",
+    "file": "backend/src/shared/contracts/pipelineAgentMiniModules.contract.js",
+    "registry": "backend/src/shared/contracts/pipeline-agent-mini-modules.registry.json",
+    "registryFrontendMirror": "frontend/src/modules/ai-ops/shared/data/pipeline-agent-mini-modules.registry.json",
+    "lintScript": "scripts/lint-pipeline-agent-mini-modules.mjs",
+    "parentMiniModulesConfig": "scripts/lib/parent-mini-modules.config.mjs"
   }
 }

@@ -1,13 +1,13 @@
 #!/bin/sh
-# Optional pre-push reminder for terminal pushes — install:
-#   cp scripts/git-hooks/pre-push.sample .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+# Install: npm run dev-log:install-hook
+# Or manually: cp scripts/git-hooks/pre-push.sample .git/hooks/pre-push && chmod +x .git/hooks/pre-push
 #
-# Block terminal push without dev logs (off by default):
-#   DEVLOG_STRICT=1 npm run dev-log:pre-push -- --check
-#
-# Agent pushes are enforced separately via .cursor/hooks.json (not this hook).
+# Strict push gate — blocks push unless paired dev logs exist and verify passes.
+
+export DEVLOG_STRICT=1
 
 if [ "$DEVLOG_STRICT" = "1" ]; then
+  npm run dev-log:verify || exit 1
   npm run dev-log:pre-push -- --check || exit 1
 else
   echo "pre-push: consider npm run dev-log:pre-push -- --slug <topic> (human + agent audit)"

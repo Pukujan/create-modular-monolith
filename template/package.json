@@ -1,21 +1,24 @@
 {
-  "name": "my-modular-monolith",
+  "name": "modular-monolith-starter",
   "private": true,
-  "version": "2.0.0",
+  "version": "0.1.0",
   "scripts": {
     "sync:cli-template": "node scripts/sync-cli-template.mjs",
     "export:architecture-starter": "node scripts/export-architecture-starter.mjs",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "lint:boundaries": "npm --prefix backend run lint:boundaries",
+    "lint:mini-modules": "npm --prefix backend run lint:mini-modules",
     "lint:layers": "npm --prefix backend run lint:layers",
     "lint:api-docs": "node scripts/check-api-docs.mjs",
     "lint:contracts": "node scripts/lint-contracts.mjs",
+    "lint:pipeline-agent-mini-modules": "node scripts/lint-pipeline-agent-mini-modules.mjs",
     "lint:repo-artifacts": "node scripts/lint-repo-artifacts.mjs",
-    "lint:architecture": "npm --prefix backend run lint:architecture",
+    "lint:deploy": "node scripts/lint-deploy.mjs",
+    "lint:architecture": "npm run lint:pipeline-agent-mini-modules && npm --prefix backend run lint:architecture",
     "test": "npm --prefix backend test && npm --prefix frontend test",
     "test:evals": "npm --prefix backend run test:evals",
-    "test:ci": "npm run lint:contracts && npm run lint:repo-artifacts && npm run lint:architecture && npm test && npm run test:evals",
+    "test:ci": "npm run lint:contracts && npm run lint:repo-artifacts && npm run lint:deploy && npm run lint:pipeline-agent-mini-modules && npm run lint:architecture && npm test && npm run test:evals",
     "new:module": "node scripts/new-module.mjs",
     "condense-prompts": "node scripts/condense-prompts.mjs",
     "condense-file-structure": "node scripts/condense-file-structure.mjs",
@@ -25,8 +28,9 @@
     "plan:gate": "node scripts/plan-gate.mjs",
     "dev-log:pre-push": "node scripts/write-pre-push-dev-log.mjs",
     "dev-log:verify": "node scripts/verify-dev-log.mjs",
-    "agent:push": "node scripts/agent-push.mjs",
-    "smoke:gates": "node scripts/smoke-gates.mjs",
-    "import:file-exchange": "node scripts/import-to-file-exchange.mjs"
+    "dev-log:sync-head": "node scripts/sync-dev-log-head.mjs",
+    "dev-log:install-hook": "node scripts/install-dev-log-hook.mjs",
+    "import:file-exchange": "node scripts/import-to-file-exchange.mjs",
+    "reset:ai-ops-data": "npm --prefix backend run reset:ai-ops-data"
   }
 }

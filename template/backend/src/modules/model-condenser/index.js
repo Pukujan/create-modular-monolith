@@ -9,4 +9,8 @@ export function register(app, context) {
   const router = createModuleRouter({ config, modelCondenser });
   app.use("/api/model-condenser", router);
   registerModuleEvents(context);
+  return {
+    detail: "→ /api/model-condenser",
+    children: [{ id: "modelCondenser", role: "facade", mount: "/api/model-condenser" }]
+  };
 }

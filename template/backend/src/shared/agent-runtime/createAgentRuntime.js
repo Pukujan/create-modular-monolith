@@ -104,7 +104,7 @@ export function createAgentRuntime({ persistence }) {
 
       const nextState = stateDef.on?.[eventType];
       if (!nextState) {
-        throw new Error(`Invalid transition: ${run.state} + ${eventType}`);
+        throw new AppError(`Invalid transition: ${run.state} + ${eventType}`, 409);
       }
 
       const nextDef = machine.states[nextState];

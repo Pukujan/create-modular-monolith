@@ -8,7 +8,7 @@ import { resolveDocumentStoragePaths, documentBlobPath } from "./resolveDocument
 test("resolveDocumentStoragePaths uses in-repo default", () => {
   const repoRoot = mkdtempSync(join(tmpdir(), "doc-storage-"));
   const paths = resolveDocumentStoragePaths(repoRoot, {});
-  assert.match(paths.uploads, /data\/uploads$/);
+  assert.equal(paths.uploads, join(repoRoot, "data", "uploads"));
   assert.equal(paths.artifactRoot, null);
 });
 

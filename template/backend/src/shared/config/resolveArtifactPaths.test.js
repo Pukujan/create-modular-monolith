@@ -6,11 +6,11 @@ import { tmpdir } from "os";
 import { resolveArtifactPaths, loadLocalArtifactsConfig } from "./resolveArtifactPaths.js";
 
 test("resolveArtifactPaths uses in-repo defaults without config", () => {
-  const repoRoot = "/tmp/repo";
+  const repoRoot = join(tmpdir(), "repo");
   const paths = resolveArtifactPaths(repoRoot, {});
   assert.equal(paths.artifactRoot, null);
-  assert.match(paths.batches, /data\/case-filing-ai\/batches$/);
-  assert.match(paths.fileExchange, /file-exchange$/);
+  assert.equal(paths.batches, join(repoRoot, "data", "case-filing-ai", "batches"));
+  assert.equal(paths.fileExchange, join(repoRoot, "file-exchange"));
 });
 
 test("resolveArtifactPaths reads local-artifacts.json", async () => {

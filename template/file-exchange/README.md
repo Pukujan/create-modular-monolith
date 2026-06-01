@@ -48,9 +48,18 @@ npm run clear:file-exchange -- --confirm    # delete
 
 Or `POST /api/file-exchange/clear` with `{ "confirm": true }` — see [docs/file-exchange/API.md](../docs/file-exchange/API.md).
 
+## Figma MCP prompt bundle
+
+| Path | Role |
+| --- | --- |
+| `imports/{stamp}/trialworks_figma_mcp_prompt/` | Inbound bundle after `npm run import:file-exchange` |
+| `imports/{stamp}/trialworks_figma_mcp_prompt/import-manifest.json` | Relative paths to prompt + reference PNG |
+
+Per [fileExchange.contract.md](../docs/architecture/contracts/fileExchange.contract.md): only `.gitkeep` and `{stamp}/` folders under `imports/` — no manifest at `imports/` root.
+
 ## Workflow
 
-1. Triage loose files into `imports/{stamp}/` (`npm run import:file-exchange -- <path>`).
+1. Triage loose files into `imports/{stamp}/` (`npm run import:file-exchange -- <path>`). Bundles at **repo root** are removed after a successful import.
 2. Process via your module APIs using files **under that stamp** only.
 3. Copy batch bundles / reports to `exports/{stamp}_{label}/` when done.
 4. Refresh consolidated snapshots: `npm run condense:all` → new `exports/{stamp}_consolidated/`.

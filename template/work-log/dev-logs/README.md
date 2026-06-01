@@ -24,7 +24,15 @@ npm run dev-log:pre-push -- --slug <kebab-topic> --program 005
 
 # 2. Fill FILL sections in agent JSON, then human markdown
 
-# 3. Optional: block push if no agent log for HEAD
+# 3. Verify filled logs
+npm run dev-log:verify
+
+# 4. Commit (include dev logs + work-log/INDEX.md)
+
+# 5. Sync agent log SHA to HEAD
+npm run dev-log:sync-head -- --latest
+
+# 6. Block push if no agent log for HEAD
 npm run dev-log:pre-push -- --check
 ```
 
@@ -55,7 +63,7 @@ Agents should read the **JSON** first when resuming work; humans read **markdown
 | Folder | Audience | Content |
 |--------|----------|---------|
 | **handoffs/** | Implementers | Spec — what to build |
-| **planning/** | You + recruiters | Why — planning conversation |
+| **study-docs/** | You + recruiters | Why — planning conversation |
 | **dev-logs/** | You + agents + reviewers | What landed — audit per push |
 
 ## vs `docs/DEVLOG_V2.md`
@@ -83,24 +91,13 @@ Older single-file logs at `dev-logs/*.md` (repo root of this folder) predate the
 | `HH-MM` | Finish time (24h) |
 | `slug` | Kebab-case topic |
 
-## Agent push enforcement (Cursor)
-
-Agent shell `git push` is blocked by `.cursor/hooks.json` until paired dev logs exist for `HEAD`:
+## Git hook (optional)
 
 ```bash
-npm run dev-log:pre-push -- --check
+npm run dev-log:install-hook
 ```
 
-Terminal `git push` by the user is **not** blocked.
-
-## Git hook (optional, terminal)
-
-```bash
-cp scripts/git-hooks/pre-push.sample .git/hooks/pre-push
-chmod +x .git/hooks/pre-push
-```
-
-Reminds you to run `dev-log:pre-push`; set `DEVLOG_STRICT=1` to block **terminal** push without logs (off by default).
+Runs `dev-log:verify` and `dev-log:pre-push --check` on every push (strict gate).
 
 ## GitHub
 

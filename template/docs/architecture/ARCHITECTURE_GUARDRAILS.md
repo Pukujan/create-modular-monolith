@@ -30,6 +30,8 @@ The entry file must live at:
 
 Discovery uses Vite’s `import.meta.glob("../modules/*/index.jsx", { eager: true })`. Any file that does not export a default with `route`, `label`, and `Component` is ignored.
 
+**Workspace parents** (`case-management`, `ai-ops`) may omit `index.jsx` and register nested routes in `frontend/src/app/router.jsx`. They must still obey cross-**top-level**-module import boundaries below.
+
 ## Boundaries (design rules)
 
 - Module code may import from **its own** folder under `modules/<name>/`.
@@ -53,21 +55,33 @@ The scaffolder wires `/api/<module-name>` and `/<module-name>` by default.
 | --- | --- |
 | **Module loader** | Only `register` from `index.js` is used; missing or invalid modules are skipped or logged. |
 | **Module registry** | Only well-shaped default exports become routes; incomplete modules do not appear in the menu. |
-| **Boundary script** | `backend/scripts/check-module-boundaries.mjs` (via `npm run lint:boundaries`) scans backend and frontend module trees for `/modules/<other>/` path strings. |
+| **Boundary script** | `backend/scripts/check-module-boundaries.mjs` (via `npm run lint:boundaries`) — absolute `/modules/<other>/` strings plus frontend relative cross-module imports (with allowlist). |
+| **Mini-module script** | `backend/scripts/check-parent-mini-modules.mjs` (via `npm run lint:mini-modules`) — sibling deep imports inside parent modules such as `ai-ops`. |
 | **Layer script** | `backend/scripts/check-module-layers.mjs` (via `npm run lint:layers`) enforces import direction inside each backend module. |
 | **Scaffolder** | `scripts/new-module.mjs` creates the full internal layout for new modules. |
 | **This document** | Single place for reviewers and contributors to align on contracts and naming. |
 
 ### Boundary script scope (important)
 
-The checker detects **literal path strings** of the form `/modules/<other>/` in `.js`, `.mjs`, and `.jsx` files. It does not replace a full type-aware import resolver. Frontend **layer** rules are documented in [Module internal contract](./MODULE_INTERNAL_CONTRACT.md) and are not fully linted yet.
+The checker detects:
+
+1. **Literal path strings** `/modules/<other>/` in module source files.
+2. **Frontend relative imports** that resolve into another top-level module folder.
+
+**Allowlisted workspace pair** (grandfathered): `app-shell` ↔ `case-management`. All other cross-top-level-module relative imports fail CI (including `ai-ops` ↔ `case-management`).
+
+**Mini-module lint** (`lint:mini-modules`): inside configured parent modules (`ai-ops`), files within one mini-module must not deep-import sibling mini-module internals — use public `index.js` barrels only.
+
+Composition roots (`router.jsx`, `shared/`) are not scanned. Frontend **layer** rules beyond boundaries are documented in [Module internal contract](./MODULE_INTERNAL_CONTRACT.md) and are not fully linted yet.
 
 ## Related files
 
 - `backend/src/core/module-loader.js` — backend registration
 - `frontend/src/core/moduleRegistry.jsx` — frontend route discovery
 - `scripts/new-module.mjs` — paired module skeleton (full internal layout)
+- `scripts/lib/parent-mini-modules.config.mjs` — parent mini-module and allowlist config
 - `backend/scripts/check-module-boundaries.mjs` — cross-module import check
+- `backend/scripts/check-parent-mini-modules.mjs` — mini-module barrel check
 - `backend/scripts/check-module-layers.mjs` — intra-module layer check
 - [Module internal contract](./MODULE_INTERNAL_CONTRACT.md) — MVC-style layout, prompts, evals, tests
 

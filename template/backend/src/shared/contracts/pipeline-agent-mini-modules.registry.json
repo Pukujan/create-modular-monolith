@@ -1,0 +1,141 @@
+{
+  "version": "v001",
+  "parentModule": "ai-ops",
+  "description": "Mirrored pipeline agent / assigner mini-modules (frontend + backend under ai-ops).",
+  "infrastructureMiniModules": {
+    "frontend": [
+      "shared",
+      "state-machine",
+      "agent-runs",
+      "document-intelligence",
+      "rule-discovery",
+      "source-verification",
+      "human-review",
+      "memory"
+    ],
+    "backendParentLayers": ["services", "routes", "repositories", "events", "config", "tests"]
+  },
+  "miniModules": [
+    {
+      "slug": "rule-discovery-run",
+      "kind": "orchestrator",
+      "label": "Rule discovery run",
+      "logicalAgentIds": [],
+      "pipelineStepIds": [],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "rule-discovery-run", "status": "planned" }
+    },
+    {
+      "slug": "parser-agent",
+      "kind": "assigner",
+      "label": "Parser / ingest router",
+      "logicalAgentIds": [],
+      "pipelineStepIds": ["ingest"],
+      "assignsTo": ["ocr-agent", "extractor-agent"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "parser-agent", "status": "stub" }
+    },
+    {
+      "slug": "ocr-agent",
+      "kind": "worker",
+      "label": "Case document OCR",
+      "logicalAgentIds": ["agent_case_document_ocr_v1"],
+      "pipelineStepIds": ["ingest"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "ocr-agent", "legacySlug": "ocr", "status": "partial" }
+    },
+    {
+      "slug": "extractor-agent",
+      "kind": "worker",
+      "label": "LLM extraction worker",
+      "logicalAgentIds": ["agent_case_identity_extractor_v1", "agent_ocr_placeholder_v1"],
+      "pipelineStepIds": ["profile", "extract"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "extractor-agent", "status": "stub" }
+    },
+    {
+      "slug": "filing-audit-agent",
+      "kind": "worker",
+      "label": "Filing audit query",
+      "logicalAgentIds": ["agent_rule_filing_audit_query_v1"],
+      "pipelineStepIds": ["audit"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "filing-audit-agent", "status": "stub" }
+    },
+    {
+      "slug": "authority-planner-agent",
+      "kind": "worker",
+      "label": "Authority planner",
+      "logicalAgentIds": ["agent_rule_authority_v1"],
+      "pipelineStepIds": ["planner"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "authority-planner-agent", "status": "stub" }
+    },
+    {
+      "slug": "rule-applicability-agent",
+      "kind": "worker",
+      "label": "Applicability research",
+      "logicalAgentIds": ["agent_rule_applicability_research_v1"],
+      "pipelineStepIds": ["research"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "rule-applicability-agent", "status": "stub" }
+    },
+    {
+      "slug": "source-discovery-agent",
+      "kind": "worker",
+      "label": "Official source discovery",
+      "logicalAgentIds": ["agent_official_source_discovery_v1"],
+      "pipelineStepIds": ["discovery"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-discovery-agent", "status": "stub" }
+    },
+    {
+      "slug": "source-crawler-agent",
+      "kind": "worker",
+      "label": "Trusted index & source ingest",
+      "logicalAgentIds": [
+        "agent_trusted_source_index_v1",
+        "agent_official_source_ingest_router_v1"
+      ],
+      "pipelineStepIds": ["trusted", "ingest_src"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-crawler-agent", "status": "stub" }
+    },
+    {
+      "slug": "source-verifier-agent",
+      "kind": "worker",
+      "label": "Source verification",
+      "logicalAgentIds": ["agent_source_verification_v1"],
+      "pipelineStepIds": ["verify"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-verifier-agent", "status": "stub" }
+    },
+    {
+      "slug": "rule-relevance-agent",
+      "kind": "worker",
+      "label": "Rule relevance",
+      "logicalAgentIds": ["agent_rule_relevance_v1"],
+      "pipelineStepIds": ["relevance"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "rule-relevance-agent", "status": "stub" }
+    },
+    {
+      "slug": "rule-filing-persist-agent",
+      "kind": "worker",
+      "label": "Filing persist",
+      "logicalAgentIds": ["agent_rule_filing_persist_v1"],
+      "pipelineStepIds": ["persist"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "rule-filing-persist-agent", "status": "stub" }
+    },
+    {
+      "slug": "human-review",
+      "kind": "gate",
+      "label": "Human review gate",
+      "logicalAgentIds": ["human_review_gate"],
+      "pipelineStepIds": ["human"],
+      "backend": { "status": "orchestrated", "note": "Owned by rule-discovery-run FSM, no separate worker folder" },
+      "frontend": { "slug": "human-review", "status": "partial" }
+    }
+  ]
+}

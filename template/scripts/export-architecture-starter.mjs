@@ -16,6 +16,16 @@ export const ARCHITECTURE_EXPORT_OUTPUT_DIR = "file-exchange/exports/architectur
 
 const templatesRoot = join(repoRoot, ARCHITECTURE_TEMPLATES_DIR);
 
+function resolveTemplate(rel, fallbackRel) {
+  const primary = join(templatesRoot, rel);
+  if (existsSync(primary)) return primary;
+  if (fallbackRel) {
+    const fallback = join(repoRoot, fallbackRel);
+    if (existsSync(fallback)) return fallback;
+  }
+  return null;
+}
+
 const EXCLUDE_DIRS = new Set([
   "node_modules",
   ".git",
@@ -51,11 +61,10 @@ const SCRIPTS_KEEP = new Set([
   "condense-all.mjs",
   "consolidated-output.mjs",
   "write-pre-push-dev-log.mjs",
-  "agent-push.mjs",
   "verify-dev-log.mjs",
   "plan-finalize.mjs",
   "plan-gate.mjs",
-  "smoke-gates.mjs",
+  "lint-pipeline-agent-mini-modules.mjs",
   "import-to-file-exchange.mjs",
   "resolve-import-stamp.mjs",
   "export-consolidated-models.mjs",
@@ -145,7 +154,15 @@ function copyDocs(target) {
       console.log(`  ✓ docs/${name}`);
     }
   }
-  cpSync(join(templatesRoot, "docs/API.starter.md"), join(destDocs, "API.md"));
+  const apiStarter = resolveTemplate("docs/API.starter.md", "docs/API.md");
+  if (apiStarter) {
+    cpSync(apiStarter, join(destDocs, "API.md"));
+  } else {
+    writeFileSync(
+      join(destDocs, "API.md"),
+      "# API registry (starter)\n\nRegister routes in this file. Run `npm run lint:api-docs` after adding modules.\n"
+    );
+  }
   mkdirSync(join(destDocs, "model-condenser"), { recursive: true });
   cpSync(
     join(repoRoot, "docs/model-condenser/API.md"),
@@ -162,7 +179,7 @@ function copyWorkLog(target) {
   }
   writeFileSync(
     join(dest, "INDEX.md"),
-    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs, planning, and dev-log rows as you work.\n`
+    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs, study-docs, and dev-log rows as you work.\n`
   );
   copyFiltered(join(repoRoot, "work-log/dev-logs"), join(dest, "dev-logs"), (p) => {
     const base = p.split(/[/\\]/).pop() || "";
@@ -173,12 +190,11 @@ function copyWorkLog(target) {
   });
   mkdirSync(join(dest, "handoffs"), { recursive: true });
   cpSync(join(repoRoot, "work-log/handoffs/README.md"), join(dest, "handoffs/README.md"));
+  mkdirSync(join(dest, "study-docs"), { recursive: true });
+  cpSync(join(repoRoot, "work-log/study-docs/README.md"), join(dest, "study-docs/README.md"));
   mkdirSync(join(dest, "planning"), { recursive: true });
-  cpSync(join(repoRoot, "work-log/planning/README.md"), join(dest, "planning/README.md"));
-  mkdirSync(join(dest, "study-logs"), { recursive: true });
-  cpSync(join(repoRoot, "work-log/study-logs/README.md"), join(dest, "study-logs/README.md"));
-  writeFileSync(join(dest, "study-logs/.gitkeep"), "");
-  console.log("  ✓ work-log/ (structure, planning/, study-logs/, no domain handoffs)");
+  writeFileSync(join(dest, "planning/.gitkeep"), "");
+  console.log("  ✓ work-log/ (structure, planning/, no domain handoffs)");
 }
 
 function copyFileExchange(target) {
@@ -221,40 +237,63 @@ function copySharedContracts(target) {
 }
 
 function writeStarterRootFiles(target) {
-  cpSync(join(templatesRoot, "package.starter.json"), join(target, "package.json"));
-  cpSync(join(templatesRoot, "AGENTS.starter.md"), join(target, "AGENTS.md"));
-  cpSync(join(templatesRoot, "README.starter.md"), join(target, "README.md"));
+  const pkg = resolveTemplate("package.starter.json");
+  if (pkg) cpSync(pkg, join(target, "package.json"));
+  else {
+    const rootPkg = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
+    writeFileSync(
+      join(target, "package.json"),
+      JSON.stringify(
+        {
+          name: "modular-monolith-starter",
+          private: true,
+          version: "0.1.0",
+          scripts: rootPkg.scripts
+        },
+        null,
+        2
+      )
+    );
+  }
+  const agents = resolveTemplate("AGENTS.starter.md", "AGENTS.md");
+  if (agents) cpSync(agents, join(target, "AGENTS.md"));
+  const readme = resolveTemplate("README.starter.md", "README.md");
+  if (readme) cpSync(readme, join(target, "README.md"));
   cpSync(join(repoRoot, ".gitignore"), join(target, ".gitignore"));
-  cpSync(join(templatesRoot, "LICENSE.starter"), join(target, "LICENSE"));
-  cpSync(join(templatesRoot, "NOTICE.starter"), join(target, "NOTICE"));
+  const license = resolveTemplate("LICENSE.starter", "LICENSE");
+  if (license) cpSync(license, join(target, "LICENSE"));
+  const notice = resolveTemplate("NOTICE.starter", "NOTICE");
+  if (notice) cpSync(notice, join(target, "NOTICE"));
   mkdirSync(join(target, "consolidated-files"), { recursive: true });
   writeFileSync(join(target, "consolidated-files/.gitkeep"), "");
   console.log("  ✓ package.json, AGENTS.md, README, LICENSE, NOTICE, consolidated-files/.gitkeep");
 }
 
 function patchStarterScripts(target) {
-  cpSync(
-    join(templatesRoot, "condense-prompts.starter.mjs"),
-    join(target, "scripts/condense-prompts.mjs")
+  const condensePrompts = resolveTemplate("condense-prompts.starter.mjs", "scripts/condense-prompts.mjs");
+  if (condensePrompts) cpSync(condensePrompts, join(target, "scripts/condense-prompts.mjs"));
+  const modelService = resolveTemplate(
+    "modelCondenser.service.starter.js",
+    "backend/src/modules/model-condenser/services/modelCondenser.service.js"
   );
-  cpSync(
-    join(templatesRoot, "modelCondenser.service.starter.js"),
-    join(
-      target,
-      "backend/src/modules/model-condenser/services/modelCondenser.service.js"
-    )
+  if (modelService) {
+    cpSync(
+      modelService,
+      join(target, "backend/src/modules/model-condenser/services/modelCondenser.service.js")
+    );
+  }
+  const apiInventory = resolveTemplate("api-inventory.starter.mjs", "scripts/lib/api-inventory.mjs");
+  if (apiInventory) cpSync(apiInventory, join(target, "scripts/lib/api-inventory.mjs"));
+  const modelTest = resolveTemplate(
+    "modelCondenser.service.test.starter.js",
+    "backend/src/modules/model-condenser/tests/unit/modelCondenser.service.test.js"
   );
-  cpSync(
-    join(templatesRoot, "api-inventory.starter.mjs"),
-    join(target, "scripts/lib/api-inventory.mjs")
-  );
-  cpSync(
-    join(templatesRoot, "modelCondenser.service.test.starter.js"),
-    join(
-      target,
-      "backend/src/modules/model-condenser/tests/unit/modelCondenser.service.test.js"
-    )
-  );
+  if (modelTest) {
+    cpSync(
+      modelTest,
+      join(target, "backend/src/modules/model-condenser/tests/unit/modelCondenser.service.test.js")
+    );
+  }
   const repoTreePath = join(target, "scripts/lib/repo-tree.mjs");
   let repoTree = readFileSync(repoTreePath, "utf8");
   repoTree = repoTree.replace(
@@ -335,7 +374,7 @@ Generated by \`npm run export:architecture-starter\`.
 
 ## What this is
 
-A **clean modular-monolith boilerplate**: contracts, file-exchange, planning gate (audit log + plan before build), pre-push dev-logs, model-condenser, \`_reference\` module, lint scripts — **without** litigation/case-filing domain modules or runtime data.
+A **clean modular-monolith boilerplate**: contracts, file-exchange, planning gate (study log + plan before build), pre-push dev-logs, model-condenser, \`_reference\` module, lint scripts — **without** litigation/case-filing domain modules or runtime data.
 
 ## What was excluded
 
@@ -364,10 +403,12 @@ Start at [docs/architecture/CONTRACTS_OVERVIEW.md](docs/architecture/CONTRACTS_O
 }
 
 function patchContractsManifest(target) {
-  const starterManifest = join(templatesRoot, "manifest.starter.json");
+  const starterManifest =
+    resolveTemplate("manifest.starter.json") ??
+    join(repoRoot, "docs/architecture/contracts/manifest.json");
   const dest = join(target, "docs/architecture/contracts/manifest.json");
   cpSync(starterManifest, dest);
-  console.log("  ✓ docs/architecture/contracts/manifest.json (platform-only)");
+  console.log("  ✓ docs/architecture/contracts/manifest.json (platform/starter)");
 }
 
 function patchLintRepoArtifacts(target) {
@@ -384,7 +425,13 @@ function patchLintRepoArtifacts(target) {
   "docs/architecture/contracts/consolidatedExports.contract.md",
   "docs/architecture/contracts/prePushDevLog.contract.md",
   "docs/architecture/contracts/planningPhase.contract.md",
+  "docs/architecture/contracts/moduleAgentStateMachine.contract.md",
+  "docs/architecture/contracts/pipelineAgentMiniModules.contract.md",
+  "docs/architecture/contracts/asyncJobQueue.contract.md",
   "docs/architecture/contracts/apiDocumentationRegistry.contract.md",
+  "backend/src/shared/contracts/pipelineAgentMiniModules.contract.js",
+  "backend/src/shared/contracts/pipeline-agent-mini-modules.registry.json",
+  "backend/src/shared/contracts/moduleAgentStateMachine.contract.js",
   "backend/src/shared/contracts/prePushDevLog.contract.js",
   "backend/src/shared/contracts/planningPhase.contract.js",
   "backend/src/shared/contracts/consolidatedExports.contract.js",

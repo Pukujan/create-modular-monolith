@@ -1,7 +1,9 @@
 import { readdirSync, readFileSync, existsSync } from "fs";
-import { join, relative } from "path";
+import { join, relative, dirname } from "path";
+import { fileURLToPath } from "url";
+import { BACKEND_PARENT_MINI_MODULES } from "../../scripts/lib/parent-mini-modules.config.mjs";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const modulesDir = join(root, "src/modules");
 
 const LAYERS = [
@@ -43,11 +45,26 @@ const moduleNames = readdirSync(modulesDir, { withFileTypes: true })
   .filter((d) => !d.name.startsWith("_"))
   .map((d) => d.name);
 
-const violations = [];
-
+/** @type {Array<{ label: string, root: string, excludeSubdirs?: Set<string> }>} */
+const scanTargets = [];
 for (const moduleName of moduleNames) {
   const moduleRoot = join(modulesDir, moduleName);
-  const files = walk(moduleRoot).filter((f) => {
+  const miniModules = BACKEND_PARENT_MINI_MODULES[moduleName] ?? [];
+  scanTargets.push({
+    label: moduleName,
+    root: moduleRoot,
+    excludeSubdirs: miniModules.length ? new Set(miniModules) : undefined
+  });
+  for (const mini of miniModules) {
+    scanTargets.push({ label: `${moduleName}/${mini}`, root: join(moduleRoot, mini) });
+  }
+}
+
+const violations = [];
+
+for (const target of scanTargets) {
+  const moduleRoot = target.root;
+  const files = walk(moduleRoot, target.excludeSubdirs).filter((f) => {
     if (f.includes("/tests/") || f.includes("\\tests\\")) return false;
     if (f.endsWith(".test.js") || f.endsWith(".test.mjs")) return false;
     return f.endsWith(".js") || f.endsWith(".mjs");
@@ -94,7 +111,14 @@ console.log("Module layers OK.");
 function layerForFile(filePath, moduleRoot) {
   const rel = relative(moduleRoot, filePath);
   if (rel === "index.js") return "index";
-  const segment = rel.split(/[/\\]/)[0];
+  const parts = rel.split(/[/\\]/);
+  if (parts[0] === "agents" && parts.length === 3 && parts[2] === "index.js") {
+    return "index";
+  }
+  if (parts[0] === "agents" && parts.length >= 3 && LAYERS.includes(parts[2])) {
+    return parts[2];
+  }
+  const segment = parts[0];
   return LAYERS.includes(segment) ? segment : null;
 }
 
@@ -122,7 +146,14 @@ function layerForImportPath(importPath, fromFile, moduleRoot) {
   }
 
   const rel = relative(moduleRoot, resolved);
-  const segment = rel.split(/[/\\]/)[0];
+  const parts = rel.split(/[/\\]/);
+  if (parts[0] === "agents" && parts.length === 3 && parts[2] === "index.js") {
+    return "index";
+  }
+  if (parts[0] === "agents" && parts.length >= 3 && LAYERS.includes(parts[2])) {
+    return parts[2];
+  }
+  const segment = parts[0];
   return LAYERS.includes(segment) ? segment : null;
 }
 
@@ -142,10 +173,11 @@ function extractRelativeImports(source) {
   return imports;
 }
 
-function walk(dir) {
+function walk(dir, excludeSubdirs) {
   const entries = readdirSync(dir, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
+    if (entry.isDirectory() && excludeSubdirs?.has(entry.name)) continue;
     const full = join(dir, entry.name);
     if (entry.isDirectory()) files.push(...walk(full));
     else files.push(full);

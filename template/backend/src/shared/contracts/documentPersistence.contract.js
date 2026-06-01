@@ -32,8 +32,12 @@ export const EXTRACTION_METHODS = ["pdf_text", "ocr", "llm", "human_review"];
 export const DOCUMENT_EVENTS = {
   UPLOADED: "document.uploaded",
   PARSED: "document.parsed",
-  PARSE_FAILED: "document.parse_failed"
+  PARSE_FAILED: "document.parse_failed",
+  DELETED: "document.deleted"
 };
+
+/** Logical storage_path when bytes live in document_blobs (Postgres). */
+export const DB_BLOB_STORAGE_MARKER = "db://blob";
 
 /** Stable table names — repositories must use these unless version bump. */
 export const DB_TABLES = {

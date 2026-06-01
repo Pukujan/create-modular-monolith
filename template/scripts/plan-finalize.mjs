@@ -2,39 +2,46 @@
 import { mkdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { artifactPaths, resolvePlanArtifacts } from "./lib/plan-artifacts.mjs";
-import { getCliArg } from "./lib/parse-cli-args.mjs";
+import { readCliArg } from "./lib/parse-cli-arg.mjs";
 
 const repoRoot = join(import.meta.dirname, "..");
 const argv = process.argv.slice(2);
-const slug = getCliArg(argv, "--slug");
+const slug = readCliArg(argv, "--slug");
 
 if (!slug) {
   console.error("Usage: npm run plan:finalize -- --slug <plan-slug> [--plan-id <id>]");
   process.exit(1);
 }
 
-const planningDir = join(repoRoot, "work-log/planning");
-const files = await resolvePlanArtifacts(planningDir, slug);
-const paths = artifactPaths(repoRoot, files);
+const planId = readCliArg(argv, "--plan-id") ?? slug;
 
-const planId = getCliArg(argv, "--plan-id") ?? files.folder ?? slug;
+const files = await resolvePlanArtifacts(repoRoot, slug);
+const paths = artifactPaths(files);
 
 const missing = [];
-if (!paths.auditLogMd) {
-  missing.push(`audit-log.md in work-log/planning/{NNN}_{date}_{time}_${slug}/`);
+if (!paths.phaseDir) {
+  missing.push(`phase folder (work-log/planning/{NNN}_{date}_{time}_${slug}/)`);
 }
-if (!paths.planPackageMd) {
-  missing.push(`plan.md in the same plan folder`);
+if (!paths.planLogMd) {
+  missing.push(`plan-log.md in phase folder`);
+}
+if (!paths.auditLogMd) {
+  missing.push(`audit-log.md in phase folder`);
 }
 
 if (missing.length) {
-  console.error(`Cannot finalize — missing in work-log/planning/:\n  - ${missing.join("\n  - ")}`);
-  console.error("\nCreate a dated plan folder with audit-log.md + plan.md, then retry.");
-  console.error("See .cursor/commands/planning-audit-log.md");
+  console.error(`Cannot finalize — missing:\n  - ${missing.join("\n  - ")}`);
+  console.error(
+    "\nCreate work-log/planning/{NNN}_{YYYY-MM-DD}_{HH-MM}_{slug}/ with plan-log.md + audit-log.md. Study logs are user-only — not required for finalize."
+  );
   process.exit(1);
 }
 
-const artifacts = { auditLogMd: paths.auditLogMd, planPackageMd: paths.planPackageMd };
+const artifacts = {
+  phaseDir: paths.phaseDir,
+  planLogMd: paths.planLogMd,
+  auditLogMd: paths.auditLogMd
+};
 if (paths.designMd) artifacts.designMd = paths.designMd;
 
 const manifest = {
@@ -42,15 +49,13 @@ const manifest = {
   slug,
   status: "approved",
   finalizedAt: new Date().toISOString(),
-  planFolder: paths.planFolder,
   artifacts
 };
 
-const dir = join(repoRoot, "work-log/planning");
-await mkdir(dir, { recursive: true });
-await writeFile(join(dir, `${planId}.json`), JSON.stringify(manifest, null, 2));
-console.log(`Wrote work-log/planning/${planId}.json`);
-if (paths.planFolder) console.log(`  folder:    ${paths.planFolder}`);
-console.log(`  auditLog:  ${paths.auditLogMd}`);
-console.log(`  design:    ${paths.designMd ?? "(none)"}`);
-console.log(`  plan:      ${paths.planPackageMd}`);
+const manifestPath = join(repoRoot, paths.phaseDir, "manifest.json");
+await mkdir(join(repoRoot, paths.phaseDir), { recursive: true });
+await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+console.log(`Wrote ${paths.phaseDir}/manifest.json`);
+console.log(`  plan:  ${paths.planLogMd}`);
+console.log(`  audit: ${paths.auditLogMd}`);
+console.log(`  design:${paths.designMd ?? " (none)"}`);

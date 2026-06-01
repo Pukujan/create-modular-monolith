@@ -18,3 +18,5 @@
 {"time":"2026-05-29T14:00:00Z","contract":"moduleAgentStateMachine","from":null,"to":"v001","reason":"Per-module agent FSM controller contract, shared runtime, implementation templates","author":"agent"}
 {"time":"2026-05-29T14:30:00Z","contract":"asyncJobQueue","from":null,"to":"v001","reason":"BullMQ + Redis for async jobs; SQL remains source of truth","author":"agent"}
 {"time":"2026-05-29T15:30:00Z","contract":"architecturePushDevLog","from":"v001","to":"v001","reason":"Documented as maintainer-repo-only; omitted from starter manifest.json until arch-log scripts ship in template","author":"agent"}
+{"time":"2026-05-30T12:00:00Z","contract":"monorepoDeploy","from":null,"to":"v001","reason":"Railway backend + Vercel frontend layout; lint-deploy.mjs enforces root dirs and forbidden root start script","author":"agent"}
+{"time":"2026-06-01T12:00:00Z","contract":"pipelineAgentMiniModules","from":null,"to":"v001","reason":"Mirrored FE/BE pipeline agent and assigner mini-module registry + lint","author":"agent"}

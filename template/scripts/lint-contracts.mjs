@@ -22,6 +22,8 @@ const PATH_KEYS = [
   "repoTree",
   "workLogReadme",
   "registry",
+  "registryFrontendMirror",
+  "parentMiniModulesConfig",
   "lintScript",
   "architectureDoc",
   "promptVersions"

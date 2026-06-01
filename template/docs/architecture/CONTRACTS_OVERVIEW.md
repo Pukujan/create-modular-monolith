@@ -108,18 +108,19 @@ One JSON line per bump: `contract`, `from`, `to`, `reason`, `time`.
 
 ## Contract catalog (starter manifest)
 
-These nine IDs are the only entries in [manifest.json](./contracts/manifest.json):
+These entries are registered in [manifest.json](./contracts/manifest.json):
 
 | ID | Version | What it governs |
 |----|---------|-----------------|
 | **repoArtifactLayout** | v001 | Canonical roots (`data/`, `file-exchange/`, `work-log/`, optional `local-artifacts.json`) |
 | **fileExchange** | v001 | `imports/{stamp}/`, `exports/{stamp}/`, human-readable UTC stamps |
 | **consolidatedExports** | v001 | `exports/consolidated-*.json` + `consolidated-files/` mirror, `condense:all` |
-| **planningPhase** | v001 | `work-log/planning/{folder}/` audit log + plan, gate/finalize |
+| **planningPhase** | v003 | Phase folders in `work-log/planning/` (`plan-log.md` + `audit-log.md` + in-folder manifest); study logs user-only |
 | **prePushDevLog** | v001 | Paired `human/*.md` + `agent/*.json`, tree/API/test audits |
 | **apiDocumentationRegistry** | v001 | `docs/API.md`, active/stub/deprecated routes |
 | **documentPersistence** | v001 | Runtime uploads (`data/uploads/`) + DB tables; not file-exchange |
 | **moduleAgentStateMachine** | v001 | Per-module agent FSM controller + shared runtime |
+| **pipelineAgentMiniModules** | v001 | Mirrored frontend/backend pipeline agent + assigner mini-modules under `ai-ops` |
 | **asyncJobQueue** | v001 | BullMQ + Redis for background jobs (SQL remains source of truth) |
 
 Per-contract detail: follow the `doc` link in [manifest.json](./contracts/manifest.json).

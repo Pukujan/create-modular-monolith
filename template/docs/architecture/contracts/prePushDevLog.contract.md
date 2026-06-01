@@ -6,21 +6,21 @@
 
 ## Purpose
 
-Before each git push, produce a **paired audit** (required for **agent** pushes; optional for terminal pushes):
+Before each git push, produce a **paired audit**:
 
 | Audience | Path | Format |
 |----------|------|--------|
 | Human | `work-log/dev-logs/human/` | Markdown — Part I summary + Part II detail |
 | Agent | `work-log/dev-logs/agent/` | JSON — machine-readable audit |
 
-**Agent enforcement:** `.cursor/hooks.json` runs `beforeShellExecution` on `git push` and denies the command unless paired logs exist for `HEAD` (`scripts/lib/check-dev-log-for-head.mjs`). Terminal pushes are not blocked.
-
 ## Commands
 
 ```bash
 npm run dev-log:pre-push -- --slug <kebab-topic> [--program 005] [--no-tests]
 npm run dev-log:verify
-npm run dev-log:pre-push -- --check   # requires git + agent log for HEAD
+npm run dev-log:sync-head -- --latest   # after commit — align agent git.sha with HEAD
+npm run dev-log:pre-push -- --check     # requires git + agent log for HEAD
+npm run dev-log:install-hook            # optional strict pre-push hook
 ```
 
 ## Human log structure (Part I + Part II)
@@ -69,4 +69,3 @@ Implemented in `scripts/lib/repo-tree.mjs`. `.DS_Store` files also excluded.
 - [work-log/dev-logs/README.md](../../../work-log/dev-logs/README.md)
 - [AGENTS.md](../../../AGENTS.md) — pre-push section
 - `.cursor/commands/pre-push-dev-log.md`
-- `.cursor/hooks.json` — agent `git push` gate

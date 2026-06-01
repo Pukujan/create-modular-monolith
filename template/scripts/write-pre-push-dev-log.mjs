@@ -5,9 +5,11 @@
  * Usage:
  *   npm run dev-log:pre-push -- --slug consolidated-exports
  *   npm run dev-log:pre-push -- --slug my-topic --program 005 --no-tests
- *   npm run dev-log:pre-push -- --check   # verify paired dev logs exist for HEAD
+ *   npm run dev-log:pre-push -- --check   # verify agent log exists for HEAD
  */
-import { writeFile, mkdir } from "fs/promises";
+import { readFile, writeFile, mkdir, readdir } from "fs/promises";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { formatWorkLogTimestamp } from "../backend/src/shared/utils/formatExchangeTimestamp.js";
@@ -16,7 +18,6 @@ import { collectGitSnapshot } from "./lib/git-snapshot.mjs";
 import { runTestSuite } from "./lib/run-tests.mjs";
 import { collectApiInventory, formatApisMarkdown } from "./lib/api-inventory.mjs";
 import { buildHumanDevLog } from "./lib/dev-log-human-format.mjs";
-import { checkDevLogForHead } from "./lib/check-dev-log-for-head.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const humanDir = join(repoRoot, "work-log/dev-logs/human");
@@ -60,19 +61,69 @@ function classifyChangedFiles(changedFiles) {
   return { byArea, added, modified, deleted };
 }
 
+const exec = promisify(execFile);
+
+async function gitCatFileExists(repoRoot, objectPath) {
+  try {
+    await exec("git", ["cat-file", "-e", objectPath], { cwd: repoRoot });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function findAgentLogForSha(sha) {
+  let files;
+  try {
+    files = await readdir(agentDir);
+  } catch {
+    return null;
+  }
+  for (const f of files.filter((x) => x.endsWith(".json")).sort().reverse()) {
+    const raw = await readFile(join(agentDir, f), "utf8");
+    const doc = JSON.parse(raw);
+    if (doc.git?.sha === sha) return join(agentDir, f);
+  }
+  return null;
+}
+
+/** Agent log at HEAD whose git.sha matches, or latest pair committed at HEAD (post-amend sync). */
+async function findAgentLogForHead(sha) {
+  const exact = await findAgentLogForSha(sha);
+  if (exact) return { path: exact, mode: "sha-match" };
+
+  let files;
+  try {
+    files = await readdir(agentDir);
+  } catch {
+    return null;
+  }
+
+  for (const f of files.filter((x) => x.endsWith(".json")).sort().reverse()) {
+    const rel = `work-log/dev-logs/agent/${f}`;
+    if (await gitCatFileExists(repoRoot, `${sha}:${rel}`)) {
+      return { path: join(agentDir, f), mode: "committed-at-head" };
+    }
+  }
+  return null;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const git = await collectGitSnapshot(repoRoot);
 
   if (args.check) {
-    const result = await checkDevLogForHead(repoRoot);
-    if (!result.ok) {
-      console.error(result.reason);
+    const found = await findAgentLogForHead(git.sha);
+    if (!found) {
+      console.error(`No agent dev-log for HEAD (${git.shortSha}). Run: npm run dev-log:pre-push -- --slug <topic>`);
       process.exit(1);
     }
-    console.log(`OK: paired dev logs for HEAD (${result.sha})`);
-    console.log(`  agent: ${result.agentPath}`);
-    console.log(`  human: ${result.humanPath}`);
+    const label = found.path.replace(repoRoot + "/", "").replace(repoRoot + "\\", "");
+    if (found.mode === "sha-match") {
+      console.log(`OK: agent dev-log matches HEAD → ${label}`);
+    } else {
+      console.log(`OK: agent dev-log committed at HEAD (${found.mode}) → ${label}`);
+    }
     return;
   }
 

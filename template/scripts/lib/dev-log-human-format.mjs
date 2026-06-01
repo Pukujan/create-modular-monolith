@@ -34,9 +34,8 @@ function buildMermaidPipeline(apis) {
   const p = apis.versioned?.pipeline;
   if (!p) {
     return `flowchart TB
-  client[Client] --> api[HTTP API]
-  api --> modules[Modular monolith]
-  modules --> data[(Storage / DB)]`;
+  seed[Demo seed JSON] --> services[Frontend services]
+  services --> workspace[Maria Santos case workspace]`;
   }
   return `flowchart TB
   upload[Upload PDFs] --> parse[Parse cache ${p.parsedArtifacts}]
@@ -78,44 +77,34 @@ function formatApiSummaryTable(apis) {
 }
 
 function formatVersionAuditTable(apis) {
-  const appVer = apis.versioned?.app?.packageJson ?? "unknown";
   const p = apis.versioned?.pipeline;
-  const prompts = apis.versioned?.prompts;
-
   if (!p) {
+    const appVersion = apis.versioned?.app?.packageJson ?? "—";
     return [
       "| Contract | Version | Status |",
       "|----------|---------|--------|",
-      `| App (package.json) | ${appVer} | current |`,
-      "| Architecture contracts | manifest.json | see docs/architecture/CONTRACTS_OVERVIEW.md |",
-      "| Domain pipeline / prompts | — | not registered in starter template |"
+      `| App (package.json) | ${appVersion} | current |`,
+      "| Demo seed / frontend workspace | Maria Santos Phase 1 | current |",
+      "| Batch pipeline contracts | — | not active in this repo phase |"
     ].join("\n");
   }
-
   const rows = [
     "| Contract | Version | Status |",
     "|----------|---------|--------|",
-    `| App (package.json) | ${p.app ?? appVer} | current |`,
+    `| App (package.json) | ${p.app} | current |`,
     `| Storage layout | ${p.storageLayout} | current |`,
     `| Parsed artifacts | ${p.parsedArtifacts} | current |`,
-    `| Master prompt (default) | ${p.masterPrompt} | env \`${prompts?.envVar ?? "—"}\` |`,
+    `| Master prompt (default) | ${p.masterPrompt} | env \`${apis.versioned.prompts.envVar}\` |`,
     `| Rule prompt | ${p.rulePrompt} | current |`,
     `| Golden dataset | ${p.goldenDataset} | current |`,
     `| Parser | ${p.parser} | current |`,
     `| OCR | ${p.ocr} | current |`
   ];
-  if (prompts?.specs) {
-    rows.push("", "**Master prompt keys:**", "");
-    rows.push("| Key | Template | Notes |", "|-----|----------|-------|");
-    for (const [key, spec] of Object.entries(prompts.specs)) {
-      const status =
-        key === "v2"
-          ? "alias → compact"
-          : key === "v001"
-            ? "opt-in"
-            : key === prompts.defaultEnv
-              ? "default"
-              : "available";
+  rows.push("", "**Master prompt keys:**", "");
+  rows.push("| Key | Template | Notes |", "|-----|----------|-------|");
+  if (apis.versioned?.prompts?.specs) {
+    for (const [key, spec] of Object.entries(apis.versioned.prompts.specs)) {
+      const status = key === "v2" ? "alias → compact" : key === "v001" ? "opt-in" : key === apis.versioned.prompts.defaultEnv ? "default" : "available";
       rows.push(`| ${key} | \`${spec.masterCaseFiling}\` | ${status} |`);
     }
   }

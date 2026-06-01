@@ -29,10 +29,13 @@ Legacy compact stamps (`20260523T155943Z`) are normalized by `normalizeExchangeS
 
 ## Mandatory workflow (agents)
 
-1. `npm run import:file-exchange -- "<path>"`
-2. Process only from `imports/{stamp}/`
-3. Copy deliverables to `exports/{stamp}/`
-4. `npm run condense:all` when refreshing consolidated snapshots
+1. `npm run import:file-exchange -- "<path>"` — copies bundle into `imports/{stamp}/`
+2. **Remove from repo root** — if the bundle was under the repository root (not already under `imports/`), the import script deletes the source after a successful copy. Do not leave inbound folders at repo root.
+3. Process only from `imports/{stamp}/`
+4. Copy deliverables to `exports/{stamp}/`
+5. `npm run condense:all` when refreshing consolidated snapshots
+
+External paths (e.g. `~/Downloads/`) are copied only; delete those manually if desired.
 
 Enforced by `AGENTS.md` and `.cursor/rules/file-exchange-inbox.mdc` (`alwaysApply: true`).
 
