@@ -6,6 +6,14 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
+## What's new in 2.4.0: mini-modules and context engineering
+
+Version 2.4.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
+
+**[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
+
+In short: the scaffold now ships with a pre-built `ai-ops` parent module containing 13 pipeline agent mini-modules and 8 infrastructure mini-modules. Each mini-module has enforced boundaries (barrel-only sibling imports, lint gates), a JSON registry, and a session memory system so agents survive context window limits.
+
 ## The problem nobody warned you about
 
 AI agents are amazing at velocity and terrible at memory.
@@ -185,6 +193,63 @@ You add domain-specific contracts inside your modules as your project grows.
 | `VITE_API_BASE_URL` | `frontend/.env` | Frontend → backend URL |
 
 See `backend/.env.example` and `docs/architecture/REPO_ARTIFACT_LAYOUT.md` after scaffold.
+
+## Mini-modules and context engineering
+
+### Why mini-modules
+
+A single module can quickly grow to hundreds of files. When an AI agent loads a module into context, it exceeds the working token budget — then starts guessing.
+
+Mini-modules split a parent module into small, single-responsibility units. Each mini-module has its own barrel (`index.js`), services, routes, and schema. Agents load only the one they need.
+
+```
+backend/src/modules/ai-ops/                    ← parent module
+├── run-orchestrator/                          ← mini-module (pipeline)
+├── ingest-router/                             ← mini-module (pipeline)
+├── document-processor/                        ← mini-module (pipeline)
+├── data-extractor/                            ← mini-module (pipeline)
+├── ...                                        ← 12 pipeline mini-modules total
+├── shared/                                    ← mini-module (infrastructure)
+├── middleware/                                ← mini-module (infrastructure)
+├── ...                                        ← 8 infrastructure mini-modules total
+└── index.js                                   ← parent barrel, registers all
+```
+
+### Registry-driven structure
+
+Every mini-module must be declared in `pipeline-agent-mini-modules.registry.json`. The registry is the source of truth. Scripts enforce alignment:
+
+| Script | Enforces |
+|---|---|
+| `npm run lint:mini-modules` | Barrel-only imports, no deep sibling access |
+| `npm run lint:architecture` | Registry ↔ folder ↔ manifest alignment |
+| `npm run lint:boundaries` | Module boundary rules, no cross-module imports |
+
+### Context engineering
+
+This scaffold includes a 3-layer memory system for AI agents:
+
+| Layer | File | Purpose |
+|---|---|---|
+| L1 — Working memory | `MEMORY.md` | Current state, <100 lines, updated every session |
+| L2 — Rules | `AGENTS.md` | Architecture rules, boundaries, lint commands |
+| L3 — Archive | `work-log/sessions/` | Completed session notes, study logs |
+
+The `work-log/` folder also holds study documents with mermaid diagrams, token budgets, and migration notes.
+
+### Installation
+
+This is released directly into `main`. To get the mini-modules version:
+
+```bash
+# Latest main (includes mini-modules)
+npx create-modular-monolith@latest my-project
+
+# Or pin the commit
+npx create-modular-monolith@c7ac6fb my-project
+```
+
+Scaffolded projects include the full 3-layer memory system, registry scripts, and 20 pre-built mini-modules out of the box.
 
 ## Package vs. product
 

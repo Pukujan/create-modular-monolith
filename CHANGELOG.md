@@ -2,6 +2,26 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.4.0] - 2026-06-06
+
+### Added
+
+- **Parent module / mini-module architecture** — modules can now contain smaller single-responsibility sub-units with their own barrel exports, services, routes, and manifests
+- **Registry-driven mini-modules** — `pipeline-agent-mini-modules.registry.json` declares all mini-modules; lint scripts enforce registry ↔ folder ↔ manifest alignment
+- **3-layer memory system** — L1 `MEMORY.md` (working memory, <100 lines), L2 `AGENTS.md` (rules and boundaries), L3 `work-log/sessions/` (completed session archive)
+- **Pre-built ai-ops parent module** — ships with 13 pipeline agent mini-modules and 8 infrastructure mini-modules (all generic, domain-agnostic)
+- **`work-log/study-docs/`** — study documents with mermaid diagrams, token budgets, and context engineering notes
+
+### Changed
+
+- **Mini-module boundary enforcement** — `lint:mini-modules` enforces barrel-only sibling imports; no deep paths into sibling internals
+- **Generic naming** — all pipeline agents renamed from legal-tech-specific slugs to generic names (e.g., `parser-agent` → `ingest-router`)
+- **Scaffold is default** — mini-modules and context engineering are now the default scaffold, not optional
+
+### Fixed
+
+- **Registry alignment** — every mini-module folder must have a matching registry entry and manifest, enforced by `lint:architecture`
+
 ## [2.3.4] - 2026-05-31
 
 ### Changed
