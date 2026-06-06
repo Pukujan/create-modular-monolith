@@ -1,0 +1,4 @@
+node_modules/
+agent_state.json
+*.pyc
+__pycache__/
