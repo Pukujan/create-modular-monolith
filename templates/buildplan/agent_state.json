@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "{{DATE}}",
+  "branch": "{{BRANCH}}",
+  "latestCommit": "{{COMMIT}}",
+  "projectDescription": "Describe your project here.",
+  "activeModule": {
+    "slug": "none",
+    "kind": "unknown",
+    "parentModule": "none",
+    "startedAt": null,
+    "phase": "planning",
+    "backendStatus": "not-started",
+    "frontendStatus": "not-started",
+    "tasks": {
+      "completed": [],
+      "inProgress": [],
+      "next": []
+    }
+  },
+  "modules": {},
+  "architecture": {
+    "registryPath": "backend/src/shared/contracts/registry.json",
+    "registryVersion": "v001",
+    "miniModuleCount": 0,
+    "implemented": 0,
+    "planned": 0,
+    "gate": 0
+  },
+  "lint": {
+    "lastRun": null,
+    "lastResult": null,
+    "lastPass": false
+  },
+  "sessions": {
+    "currentId": null,
+    "lastSessionId": null,
+    "archive": []
+  },
+  "contextBudget": {
+    "hardLimit": 24000,
+    "currentUsage": 0,
+    "remaining": 24000,
+    "sessionStart": null
+  }
+}
