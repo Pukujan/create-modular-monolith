@@ -37,13 +37,19 @@ async function askMiniModules() {
   if (forceNoMiniModules) return false;
 
   const rl = createInterface({ input: process.stdin, output: process.stdout });
+  console.log(`
+  Scaffolding options:
+    1) Mini-modules  (latest, default) — full pipeline agents + memory system
+    2) Lightweight   — base scaffold only
+
+`);
   const answer = await new Promise((resolve) => {
-    rl.question("\nInclude mini-modules scaffold (ai-ops pipeline + memory)? [Y/n] ", (a) => {
+    rl.question("  Choose (1/2) [1]: ", (a) => {
       rl.close();
       resolve(a);
     });
   });
-  return answer.toLowerCase() !== "n";
+  return answer.trim() === "" || answer.trim() === "1";
 }
 
 const includeMiniModules = await askMiniModules();
@@ -57,15 +63,13 @@ if (!includeMiniModules) {
 
   if (existsSync(backendAiOps)) rmSync(backendAiOps, { recursive: true });
   if (existsSync(frontendAiOps)) rmSync(frontendAiOps, { recursive: true });
-
-  console.log("\nMini-modules scaffold skipped.");
 }
 
 const REPO_URL = "https://github.com/Pukujan/create-modular-monolith";
 const NPM_URL = "https://www.npmjs.com/package/@pukujan/create-modular-monolith";
 
 console.log(`
-Created modular monolith at ${target}
+Created modular monolith at ${target} (mini-modules: ${includeMiniModules ? "included" : "skipped"})
 
 Next steps:
   cd ${targetArg}
