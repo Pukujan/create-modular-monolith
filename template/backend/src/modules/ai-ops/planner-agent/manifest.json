@@ -1,5 +1,5 @@
 {
-  "miniModule": "rule-relevance-agent",
+  "miniModule": "planner-agent",
   "parentModule": "ai-ops",
   "version": "v001",
   "status": "planned"

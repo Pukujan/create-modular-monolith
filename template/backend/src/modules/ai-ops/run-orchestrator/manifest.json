@@ -1,5 +1,5 @@
 {
-  "miniModule": "ocr-agent",
+  "miniModule": "run-orchestrator",
   "parentModule": "ai-ops",
   "version": "v001",
   "status": "implemented"

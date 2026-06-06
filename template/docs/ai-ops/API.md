@@ -32,16 +32,16 @@ Pipeline agents are nested under `ai-ops/` — see [pipeline-agent-mini-modules.
 
 | Mini-module | Backend Status | Frontend Status |
 |-------------|---------------|-----------------|
-| rule-discovery-run | implemented | planned |
-| parser-agent | implemented | stub |
-| ocr-agent | implemented | partial |
-| extractor-agent | implemented | stub |
-| filing-audit-agent | implemented | stub |
-| authority-planner-agent | planned | stub |
-| rule-applicability-agent | implemented | stub |
-| source-discovery-agent | implemented | stub |
-| source-crawler-agent | implemented | stub |
-| source-verifier-agent | implemented | stub |
-| rule-relevance-agent | planned | stub |
-| rule-filing-persist-agent | planned | stub |
+| run-orchestrator | implemented | planned |
+| ingest-router | implemented | stub |
+| document-processor | implemented | partial |
+| data-extractor | implemented | stub |
+| audit-agent | implemented | stub |
+| planner-agent | planned | stub |
+| applicability-agent | implemented | stub |
+| source-discovery | implemented | stub |
+| source-crawler | implemented | stub |
+| source-verifier | implemented | stub |
+| relevance-agent | planned | stub |
+| persist-agent | planned | stub |
 | human-review | orchestrated | partial |

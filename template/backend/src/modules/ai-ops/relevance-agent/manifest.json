@@ -1,5 +1,5 @@
 {
-  "miniModule": "rule-filing-persist-agent",
+  "miniModule": "relevance-agent",
   "parentModule": "ai-ops",
   "version": "v001",
   "status": "planned"

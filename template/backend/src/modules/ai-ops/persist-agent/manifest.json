@@ -1,5 +1,5 @@
 {
-  "miniModule": "authority-planner-agent",
+  "miniModule": "persist-agent",
   "parentModule": "ai-ops",
   "version": "v001",
   "status": "planned"
