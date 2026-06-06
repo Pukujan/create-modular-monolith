@@ -5,12 +5,13 @@ Planning artifacts for this repo: **what to build** (handoffs) and **how we deci
 ```text
 work-log/
   README.md       ← you are here
-  INDEX.md        ← full index (handoffs + planning + dev-logs + checkpoints)
+  INDEX.md        ← full index (handoffs + planning + dev-logs + sessions + checkpoints)
   handoffs/       ← numbered specs, starter packs (002, 005, …)
   study-docs/     ← USER ONLY — personal study logs (agents do not touch)
   planning/       ← phase folders: plan-log + audit-log + manifest (planningPhase contract)
   checkpoints/    ← runtime proof only (e.g. batch-002 eval evidence), not conversation
   dev-logs/       ← pre-push audit: human/ + agent/ (paired per push) — what shipped
+  sessions/       ← per-session work summaries and decisions (archived from MEMORY.md)
   architecture-push-logs/  ← npm export to create-modular-monolith only (separate from dev-logs)
 ```
 
@@ -23,6 +24,7 @@ work-log/
 | **planning/** | Phase folders with `plan-log.md`, `audit-log.md`, `manifest.json` ([planning-plan-package](../.cursor/commands/planning-plan-package.md), [planningPhase contract](../docs/architecture/contracts/planningPhase.contract.md)) | Yes |
 | **checkpoints/** | Post-run evidence (batch evals, pass/fail tables) | Yes |
 | **dev-logs/** | What shipped — **paired human MD + agent JSON** before each product push | Yes |
+| **sessions/** | Per-session work summaries — what we worked on, decisions, follow-ups (archived from MEMORY.md) | Yes |
 | **architecture-push-logs/** | Platform/npm sync — paired logs before pushing [create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) | Yes |
 
 ## Filename convention

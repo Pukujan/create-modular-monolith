@@ -78,3 +78,18 @@ npm run lint:api-docs
 ## Work log
 
 Planning phase folders and dev-logs under `work-log/` per [work-log/README.md](work-log/README.md). Pre-push dev-logs record what shipped.
+
+## Context window management
+
+**Hard limit:** If context usage approaches ~32k tokens, STOP and compact immediately:
+1. Write a concise session summary to `work-log/sessions/{YYYY-MM-DD}-{slug}.md`
+2. Update `template/MEMORY.md` to current state only
+3. Ask the user to start a new session
+
+**Read discipline:** Never read large files or multiple files if not strictly necessary. Prefer `grep`/`glob` over `read`. Minimize tool calls that consume context.
+
+## Session memory (cross-session persistence)
+
+**On session start:** Read `template/MEMORY.md` to restore project context.
+
+**On session end:** Archive session details to `work-log/sessions/{YYYY-MM-DD}-{slug}.md`, update `work-log/sessions/INDEX.md`, then prune `template/MEMORY.md` to current state only (remove completed items, keep next steps and guardrails).

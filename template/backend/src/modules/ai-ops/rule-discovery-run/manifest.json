@@ -1,0 +1,6 @@
+{
+  "miniModule": "rule-discovery-run",
+  "parentModule": "ai-ops",
+  "version": "v001",
+  "status": "implemented"
+}

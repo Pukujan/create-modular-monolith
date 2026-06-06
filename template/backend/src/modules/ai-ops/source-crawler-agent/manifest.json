@@ -1,0 +1,6 @@
+{
+  "miniModule": "source-crawler-agent",
+  "parentModule": "ai-ops",
+  "version": "v001",
+  "status": "implemented"
+}

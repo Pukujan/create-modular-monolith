@@ -1,0 +1,6 @@
+{
+  "miniModule": "rule-filing-persist-agent",
+  "parentModule": "ai-ops",
+  "version": "v001",
+  "status": "planned"
+}
