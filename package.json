@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/context-engineering",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "3-layer agent memory, hard state management, token budgeting, and lint gates for any project.",
   "type": "module",
   "bin": {
