@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 import { init } from '../lib/init.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const TEMPLATES = resolve(__dirname, '..', 'context-eng', 'templates');
-const PHASE_BUILDER = resolve(__dirname, '..', 'phase_builder');
+const TEMPLATES = resolve(__dirname, 'templates');
+const PHASE_BUILDER = resolve(__dirname, '..', '..', 'additional-modules', 'phase-builder', 'phase_builder');
 
 const projectRoot = process.cwd();
 

@@ -7,10 +7,8 @@
     "context-engineering": "bin/context-eng.js"
   },
   "files": [
-    "bin/",
-    "lib/",
     "context-eng/",
-    "phase_builder/"
+    "additional-modules/"
   ],
   "scripts": {
     "init": "node bin/context-eng.js init"
