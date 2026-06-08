@@ -13,7 +13,7 @@
 4. **Archive session** — run `python3 additional-modules/scripts/measure_context.py --archive-session --slug <slug> --tokens <count>`
 
 ### Context Budget
-- **Ceiling:** 30,000 tokens per session (warn-only — never aborts the agent)
+- **Ceiling:** 28,000 tokens per session (warn-only — never aborts the agent)
 - **Tracked by:** `additional-modules/scripts/measure_context.py`
 - **Tracker:** `additional-modules/buildplan/context_budget.json`
 - **Check status:** `python3 additional-modules/scripts/measure_context.py --status`
@@ -37,6 +37,23 @@
 | `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- ~30k token ceiling with warn-only procedure (compact + archive, do not stop work)
+- ~28k token ceiling with warn-only procedure (compact + archive, do not stop work)
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
+
+## OpenCode vs context-engineering (two systems)
+
+| Layer | Enforcer | What it does |
+|---|---|---|
+| Live chat compaction | `additional-modules/context-engineering/opencode.json` | Auto-compact before context overflow; prune old tool outputs |
+| Cross-session memory | `measure_context.py`, `MEMORY.md`, work-log | Track budget, archive sessions, restore state next session |
+
+They are parallel — OpenCode does not call `measure_context.py` unless you run it.
+
+**Setup:** `node additional-modules/context-engineering/bin/context-eng.js init --opencode`
+
+**Policy alignment:** 28k ceiling everywhere — compact around 25.2k (90%). Set `provider.<name>.models.<id>.limit.context` to **28672** (28k) in `additional-modules/context-engineering/opencode.json`; shipped `compaction.reserved: 3472` triggers compaction before the cap.
+
+**OpenCode discovery:** OpenCode loads `opencode.json` from the project root by default. Point it at this file with `export OPENCODE_CONFIG="$PWD/additional-modules/context-engineering/opencode.json"`, or symlink: `ln -sf additional-modules/context-engineering/opencode.json opencode.json`.
+
+**Avoid false "interrupted":** Do not send a new message while the agent is still running — OpenCode cancels the in-flight turn (`session.prompt cancel`).

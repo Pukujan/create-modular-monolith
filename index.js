@@ -64,7 +64,7 @@ Created modular monolith at ${target}
 
 Next steps:
   cd ${targetArg}
-  node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+  node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
   python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
   python3 additional-modules/scripts/render_memory.py
   npm install --prefix backend

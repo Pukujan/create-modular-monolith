@@ -49,7 +49,7 @@ class TestStateSchema:
         state = create_state()
         budget = state["context_budget"]
         assert "hard_limit" in budget
-        assert budget["hard_limit"] == 35000
+        assert budget["hard_limit"] == 28000
         assert "current_usage" in budget
         assert budget["current_usage"] == 0
 
@@ -80,7 +80,7 @@ class TestStateSchema:
             "version": "1.0.0",
             "phase": "phase_99_invalid",
             "tasks": {"completed": [], "in_progress": [], "next": []},
-            "context_budget": {"hard_limit": 35000, "current_usage": 0},
+            "context_budget": {"hard_limit": 28000, "current_usage": 0},
             "sessions": {"current_id": None, "archive": []},
         }
         state_file = tmp_path / "agent_state.json"

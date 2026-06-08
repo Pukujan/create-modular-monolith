@@ -1,8 +1,8 @@
 {
-  "hardLimit": 30000,
-  "currentUsage": 0,
-  "remaining": 30000,
-  "sessionStart": null,
+  "hardLimit": 28000,
+  "currentUsage": 35000,
+  "remaining": -7000,
+  "sessionStart": "2026-06-08T15:37:18.064+00:00",
   "sessionEnd": null,
   "history": []
 }

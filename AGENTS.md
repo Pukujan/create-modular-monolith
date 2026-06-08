@@ -9,25 +9,24 @@
 ### Workflow
 1. **Read `MEMORY.md` on session start** — restore project context
 2. **Edit `additional-modules/buildplan/agent_state.json`** — update state as you work
-3. **Regenerate `MEMORY.md`** — run `python additional-modules/scripts/render_memory.py` to update the view
-4. **Archive session** — on session end, run `python additional-modules/scripts/measure_context.py --archive-session --slug <slug>`
+3. **Regenerate `MEMORY.md`** — run `python3 additional-modules/scripts/render_memory.py`
+4. **Archive session** — run `python3 additional-modules/scripts/measure_context.py --archive-session --slug <slug> --tokens <count>`
 
 ### Context Budget
-- **Hard limit:** 30,000 tokens per session
-- **Enforced by:** `additional-modules/scripts/measure_context.py`
+- **Ceiling:** 28,000 tokens per session (warn-only — never aborts the agent)
+- **Tracked by:** `additional-modules/scripts/measure_context.py`
 - **Tracker:** `additional-modules/buildplan/context_budget.json`
-- **Check status:** `python additional-modules/scripts/measure_context.py --status`
+- **Check status:** `python3 additional-modules/scripts/measure_context.py --status`
+- **Start session:** `python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session`
 
 ### Module Gate
-- Before transitioning modules, run: `python additional-modules/scripts/check_gate.py`
-- Gate fails if `lint:architecture` has any errors
-- Blocks transition until lint passes
+- Before transitioning modules, run: `python3 additional-modules/scripts/check_gate.py --module <slug>`
+- Gate runs `lint:architecture` when the host project defines it
 
 ### Session Archives
 - Location: `additional-modules/work-log/sessions/`
 - Format: `{YYYY-MM-DD}-{slug}.md`
 - Index: `additional-modules/work-log/sessions/INDEX.md`
-- Dev logs: `additional-modules/work-log/dev-logs/`
 
 ## Lint Commands
 
@@ -38,6 +37,23 @@
 | `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- Hard ~30k token limit with compact procedure
+- ~28k token ceiling with warn-only procedure (compact + archive, do not stop work)
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
+
+## OpenCode vs context-engineering (two systems)
+
+| Layer | Enforcer | What it does |
+|---|---|---|
+| Live chat compaction | `additional-modules/context-engineering/opencode.json` | Auto-compact before context overflow; prune old tool outputs |
+| Cross-session memory | `measure_context.py`, `MEMORY.md`, work-log | Track budget, archive sessions, restore state next session |
+
+They are parallel — OpenCode does not call `measure_context.py` unless you run it.
+
+**Setup:** `node additional-modules/context-engineering/bin/context-eng.js init --opencode`
+
+**Policy alignment:** 28k ceiling everywhere — compact around 25.2k (90%). Set `limit.context` to **28672** (28k) in `additional-modules/context-engineering/opencode.json`; shipped `compaction.reserved: 3472` triggers compaction before the cap.
+
+**OpenCode discovery:** `export OPENCODE_CONFIG="$PWD/additional-modules/context-engineering/opencode.json"` or symlink to project root.
+
+**Avoid false "interrupted":** Do not send a new message while the agent is still running — OpenCode cancels the in-flight turn (`session.prompt cancel`).

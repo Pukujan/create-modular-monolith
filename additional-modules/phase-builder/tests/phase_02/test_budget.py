@@ -24,7 +24,11 @@ from phase_02.budget import (
     end_session,
     rotate_history,
     get_remaining,
+    WARN_THRESHOLD,
 )
+
+HARD_LIMIT = 28000
+CRITICAL_START = int(HARD_LIMIT * 0.9)  # 25200
 
 
 class TestBudgetDefaults:
@@ -32,12 +36,12 @@ class TestBudgetDefaults:
 
     def test_create_budget_has_hard_limit(self):
         b = create_budget()
-        assert b["hard_limit"] == 35000
+        assert b["hard_limit"] == HARD_LIMIT
 
     def test_create_budget_zero_usage(self):
         b = create_budget()
         assert b["current_usage"] == 0
-        assert b["remaining"] == 35000
+        assert b["remaining"] == HARD_LIMIT
 
     def test_create_budget_no_session(self):
         b = create_budget()
@@ -55,37 +59,37 @@ class TestUsageCheck:
     """Usage must report status correctly at all thresholds."""
 
     def test_ok_under_limit(self):
-        result = check_usage(10000, 35000)
+        result = check_usage(10000, HARD_LIMIT)
         assert result["status"] == "ok"
-        assert result["remaining"] == 25000
+        assert result["remaining"] == 18000
         assert result["pct_used"] < 1.0
 
-    def test_ok_under_27k(self):
-        result = check_usage(10000, 35000)
+    def test_ok_under_warn_threshold(self):
+        result = check_usage(10000, HARD_LIMIT)
         assert result["status"] == "ok"
-        assert result["remaining"] == 25000
+        assert result["remaining"] == 18000
 
-    def test_warning_at_27k(self):
-        result = check_usage(27000, 35000)
+    def test_warning_at_warn_threshold(self):
+        result = check_usage(WARN_THRESHOLD, HARD_LIMIT)
         assert result["status"] == "warning"
-        assert result["remaining"] == 8000
+        assert result["remaining"] == HARD_LIMIT - WARN_THRESHOLD
 
     def test_warning_mid_range(self):
-        result = check_usage(30000, 35000)
+        result = check_usage(24000, HARD_LIMIT)
         assert result["status"] == "warning"
 
     def test_critical_near_limit(self):
-        result = check_usage(33000, 35000)
+        result = check_usage(CRITICAL_START + 500, HARD_LIMIT)
         assert result["status"] == "critical"
-        assert result["remaining"] == 2000
+        assert result["remaining"] == HARD_LIMIT - (CRITICAL_START + 500)
 
     def test_critical_at_limit(self):
-        result = check_usage(35000, 35000)
+        result = check_usage(HARD_LIMIT, HARD_LIMIT)
         assert result["status"] == "critical"
         assert result["remaining"] == 0
 
     def test_critical_over_limit_no_abort(self):
-        result = check_usage(40000, 35000)
+        result = check_usage(HARD_LIMIT + 2000, HARD_LIMIT)
         assert result["status"] == "critical"
         assert result["remaining"] == 0
 
@@ -151,11 +155,11 @@ class TestGetRemaining:
     """Remaining tokens must calculate correctly."""
 
     def test_remaining_subtracts_usage(self):
-        rem = get_remaining(35000, 20000)
-        assert rem == 15000
+        rem = get_remaining(HARD_LIMIT, 20000)
+        assert rem == 8000
 
     def test_remaining_zero_over_limit(self):
-        rem = get_remaining(35000, 40000)
+        rem = get_remaining(HARD_LIMIT, HARD_LIMIT + 2000)
         assert rem == 0
 
 
@@ -170,7 +174,7 @@ class TestBudgetPersistence:
         assert loaded["hard_limit"] == 64000
 
     def test_save_overwrites_existing(self, tmp_path):
-        b1 = create_budget(hard_limit=35000)
+        b1 = create_budget(hard_limit=HARD_LIMIT)
         budget_file = tmp_path / "context_budget.json"
         save_budget(b1, budget_file)
         b2 = create_budget(hard_limit=64000)

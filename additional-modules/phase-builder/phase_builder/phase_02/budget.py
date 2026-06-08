@@ -12,10 +12,10 @@ class BudgetError(Exception):
     pass
 
 
-WARN_THRESHOLD = 27000
+WARN_THRESHOLD = 21600
 
 
-def create_budget(hard_limit: int = 35000) -> dict:
+def create_budget(hard_limit: int = 28000) -> dict:
     """Create a fresh budget with valid defaults."""
     return {
         "hard_limit": hard_limit,
@@ -58,9 +58,9 @@ def check_usage(usage: int, hard_limit: int) -> dict:
     """Check token usage. No abort — just status reporting.
 
     Status levels:
-      - ok: usage < 27k
-      - warning: 27k <= usage < 33k  (compact soon)
-      - critical: usage >= 33k  (compact now, but don't abort)
+      - ok: usage < 21.6k
+      - warning: 21.6k <= usage < 25.2k  (compact soon)
+      - critical: usage >= 25.2k  (compact now, but don't abort)
 
     Returns status dict with: status, remaining, pct_used.
     """

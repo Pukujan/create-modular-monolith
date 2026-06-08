@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 *.log
 additional-modules/phase_builder/
+__pycache__/
+*.pyc

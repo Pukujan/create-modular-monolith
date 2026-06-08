@@ -15,6 +15,7 @@ const projectRoot = process.cwd();
 const command = process.argv[2] || 'init';
 const options = {
   phaseBuilder: process.argv.includes('--phase-builder'),
+  opencode: process.argv.includes('--opencode'),
   force: process.argv.includes('--force')
 };
 
@@ -22,6 +23,6 @@ if (command === 'init') {
   await init(projectRoot, TEMPLATES, BUILDPPLAN, options.phaseBuilder ? PHASE_BUILDER : null, WORK_LOG, options);
 } else {
   console.error(`Unknown command: ${command}`);
-  console.error('Usage: context-engineering init [--phase-builder] [--force]');
+  console.error('Usage: context-engineering init [--phase-builder] [--opencode] [--force]');
   process.exit(1);
 }

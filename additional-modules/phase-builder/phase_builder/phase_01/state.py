@@ -35,7 +35,7 @@ def create_state(override: dict | None = None) -> dict:
             "next": [],
         },
         "context_budget": {
-            "hard_limit": 35000,
+            "hard_limit": 28000,
             "current_usage": 0,
         },
         "sessions": {

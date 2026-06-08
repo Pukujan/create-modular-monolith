@@ -6,6 +6,14 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
+## What's new in 2.6.2: 28k budget, OpenCode compaction, phase-builder alignment
+
+Version 2.6.2 aligns the **28k token ceiling** across context-engineering, phase-builder, and OpenCode config — warn-only budgeting (never aborts agents), optional `init --opencode`, and phase-builder defaults/tests updated to match.
+
+**[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
+
+Also in 2.6.x: init re-run on existing scaffolds, `--archive-session` / `--status` flags, and phase-builder copied via `init --phase-builder`.
+
 ## What's new in 2.5.0: mini-modules and context engineering
 
 Version 2.5.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
@@ -56,7 +64,7 @@ npm create @pukujan/modular-monolith@latest my-platform
 cd my-platform
 
 # Finish context engineering (resolves placeholders, syncs scripts, renders MEMORY.md)
-node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
 python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
 python3 additional-modules/scripts/render_memory.py
 
@@ -243,6 +251,49 @@ This scaffold includes a 3-layer memory system for AI agents:
 
 The `work-log/` folder also holds study documents with mermaid diagrams, token budgets, and migration notes.
 
+### OpenCode users (live compaction)
+
+Context-engineering and OpenCode solve different problems:
+
+| System | Scope | Role |
+|---|---|---|
+| **OpenCode** (`additional-modules/context-engineering/opencode.json`) | Current chat session | Auto-compact before overflow; prune old tool outputs |
+| **Context-engineering** (`measure_context.py`, `MEMORY.md`) | Across sessions | Track budget, archive work, restore project state |
+
+They share the same **28k ceiling** (compact around 25.2k at 90%) but use different enforcers. OpenCode never calls `measure_context.py` unless you run it.
+
+```bash
+# Writes additional-modules/context-engineering/opencode.json with compaction defaults
+node additional-modules/context-engineering/bin/context-eng.js init --opencode
+```
+
+Shipped defaults: `compaction.auto`, `prune`, and `reserved: 3472` (compact at ~25.2k before the 28k cap). Set your provider model limit to **28672** context tokens:
+
+```json
+{
+  "provider": {
+    "local-qwen": {
+      "models": {
+        "qwen": {
+          "limit": { "context": 28672, "output": 4096 }
+        }
+      }
+    }
+  }
+}
+```
+
+OpenCode looks for `opencode.json` in the project root by default. Point it at the module config:
+
+```bash
+export OPENCODE_CONFIG="$PWD/additional-modules/context-engineering/opencode.json"
+# or: ln -sf additional-modules/context-engineering/opencode.json opencode.json
+```
+
+Global defaults live in `~/.config/opencode/opencode.jsonc` and apply to all projects; project config overrides them when OpenCode runs in that directory.
+
+**Tip:** Sending a new message while the agent is running shows "interrupted" — that is a manual cancel, not failed compaction. Wait for the turn to finish.
+
 ### Installation
 
 This is released directly into `main`. To get the mini-modules version:
@@ -260,10 +311,9 @@ Scaffolded projects include the full 3-layer memory system, registry scripts, an
 **Post-scaffold init (required):**
 ```bash
 cd my-project
-# Initialize context engineering (expands buildplan, work-log, scripts, and memory files)
-node additional-modules/context-engineering/bin/context-eng.js init
-# Optional: include phase builder
-# node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
+python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
+python3 additional-modules/scripts/render_memory.py
 ```
 
 ## Package vs. product

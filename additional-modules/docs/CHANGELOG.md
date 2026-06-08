@@ -2,6 +2,37 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.6.2] - 2026-06-08
+
+### Added
+
+- **`init --opencode`** — writes `additional-modules/context-engineering/opencode.json` with compaction defaults (`reserved: 3472` for 28k cap)
+- **OpenCode docs** — README and `AGENTS.md` explain live compaction vs cross-session memory
+
+### Changed
+
+- **28k token ceiling** — aligned across `measure_context.py`, `buildplan/`, phase-builder, and `MEMORY.md` rendering
+- **Warn thresholds** — warning at 18k, critical at 25.2k (90%); always exit 0 on budget check
+- **Post-scaffold flow** — `init --phase-builder --opencode` documented in README, `index.js`, and `template/README.md`
+
+### Fixed
+
+- **Phase-builder defaults** — `hard_limit` 28000 (was 35000) with updated tests
+
+## [2.6.1] - 2026-06-08
+
+### Fixed
+
+- **`init` re-run** — resolves `{{placeholders}}`, syncs Python scripts, re-renders `MEMORY.md` on existing projects
+- **`measure_context.py`** — warn-only (no abort at limit); added `--status` and `--archive-session --slug`
+- **`AGENTS.md`** — documents real CLI flags
+
+## [2.6.0] - 2026-06-08
+
+### Changed
+
+- **Clean scaffold** — removed litigation product modules; ships `_reference` + contracts only
+
 ## [2.4.0] - 2026-06-06
 
 ### Added
