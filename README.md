@@ -14,6 +14,8 @@ Version 2.6.4 resolves critical agent state bugs: `activeModule` now reflects th
 
 Also in 2.6.x: init re-run on existing scaffolds, `--archive-session` / `--status` flags, and phase-builder copied via `init --phase-builder`.
 
+**Standalone memory-only package:** the same compaction-threshold and checksum fixes ship in [`@pukujan/context-engineering@2.2.1`](https://www.npmjs.com/package/@pukujan/context-engineering) on the [`context-engineering`](https://github.com/Pukujan/create-modular-monolith/tree/context-engineering) branch — memory + budgeting only, writes to project root (no Express/React scaffold).
+
 ## What's new in 2.5.0: mini-modules and context engineering
 
 Version 2.5.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
@@ -315,6 +317,24 @@ node additional-modules/context-engineering/bin/context-eng.js init --phase-buil
 python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
 python3 additional-modules/scripts/render_memory.py
 ```
+
+### Standalone context-engineering package
+
+Need memory, token budgeting, and OpenCode compaction **without** the full monolith scaffold? Use the separate npm package on the `context-engineering` branch:
+
+```bash
+npm install -g @pukujan/context-engineering@2.2.1
+context-engineering init --phase-builder --opencode
+python3 scripts/measure_context.py --tokens 0 --start-session
+python3 scripts/render_memory.py
+```
+
+| Package | Branch | Layout |
+|---------|--------|--------|
+| `@pukujan/create-modular-monolith` | `main` | Full scaffold; paths under `additional-modules/` |
+| `@pukujan/context-engineering` | `context-engineering` | Memory only; paths at project root |
+
+See the [context-engineering README](https://github.com/Pukujan/create-modular-monolith/tree/context-engineering#readme) for v2.2.1 release notes.
 
 ## Package vs. product
 
