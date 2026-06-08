@@ -2,8 +2,8 @@
 """measure_context.py — hard stop at 30k token budget.
 
 Usage:
-    python scripts/measure_context.py --tokens <current_count>
-    python scripts/measure_context.py --tokens 18500 --budget buildplan/context_budget.json
+    python additional-modules/scripts/measure_context.py --tokens <current_count>
+    python additional-modules/scripts/measure_context.py --tokens 18500 --budget additional-modules/buildplan/context_budget.json
 
 Rules:
     - Hard limit: 30000 tokens.
@@ -19,7 +19,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Resolve paths relative to the current working directory (the scaffolded project root)
+_REPO_ROOT = os.getcwd()
 
 
 def _resolve(path: str) -> str:
@@ -58,8 +59,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--budget",
-        default="buildplan/context_budget.json",
-        help="Path to context_budget.json (default: buildplan/context_budget.json)",
+        default="additional-modules/buildplan/context_budget.json",
+        help="Path to context_budget.json (default: additional-modules/buildplan/context_budget.json)",
     )
     parser.add_argument(
         "--start-session",
@@ -113,8 +114,8 @@ def main() -> int:
         print(f"\nACTION REQUIRED:", file=sys.stderr)
         print(f"  1. Archive session to work-log/sessions/", file=sys.stderr)
         print(f"  2. Update agent_state.json with completed tasks", file=sys.stderr)
-        print(f"  3. Run: python scripts/render_memory.py", file=sys.stderr)
-        print(f"  4. Reset budget: python scripts/measure_context.py --tokens 0 --start-session", file=sys.stderr)
+        print(f"  3. Run: python additional-modules/scripts/render_memory.py", file=sys.stderr)
+        print(f"  4. Reset budget: python additional-modules/scripts/measure_context.py --tokens 0 --start-session", file=sys.stderr)
         print(f"  5. Ask user to start a new session", file=sys.stderr)
 
         return 1

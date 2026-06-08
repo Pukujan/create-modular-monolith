@@ -2,8 +2,8 @@
 """check_gate.py — blocks module switch if lint:architecture fails.
 
 Usage:
-    python scripts/check_gate.py --module <slug>
-    python scripts/check_gate.py --module ingest-router --update-state
+    python additional-modules/scripts/check_gate.py --module <slug>
+    python additional-modules/scripts/check_gate.py --module ingest-router --update-state
 
 Rules:
     - Must pass lint:architecture before allowing module transition.
@@ -20,7 +20,8 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Resolve paths relative to the current working directory (the scaffolded project root)
+_REPO_ROOT = os.getcwd()
 
 
 def _resolve(path: str) -> str:
@@ -64,8 +65,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--state",
-        default="buildplan/agent_state.json",
-        help="Path to agent_state.json (default: buildplan/agent_state.json)",
+        default="additional-modules/buildplan/agent_state.json",
+        help="Path to agent_state.json (default: additional-modules/buildplan/agent_state.json)",
     )
     parser.add_argument(
         "--update-state",

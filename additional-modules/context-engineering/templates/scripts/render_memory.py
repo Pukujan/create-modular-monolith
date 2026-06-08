@@ -2,7 +2,7 @@
 """render_memory.py — renders template/MEMORY.md from buildplan/agent_state.json.
 
 Usage:
-    python scripts/render_memory.py [--state buildplan/agent_state.json] [--out template/MEMORY.md]
+    python additional-modules/scripts/render_memory.py [--state additional-modules/buildplan/agent_state.json]
 
 Rules:
     - MEMORY.md is read-only to the agent.
@@ -17,8 +17,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
-# Resolve paths relative to repo root (parent of scripts/)
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Resolve paths relative to the current working directory (the scaffolded project root)
+_REPO_ROOT = os.getcwd()
 
 
 def _resolve(path: str) -> str:
@@ -127,22 +127,22 @@ def render(state: dict) -> str:
     if lint.get("lastResult"):
         a(f"Message: `{lint['lastResult']}`")
     a("")
-    a("Before module transition: `python scripts/check_gate.py --module <slug>`")
+    a("Before module transition: `python additional-modules/scripts/check_gate.py --module <slug>`")
     a("")
     a("---")
     a("")
     a("## CONTEXT BUDGET")
     a("")
-    a(f"Hard limit: {budget.get('hardLimit', 24000):,} tokens")
+    a(f"Hard limit: {budget.get('hardLimit', 30000):,} tokens")
     a(f"Current usage: {budget.get('currentUsage', 0):,} tokens")
-    a(f"Remaining: {budget.get('remaining', 24000):,} tokens")
+    a(f"Remaining: {budget.get('remaining', 30000):,} tokens")
     a(f"Session start: `{budget.get('sessionStart', '—')}`")
     a("")
     a("---")
     a("")
     a("## SESSION ARCHIVES")
     a("")
-    a("Index: `work-log/sessions/INDEX.md`")
+    a("Index: `additional-modules/work-log/sessions/INDEX.md`")
     archive = sessions.get("archive", [])
     for sid in archive:
         a(f"- `{sid}`")
@@ -162,9 +162,9 @@ def render(state: dict) -> str:
     a("")
     a("### Workflow")
     a("1. Agent updates `agent_state.json` directly")
-    a("2. Run `python scripts/render_memory.py` to regenerate `MEMORY.md`")
-    a("3. Run `python scripts/check_gate.py --module <slug>` before module transition")
-    a("4. Run `python scripts/measure_context.py --tokens <count>` to check budget")
+    a("2. Run `python additional-modules/scripts/render_memory.py` to regenerate `MEMORY.md`")
+    a("3. Run `python additional-modules/scripts/check_gate.py --module <slug>` before module transition")
+    a("4. Run `python additional-modules/scripts/measure_context.py --tokens <count>` to check budget")
     a("")
     a("---")
     a("")
@@ -184,8 +184,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--state",
-        default="buildplan/agent_state.json",
-        help="Path to agent_state.json (default: buildplan/agent_state.json)",
+        default="additional-modules/buildplan/agent_state.json",
+        help="Path to agent_state.json (default: additional-modules/buildplan/agent_state.json)",
     )
     parser.add_argument(
         "--out",
