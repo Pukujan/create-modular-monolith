@@ -1,4 +1,8 @@
 node_modules/
 agent_state.json
+contextBudget.json
+MEMORY.md
 *.pyc
 __pycache__/
+.venv/
+.pytest_cache/

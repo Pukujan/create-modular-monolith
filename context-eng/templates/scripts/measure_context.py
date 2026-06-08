@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""measure_context.py — hard stop at 24k token budget.
+"""measure_context.py — report context budget status, no abort.
 
 Usage:
     python scripts/measure_context.py --tokens <current_count>
     python scripts/measure_context.py --tokens 18500 --budget buildplan/context_budget.json
 
 Rules:
-    - Hard limit: 24000 tokens.
-    - Aborts session (exit 1) if budget exceeded.
+    - Ceiling: 35000 tokens (never aborts, just reports).
+    - Warning at 27k: consider compacting.
+    - Critical at 31.5k+ (90% of ceiling): compact now.
     - Updates context_budget.json with current usage.
 
 Paths resolve relative to repo root (parent of scripts/).
@@ -28,8 +29,9 @@ def _resolve(path: str) -> str:
     return os.path.join(_REPO_ROOT, path)
 
 
-HARD_LIMIT = 24000
-WARN_THRESHOLD = 20000
+CEILING = 35000
+WARN_THRESHOLD = 27000
+CRITICAL_THRESHOLD = 31500  # 90% of ceiling
 
 
 def load_budget(path: str) -> dict:
@@ -48,7 +50,7 @@ def save_budget(path: str, budget: dict) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Measure context budget — hard stop at 24k tokens"
+        description="Measure context budget — reports status, never aborts"
     )
     parser.add_argument(
         "--tokens",
@@ -79,45 +81,25 @@ def main() -> int:
         budget = load_budget(args.budget)
     except FileNotFoundError:
         budget = {
-            "hardLimit": HARD_LIMIT,
+            "hardLimit": CEILING,
             "currentUsage": 0,
-            "remaining": HARD_LIMIT,
+            "remaining": CEILING,
             "sessionStart": None,
             "sessionEnd": None,
             "history": [],
         }
 
     usage = args.tokens
-    remaining = budget["hardLimit"] - usage
+    remaining = max(0, budget["hardLimit"] - usage)
 
     if args.start_session:
         budget["sessionStart"] = now
+        budget["sessionEnd"] = None
+        budget["currentUsage"] = 0
         print(f"Session started: {now}")
 
     budget["currentUsage"] = usage
     budget["remaining"] = remaining
-
-    if usage >= HARD_LIMIT:
-        budget["sessionEnd"] = now
-        entry = {
-            "endedAt": now,
-            "peakUsage": usage,
-            "reason": "hard_limit_exceeded",
-        }
-        budget.setdefault("history", []).append(entry)
-        save_budget(args.budget, budget)
-
-        print(f"\n🛑 CONTEXT BUDGET EXCEEDED", file=sys.stderr)
-        print(f"Usage:    {usage:,} / {budget['hardLimit']:,} tokens", file=sys.stderr)
-        print(f"Exceeded: {usage - budget['hardLimit']:,} tokens", file=sys.stderr)
-        print(f"\nACTION REQUIRED:", file=sys.stderr)
-        print(f"  1. Archive session to work-log/sessions/", file=sys.stderr)
-        print(f"  2. Update agent_state.json with completed tasks", file=sys.stderr)
-        print(f"  3. Run: python scripts/render_memory.py", file=sys.stderr)
-        print(f"  4. Reset budget: python scripts/measure_context.py --tokens 0 --start-session", file=sys.stderr)
-        print(f"  5. Ask user to start a new session", file=sys.stderr)
-
-        return 1
 
     if args.end_session:
         budget["sessionEnd"] = now
@@ -127,20 +109,23 @@ def main() -> int:
             "reason": "manual_end",
         }
         budget.setdefault("history", []).append(entry)
-        save_budget(args.budget, budget)
         print(f"Session ended: {now}")
         print(f"Peak usage: {usage:,} / {budget['hardLimit']:,} tokens")
 
     save_budget(args.budget, budget)
 
-    if usage >= WARN_THRESHOLD:
-        pct = (usage / budget["hardLimit"]) * 100
-        print(f"⚠️  WARNING: {usage:,} / {budget['hardLimit']:,} tokens ({pct:.0f}%)")
+    pct = (usage / budget["hardLimit"]) * 100
+
+    if usage >= CRITICAL_THRESHOLD:
+        print(f"🔴 CRITICAL: {usage:,} / {budget['hardLimit']:,} tokens ({pct:.0f}%)")
+        print(f"   Remaining: {remaining:,} tokens")
+        print(f"   Compact context now.")
+    elif usage >= WARN_THRESHOLD:
+        print(f"🟡 WARNING: {usage:,} / {budget['hardLimit']:,} tokens ({pct:.0f}%)")
         print(f"   Remaining: {remaining:,} tokens")
         print(f"   Consider compacting context soon.")
     else:
-        pct = (usage / budget["hardLimit"]) * 100
-        print(f"✅ Budget OK: {usage:,} / {budget['hardLimit']:,} tokens ({pct:.0f}%)")
+        print(f"🟢 OK: {usage:,} / {budget['hardLimit']:,} tokens ({pct:.0f}%)")
         print(f"   Remaining: {remaining:,} tokens")
 
     return 0
