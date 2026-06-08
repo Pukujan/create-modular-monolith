@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "Scaffold a clean agent-first modular monolith (Express + React): _reference module, architecture contracts, context-engineering memory, file-exchange, dev logs, and CI lint gates.",
   "type": "module",
   "bin": {
