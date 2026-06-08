@@ -1,21 +1,34 @@
 {
-  "name": "@pukujan/context-engineering",
-  "version": "2.0.0",
-  "description": "3-layer agent memory, hard state management, token budgeting, lint gates, and phase builder addon for any project.",
+  "name": "@pukujan/create-modular-monolith",
+  "version": "2.4.0",
+  "description": "Scaffold an agent-first modular monolith (Express + React): mini-modules with registry-driven architecture, 3-layer agent memory, 9 architecture contracts, file-exchange, dev logs, FSM/agent templates, and CI lint gates.",
   "type": "module",
   "bin": {
-    "context-engineering": "additional-modules/context-engineering/bin/context-eng.js"
+    "create-modular-monolith": "index.js"
   },
+  "files": [
+    "index.js",
+    "LICENSE",
+    "scripts/postinstall-message.mjs",
+    "template",
+    "additional-modules"
+  ],
   "scripts": {
-    "init": "node additional-modules/context-engineering/bin/context-eng.js init"
+    "postinstall": "node scripts/postinstall-message.mjs"
   },
   "keywords": [
-    "context-engineering",
-    "agent-memory",
-    "token-budget",
-    "state-management",
-    "lint-gates",
-    "llm-agents"
+    "modular-monolith",
+    "express",
+    "react",
+    "vite",
+    "cursor",
+    "architecture",
+    "scaffold",
+    "create-app",
+    "bullmq",
+    "agent",
+    "state-machine",
+    "file-exchange"
   ],
   "author": "Pukujan",
   "license": "MIT",
@@ -28,7 +41,6 @@
   },
   "homepage": "https://github.com/Pukujan/create-modular-monolith#readme",
   "engines": {
-    "node": ">=20",
-    "python": ">=3.10"
+    "node": ">=20"
   }
 }
