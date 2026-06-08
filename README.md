@@ -236,7 +236,7 @@ This scaffold includes a 3-layer memory system for AI agents:
 
 | Layer | File | Purpose |
 |---|---|---|
-| L1 — Working memory | `additional-modules/MEMORY.md` | Current state, <100 lines, updated every session |
+| L1 — Working memory | `MEMORY.md` | Current state, <100 lines, updated every session |
 | L2 — Rules | `AGENTS.md` | Architecture rules, boundaries, lint commands |
 | L3 — Archive | `additional-modules/work-log/sessions/` | Completed session notes, study logs |
 
