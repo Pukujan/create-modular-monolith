@@ -5,15 +5,15 @@ __pycache__/
 *.egg-info/
 .venv/
 node_modules/
+*.tsbuildinfo
 
 # Git and npm config
-.git
+.git/
 .gitignore
 .npmignore
 
-# Scaffolded project files at repo root only
-/buildplan/
-/scripts/
-/work-log/
-/AGENTS.md
-/MEMORY.md
+# IDE and OS
+.DS_Store
+*.log
+
+

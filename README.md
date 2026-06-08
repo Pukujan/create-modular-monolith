@@ -51,7 +51,7 @@ If you are still writing every line by hand, this is probably overkill.
 
 ```bash
 # Scaffold the project
-npm create @pukujan/create-modular-monolith@latest my-platform
+npm create @pukujan/modular-monolith@latest my-platform
 
 cd my-platform
 
@@ -243,10 +243,10 @@ This is released directly into `main`. To get the mini-modules version:
 
 ```bash
 # Latest main (includes mini-modules)
-npx create-modular-monolith@latest my-project
+npx @pukujan/modular-monolith@latest my-project
 
 # Or pin the commit
-npx create-modular-monolith@c7ac6fb my-project
+npx @pukujan/modular-monolith@c7ac6fb my-project
 ```
 
 Scaffolded projects include the full 3-layer memory system, registry scripts, and 20 pre-built mini-modules out of the box.
@@ -259,7 +259,7 @@ For a reference product that stress-tests this architecture with real domain mod
 
 ## Changelog
 
-See [CHANGELOG.md](./CHANGELOG.md) for version history, migration notes, and bug fixes.
+See [CHANGELOG.md](./additional-modules/docs/CHANGELOG.md) for version history, migration notes, and bug fixes.
 
 ## License
 

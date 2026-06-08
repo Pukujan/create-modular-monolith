@@ -1,18 +1,11 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Scaffold an agent-first modular monolith (Express + React): mini-modules with registry-driven architecture, 3-layer agent memory, 9 architecture contracts, file-exchange, dev logs, FSM/agent templates, and CI lint gates.",
   "type": "module",
   "bin": {
     "create-modular-monolith": "index.js"
   },
-  "files": [
-    "index.js",
-    "LICENSE",
-    "scripts/postinstall-message.mjs",
-    "template",
-    "additional-modules"
-  ],
   "scripts": {
     "postinstall": "node scripts/postinstall-message.mjs"
   },
