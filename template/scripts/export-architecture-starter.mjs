@@ -208,8 +208,8 @@ function copyFileExchange(target) {
 }
 
 function copyCursor(target) {
-  copyFiltered(join(repoRoot, ".cursor"), join(target, ".cursor"));
-  console.log("  ✓ .cursor/");
+  copyFiltered(join(repoRoot, ".agents"), join(target, ".agents"));
+  console.log("  ✓ .agents/");
 }
 
 function copyGithubCi(target) {
@@ -343,7 +343,7 @@ function writeManifest(target) {
       other: [
         "file-exchange/",
         "work-log/ (structure)",
-        ".cursor/",
+        ".agents/",
         "backend/src/core",
         "backend/src/shared",
         "frontend/src/core",

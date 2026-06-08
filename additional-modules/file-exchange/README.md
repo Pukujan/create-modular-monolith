@@ -64,6 +64,6 @@ Per [fileExchange.contract.md](../docs/architecture/contracts/fileExchange.contr
 3. Copy batch bundles / reports to `exports/{stamp}_{label}/` when done.
 4. Refresh consolidated snapshots: `npm run condense:all` → new `exports/{stamp}_consolidated/`.
 
-**Cursor agents:** mandatory — see [AGENTS.md](../AGENTS.md) and `.cursor/rules/file-exchange-inbox.mdc`.
+**Agent use:** mandatory — see [AGENTS.md](../AGENTS.md) and `.agents/rules/file-exchange-inbox.mdc`.
 
 See [docs/architecture/REPO_ARTIFACT_LAYOUT.md](../docs/architecture/REPO_ARTIFACT_LAYOUT.md).

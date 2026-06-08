@@ -68,4 +68,4 @@ Implemented in `scripts/lib/repo-tree.mjs`. `.DS_Store` files also excluded.
 
 - [work-log/dev-logs/README.md](../../../work-log/dev-logs/README.md)
 - [AGENTS.md](../../../AGENTS.md) — pre-push section
-- `.cursor/commands/pre-push-dev-log.md`
+- `.agents/commands/pre-push-dev-log.md`

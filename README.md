@@ -88,7 +88,7 @@ A working Express + React/Vite starter, plus the infrastructure to survive agent
 | **Dev logs + audit trail** | One command before push: `npm run dev-log:pre-push -- --slug my-feature`. Humans get a story. Agents get structured JSON. |
 | **Planning gates** | `npm run plan:gate` forces a planning audit log before big refactors. Prevents "I asked the agent to just clean up a little and it rewrote half the app." |
 | **Condensed handoffs** | `npm run condense:all` exports a snapshot of your contracts, file tree, and current state. Drop it into the next agent session. |
-| **Cursor-native setup** | `AGENTS.md`, `.cursor/rules`, and `.cursor/commands` give your coding agent project-specific instructions from day one. |
+| **Agent-native setup** | `AGENTS.md`, `.agents/rules`, and `.agents/commands` give your coding agent project-specific instructions from day one. |
 
 Domain logic is yours. The scaffolding just makes sure your agents don't burn your house down while building it.
 

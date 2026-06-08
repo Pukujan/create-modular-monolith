@@ -36,7 +36,7 @@ npm run dev-log:sync-head -- --latest
 npm run dev-log:pre-push -- --check
 ```
 
-Cursor: use command **Pre-push dev log** (`.cursor/commands/pre-push-dev-log.md`).
+Agent: use command **Pre-push dev log** (`.agents/commands/pre-push-dev-log.md`).
 
 ### Human log (two-part markdown)
 

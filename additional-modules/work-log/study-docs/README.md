@@ -6,7 +6,7 @@ Personal planning **conversation** notes. Parent: [work-log](../README.md).
 
 ## What belongs here
 
-- **Study logs** — `*_study-log_{slug}.md` — your messages verbatim + optional summaries ([planning-study-log](../../.cursor/commands/planning-study-log.md) — human use only)
+- **Study logs** — `*_study-log_{slug}.md` — your messages verbatim + optional summaries ([planning-study-log](../../agents/commands/planning-study-log.md) — human use only)
 
 Do **not** put plan logs, audit logs, or manifests here.
 

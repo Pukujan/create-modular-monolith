@@ -41,4 +41,4 @@ Run **after** `npm run export:architecture-starter -- --to …` and **before** p
 
 - [prePushDevLog.contract.md](./prePushDevLog.contract.md) — product pushes
 - [work-log/architecture-push-logs/README.md](../../../work-log/architecture-push-logs/README.md)
-- `.cursor/commands/architecture-push-log.md`
+- `.agents/commands/architecture-push-log.md`

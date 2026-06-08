@@ -29,4 +29,4 @@ When the user asks to **push**, **commit and push**, or similar — run this ful
 - Never ask the user to click Push in the UI to bypass this.
 - Terminal push by the user (without you running shell) is their choice — your job is to use `npm run agent:push`.
 
-See `.cursor/commands/pre-push-dev-log.md` for field-level fill guidance.
+See `.agents/commands/pre-push-dev-log.md` for field-level fill guidance.

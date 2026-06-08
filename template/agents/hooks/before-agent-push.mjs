@@ -48,7 +48,7 @@ async function main() {
       "2. Fill FILL sections in work-log/dev-logs/agent/ and human/",
       "3. npm run agent:push -- --slug <kebab-topic> --commit",
       "",
-      "See .cursor/commands/push.md"
+      "See .agents/commands/push.md"
     ].join("\n")
   });
 }

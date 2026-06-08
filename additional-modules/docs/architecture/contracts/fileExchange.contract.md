@@ -37,7 +37,7 @@ Legacy compact stamps (`20260523T155943Z`) are normalized by `normalizeExchangeS
 
 External paths (e.g. `~/Downloads/`) are copied only; delete those manually if desired.
 
-Enforced by `AGENTS.md` and `.cursor/rules/file-exchange-inbox.mdc` (`alwaysApply: true`).
+Enforced by `AGENTS.md` and `.agents/rules/file-exchange-inbox.mdc` (`alwaysApply: true`).
 
 ## Scripts
 

@@ -21,7 +21,7 @@ work-log/
 |--------|----------|--------|
 | **handoffs/** | Implementation specs, second/third handoffs, starter pack snapshots | Yes |
 | **study-docs/** | Personal planning conversation — study logs (`You` verbatim + summaries) | **No — user only** |
-| **planning/** | Phase folders with `plan-log.md`, `audit-log.md`, `manifest.json` ([planning-plan-package](../.cursor/commands/planning-plan-package.md), [planningPhase contract](../docs/architecture/contracts/planningPhase.contract.md)) | Yes |
+| **planning/** | Phase folders with `plan-log.md`, `audit-log.md`, `manifest.json` ([planning-plan-package](../agents/commands/planning-plan-package.md), [planningPhase contract](../docs/architecture/contracts/planningPhase.contract.md)) | Yes |
 | **checkpoints/** | Post-run evidence (batch evals, pass/fail tables) | Yes |
 | **dev-logs/** | What shipped — **paired human MD + agent JSON** before each product push | Yes |
 | **sessions/** | Per-session work summaries — what we worked on, decisions, follow-ups (archived from MEMORY.md) | Yes |

@@ -2,7 +2,7 @@
 
 Create **two** dev logs before every **agent-initiated** push: one for humans, one structured JSON for agents.
 
-Terminal `git push` by the user is allowed without dev logs. Agent shell `git push` is blocked by `.cursor/hooks.json` until paired logs exist for `HEAD`.
+Terminal `git push` by the user is allowed without dev logs. Agent shell `git push` is blocked by `.agents/hooks.json` until paired logs exist for `HEAD`.
 
 ## When to run
 

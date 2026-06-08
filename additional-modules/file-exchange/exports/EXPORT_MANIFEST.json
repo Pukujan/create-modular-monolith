@@ -42,7 +42,7 @@
     "other": [
       "file-exchange/",
       "work-log/ (structure)",
-      ".cursor/",
+      ".agents/",
       "backend/src/core",
       "backend/src/shared",
       "frontend/src/core",

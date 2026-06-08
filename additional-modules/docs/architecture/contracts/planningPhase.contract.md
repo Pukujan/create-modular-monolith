@@ -19,7 +19,7 @@ Audit trail **before** implementation. Each planned phase lives in its own dated
 
 ## Agent workflow
 
-1. **Plan log** — goal, constraints, file paths, verification checklist ([planning-plan-package](../../.cursor/commands/planning-plan-package.md))
+1. **Plan log** — goal, constraints, file paths, verification checklist ([planning-plan-package](../../agents/commands/planning-plan-package.md))
 2. **Audit log** — scope audited, gap table, pass/fail notes
 3. **Design** (optional) — architecture notes in the same phase folder
 4. **Finalize** — `npm run plan:finalize -- --slug <slug>` writes `manifest.json` inside the phase folder

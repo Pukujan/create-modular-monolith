@@ -32,7 +32,7 @@ All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
 ### Added
 
-- **`work-log/study-logs/`** — personal portfolio notes; included in repo but agents must not read or write (`.cursor/rules/study-logs-user-only.mdc`)
+- **`work-log/study-logs/`** — personal portfolio notes; included in repo but agents must not read or write (`.agents/rules/study-logs-user-only.mdc`)
 - **`scripts/lib/plan-folder.mjs`** — folder naming helpers for planning artifacts
 - Starter export copies `study-logs/` README
 
@@ -50,8 +50,8 @@ All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
 - **`npm run agent:push`** — agent workflow: create dev logs, commit pair, then push
 - **`npm run smoke:gates`** — smoke tests for planning gate and agent push gate
-- **Cursor hooks** — `.cursor/hooks.json` blocks bare agent `git push` without paired dev logs
-- **`.cursor/commands/push.md`** and **`agent-push-dev-log`** rule for push requests
+- **Agent hooks** — `.agents/hooks.json` blocks bare agent `git push` without paired dev logs
+- **`.agents/commands/push.md`** and **`agent-push-dev-log`** rule for push requests
 
 ### Notes
 
@@ -157,7 +157,7 @@ All notable changes to `@pukujan/create-modular-monolith` are documented here.
 - `docs/architecture/PLATFORM_ARCHITECTURE.md` — agent-scale platform narrative
 - Contract manifest v001: file exchange, consolidated exports, pre-push dev logs, API registry
 - Scripts: `lint:contracts`, `dev-log:pre-push`, `condense:all`, `import:file-exchange`, `new:module`
-- Cursor: `AGENTS.md`, `.cursor/rules`, `.cursor/commands/pre-push-dev-log.md`
+- Agent config: `AGENTS.md`, `.agents/rules`, `.agents/commands/pre-push-dev-log.md`
 - Generic `api-inventory.mjs` (no domain pipeline imports)
 
 ### Changed
