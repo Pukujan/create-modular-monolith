@@ -1,13 +1,25 @@
 {
   "name": "@pukujan/create-modular-monolith",
-  "version": "2.5.3",
-  "description": "Scaffold an agent-first modular monolith (Express + React): mini-modules with registry-driven architecture, 3-layer agent memory, 9 architecture contracts, file-exchange, dev logs, FSM/agent templates, and CI lint gates.",
+  "version": "2.6.0",
+  "description": "Scaffold a clean agent-first modular monolith (Express + React): _reference module, architecture contracts, context-engineering memory, file-exchange, dev logs, and CI lint gates.",
   "type": "module",
   "bin": {
     "create-modular-monolith": "index.js"
   },
+  "files": [
+    "index.js",
+    "template",
+    "additional-modules",
+    "scripts",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
-    "postinstall": "node scripts/postinstall-message.mjs"
+    "postinstall": "node scripts/postinstall-message.mjs",
+    "prepublishOnly": "test -f template/package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "modular-monolith",
@@ -18,9 +30,8 @@
     "architecture",
     "scaffold",
     "create-app",
-    "bullmq",
     "agent",
-    "state-machine",
+    "context-engineering",
     "file-exchange"
   ],
   "author": "Pukujan",

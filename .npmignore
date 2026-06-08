@@ -1,3 +1,7 @@
+# Maintainer workspace (not shipped to scaffold consumers)
+AGENTS.md
+MEMORY.md
+
 # Dev artifacts
 __pycache__/
 *.pyc
@@ -6,6 +10,10 @@ __pycache__/
 .venv/
 node_modules/
 *.tsbuildinfo
+template/backend/node_modules/
+template/frontend/node_modules/
+template/backend/package-lock.json
+template/frontend/package-lock.json
 
 # Git and npm config
 .git/
@@ -15,5 +23,3 @@ node_modules/
 # IDE and OS
 .DS_Store
 *.log
-
-
