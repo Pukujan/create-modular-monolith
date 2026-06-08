@@ -6,9 +6,9 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
-## What's new in 2.6.2: 28k budget, OpenCode compaction, phase-builder alignment
+## What's new in 2.6.4: agent state, compaction symlink, context budget thresholds
 
-Version 2.6.2 aligns the **28k token ceiling** across context-engineering, phase-builder, and OpenCode config — warn-only budgeting (never aborts agents), optional `init --opencode`, and phase-builder defaults/tests updated to match.
+Version 2.6.4 resolves critical agent state bugs: `activeModule` now reflects the current module being scaffolded (was `"none"`), an `opencode.json` symlink enables auto-compaction at the 28k ceiling, and `context_budget.json` includes proper warning/compact/stop thresholds. Also fixes the `.mdc` rule discovery path mismatch by moving rules to `.agents/rules/`.
 
 **[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
 

@@ -8,7 +8,7 @@ Agent-first Express + React scaffold with architecture contracts, module boundar
 | --- | --- |
 | Backend | Express, modular loader |
 | Frontend | React + Vite, registry-driven module routes |
-| Contracts | 8 registered IDs — [CONTRACTS_OVERVIEW](docs/architecture/CONTRACTS_OVERVIEW.md) |
+| Contracts | 9 registered IDs — [CONTRACTS_OVERVIEW](docs/architecture/CONTRACTS_OVERVIEW.md) |
 
 ## Quick start
 
