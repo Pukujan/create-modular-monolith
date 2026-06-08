@@ -6,9 +6,9 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
-## What's new in 2.4.0: mini-modules and context engineering
+## What's new in 2.5.0: mini-modules and context engineering
 
-Version 2.4.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
+Version 2.5.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
 
 **[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
 
@@ -137,20 +137,25 @@ npm run plan:gate -- --slug auth-refactor
 ```
 my-platform/
 ├── AGENTS.md                 ← Required reading for Cursor / agents
+├── MEMORY.md                 ← Working memory (regenerated each session)
 ├── backend/src/
 │   ├── core/                 ← Module loader, server
 │   ├── modules/_reference/   ← Example health-check module
 │   ├── modules/model-condenser/
 │   └── shared/               ← Contracts, agent-runtime, artifact paths
 ├── frontend/src/core/ + modules/_reference/
-├── docs/architecture/        ← Contracts, guardrails, templates
-├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
-├── work-log/                 ← dev-logs, planning/{folder}/, study-logs/
+├── additional-modules/
+│   ├── docs/architecture/    ← Contracts, guardrails, templates
+│   ├── file-exchange/        ← imports/ + exports/ (human ↔ agent handoff)
+│   ├── work-log/             ← dev-logs, planning/{folder}/, study-logs/
+│   ├── buildplan/            ← Agent state, context budget
+│   ├── scripts/              ← render_memory, measure_context, check_gate
+│   └── context-engineering/  ← CLI tool and templates
 ├── local-artifacts.example.json
 └── package.json              ← Root scripts (test:ci, condense:all, new:module, …)
 ```
 
-Read `docs/architecture/CONTRACTS_OVERVIEW.md` and `AGENTS.md` before adding your own domain modules.
+Read `additional-modules/docs/architecture/CONTRACTS_OVERVIEW.md` and `AGENTS.md` before adding your own domain modules.
 
 ## Architecture contracts (the boring-but-important part)
 
