@@ -171,7 +171,7 @@ def render(state: dict) -> str:
     a("## AGENT RULES")
     a("")
     a("- MEMORY.md is **read-only** — write to `agent_state.json` instead")
-    a("- Hard ~24k token limit with compact procedure")
+    a("- Hard ~30k token limit with compact procedure")
     a("- Session memory: read MEMORY.md on start, archive + prune on end")
     a("- Terse bullets, no prose")
 

@@ -91,6 +91,6 @@ Index: `work-log/sessions/INDEX.md`
 - `2026-06-06-generic-rename-and-enforcement-test` — Generic rename, boundary test
 
 ## AGENT RULES
-- Hard ~24k token limit with compact procedure
+- Hard ~30k token limit with compact procedure
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose

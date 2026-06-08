@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""measure_context.py — hard stop at 24k token budget.
+"""measure_context.py — hard stop at 30k token budget.
 
 Usage:
     python scripts/measure_context.py --tokens <current_count>
     python scripts/measure_context.py --tokens 18500 --budget buildplan/context_budget.json
 
 Rules:
-    - Hard limit: 24000 tokens.
+    - Hard limit: 30000 tokens.
     - Aborts session (exit 1) if budget exceeded.
     - Updates context_budget.json with current usage.
 
@@ -28,7 +28,7 @@ def _resolve(path: str) -> str:
     return os.path.join(_REPO_ROOT, path)
 
 
-HARD_LIMIT = 24000
+HARD_LIMIT = 30000
 WARN_THRESHOLD = 20000
 
 
@@ -48,7 +48,7 @@ def save_budget(path: str, budget: dict) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Measure context budget — hard stop at 24k tokens"
+        description="Measure context budget — hard stop at 30k tokens"
     )
     parser.add_argument(
         "--tokens",

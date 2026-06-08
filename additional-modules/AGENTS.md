@@ -81,7 +81,7 @@ Planning phase folders and dev-logs under `work-log/` per [work-log/README.md](w
 
 ## Context window management
 
-**Hard limit:** If context usage approaches ~32k tokens, STOP and compact immediately:
+**Hard limit:** If context usage approaches ~35k tokens, STOP and compact immediately:
 1. Write a concise session summary to `work-log/sessions/{YYYY-MM-DD}-{slug}.md`
 2. Update `MEMORY.md` to current state only
 3. Ask the user to start a new session

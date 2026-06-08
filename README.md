@@ -236,9 +236,9 @@ This scaffold includes a 3-layer memory system for AI agents:
 
 | Layer | File | Purpose |
 |---|---|---|
-| L1 — Working memory | `MEMORY.md` | Current state, <100 lines, updated every session |
+| L1 — Working memory | `additional-modules/MEMORY.md` | Current state, <100 lines, updated every session |
 | L2 — Rules | `AGENTS.md` | Architecture rules, boundaries, lint commands |
-| L3 — Archive | `work-log/sessions/` | Completed session notes, study logs |
+| L3 — Archive | `additional-modules/work-log/sessions/` | Completed session notes, study logs |
 
 The `work-log/` folder also holds study documents with mermaid diagrams, token budgets, and migration notes.
 
@@ -255,6 +255,15 @@ npx @pukujan/modular-monolith@c7ac6fb my-project
 ```
 
 Scaffolded projects include the full 3-layer memory system, registry scripts, and 20 pre-built mini-modules out of the box.
+
+**Post-scaffold init (required):**
+```bash
+cd my-project
+# Initialize context engineering (expands buildplan, work-log, scripts, and memory files)
+node additional-modules/context-engineering/bin/context-eng.js init
+# Optional: include phase builder
+# node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+```
 
 ## Package vs. product
 

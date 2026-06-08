@@ -38,9 +38,9 @@
     "archive": []
   },
   "contextBudget": {
-    "hardLimit": 24000,
+    "hardLimit": 30000,
     "currentUsage": 0,
-    "remaining": 24000,
+    "remaining": 30000,
     "sessionStart": null
   }
 }

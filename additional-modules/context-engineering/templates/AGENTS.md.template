@@ -38,6 +38,6 @@
 | `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- Hard ~24k token limit with compact procedure
+- Hard ~30k token limit with compact procedure
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
