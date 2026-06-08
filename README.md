@@ -1,6 +1,8 @@
 # @pukujan/context-engineering
 
-Reusable scaffold for agent memory, hard state management, token budgeting, and lint gates.
+Standalone npm package for agent memory, hard state management, token budgeting, and optional phase-builder addon.
+
+No Express/React scaffold, no architecture contracts, no template enforcement — use [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) on `main` for the full modular monolith.
 
 ## Install
 
@@ -8,24 +10,44 @@ Reusable scaffold for agent memory, hard state management, token budgeting, and 
 npm install -g @pukujan/context-engineering
 ```
 
+Or run without installing:
+
+```bash
+npx @pukujan/context-engineering init
+npx @pukujan/context-engineering init --phase-builder
+```
+
 ## Usage
 
 ```bash
 context-engineering init
+context-engineering init --phase-builder
 ```
 
-Copies templates into your project with variable substitution (`{{DATE}}`, `{{BRANCH}}`, `{{COMMIT}}`, `{{TOKEN_LIMIT}}`).
+Copies templates into your **project root** with variable substitution (`{{DATE}}`, `{{BRANCH}}`, `{{COMMIT}}`, `{{TOKEN_LIMIT}}`).
 
 ## What it scaffolds
 
-- `AGENTS.md` - Agent rules and guardrails
-- `MEMORY.md` - Persistent session memory
-- `buildplan/agent_state.json` - Hard state file
-- `buildplan/context_budget.json` - Token budget config
-- `scripts/measure_context.py` - Token limit enforcement
-- `scripts/render_memory.py` - MEMORY.md generator
-- `scripts/check_gate.py` - Lint gate enforcement
-- `work-log/` - Session archive structure
+| Path | Purpose |
+|------|---------|
+| `AGENTS.md` | Agent rules and memory workflow |
+| `MEMORY.md` | Read-only session view (regenerated) |
+| `buildplan/agent_state.json` | Hard state source of truth |
+| `buildplan/context_budget.json` | 30k token budget tracker |
+| `scripts/measure_context.py` | Token limit enforcement |
+| `scripts/render_memory.py` | MEMORY.md generator |
+| `scripts/check_gate.py` | Phase transition gate (optional lint if host has `lint:architecture`) |
+| `work-log/` | Session archive structure |
+| `phase_builder/` | Optional addon (`--phase-builder`) |
+
+## Relationship to create-modular-monolith
+
+| Package | Branch | Scope |
+|---------|--------|-------|
+| `@pukujan/create-modular-monolith` | `main` | Full scaffold: Express + React, contracts, lint gates, `additional-modules/` layout |
+| `@pukujan/context-engineering` | `context-engineering` | Memory + budgeting only; writes to project root |
+
+The monolith embeds this package under `additional-modules/context-engineering/` and uses nested paths (`additional-modules/buildplan/`, etc.). This standalone package uses root-level paths instead.
 
 ## Requirements
 

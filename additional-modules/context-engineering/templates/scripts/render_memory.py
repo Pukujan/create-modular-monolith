@@ -2,7 +2,7 @@
 """render_memory.py — renders template/MEMORY.md from buildplan/agent_state.json.
 
 Usage:
-    python scripts/render_memory.py [--state buildplan/agent_state.json] [--out template/MEMORY.md]
+    python scripts/render_memory.py [--state buildplan/agent_state.json]
 
 Rules:
     - MEMORY.md is read-only to the agent.
@@ -17,8 +17,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
-# Resolve paths relative to repo root (parent of scripts/)
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Resolve paths relative to the current working directory (the scaffolded project root)
+_REPO_ROOT = os.getcwd()
 
 
 def _resolve(path: str) -> str:
@@ -133,9 +133,9 @@ def render(state: dict) -> str:
     a("")
     a("## CONTEXT BUDGET")
     a("")
-    a(f"Hard limit: {budget.get('hardLimit', 35000):,} tokens")
+    a(f"Hard limit: {budget.get('hardLimit', 30000):,} tokens")
     a(f"Current usage: {budget.get('currentUsage', 0):,} tokens")
-    a(f"Remaining: {budget.get('remaining', 35000):,} tokens")
+    a(f"Remaining: {budget.get('remaining', 30000):,} tokens")
     a(f"Session start: `{budget.get('sessionStart', '—')}`")
     a("")
     a("---")
@@ -171,7 +171,7 @@ def render(state: dict) -> str:
     a("## AGENT RULES")
     a("")
     a("- MEMORY.md is **read-only** — write to `agent_state.json` instead")
-    a("- Hard ~35k token limit with compact procedure")
+    a("- Hard ~30k token limit with compact procedure")
     a("- Session memory: read MEMORY.md on start, archive + prune on end")
     a("- Terse bullets, no prose")
 

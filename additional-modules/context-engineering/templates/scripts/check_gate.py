@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""check_gate.py — blocks module switch if lint:architecture fails.
+"""check_gate.py — records phase transitions; optional lint when host project supports it.
 
 Usage:
     python scripts/check_gate.py --module <slug>
-    python scripts/check_gate.py --module ingest-router --update-state
+    python scripts/check_gate.py --module billing --update-state
 
 Rules:
-    - Must pass lint:architecture before allowing module transition.
-    - Optionally updates buildplan/agent_state.json with lint result.
+    - If package.json defines `lint:architecture`, runs it before allowing transition.
+    - Otherwise records the transition without lint (standalone context-engineering projects).
+    - Optionally updates buildplan/agent_state.json with gate result.
     - Exit 0 = gate passed, Exit 1 = gate blocked.
 
-Paths resolve relative to repo root (parent of scripts/).
+Paths resolve relative to the current working directory (project root).
 """
 
 import argparse
@@ -20,7 +21,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_REPO_ROOT = os.getcwd()
 
 
 def _resolve(path: str) -> str:
@@ -43,6 +44,18 @@ def save_state(path: str, state: dict) -> None:
     os.replace(tmp, resolved)
 
 
+def has_architecture_lint(repo_root: str) -> bool:
+    pkg_path = os.path.join(repo_root, "package.json")
+    if not os.path.isfile(pkg_path):
+        return False
+    try:
+        with open(pkg_path, "r", encoding="utf-8") as f:
+            pkg = json.load(f)
+    except json.JSONDecodeError:
+        return False
+    return "lint:architecture" in (pkg.get("scripts") or {})
+
+
 def run_lint(repo_root: str) -> tuple[int, str]:
     result = subprocess.run(
         ["npm", "run", "lint:architecture"],
@@ -55,12 +68,12 @@ def run_lint(repo_root: str) -> tuple[int, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Gate check — blocks module switch if lint fails"
+        description="Gate check — optional lint + module transition"
     )
     parser.add_argument(
         "--module",
         required=True,
-        help="Module slug to transition to",
+        help="Module or phase slug to transition to",
     )
     parser.add_argument(
         "--state",
@@ -70,47 +83,44 @@ def main() -> int:
     parser.add_argument(
         "--update-state",
         action="store_true",
-        help="Update agent_state.json with lint result",
+        help="Update agent_state.json with gate result",
     )
     args = parser.parse_args()
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.dirname(script_dir)
+    now = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    lint_enabled = has_architecture_lint(_REPO_ROOT)
 
     print(f"Gate check for module: {args.module}")
-    print(f"Running lint:architecture ...")
 
-    # Run lint from repo root (where package.json with scripts lives)
-    exit_code, output = run_lint(repo_root)
-    now = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    if lint_enabled:
+        print("Running lint:architecture ...")
+        exit_code, output = run_lint(_REPO_ROOT)
+        if exit_code != 0:
+            print(f"\n❌ GATE BLOCKED — lint:architecture failed", file=sys.stderr)
+            print(f"Output:\n{output}", file=sys.stderr)
+            if args.update_state:
+                try:
+                    state = load_state(args.state)
+                    state.setdefault("lint", {})
+                    state["lint"]["lastRun"] = now
+                    state["lint"]["lastResult"] = output[:500]
+                    state["lint"]["lastPass"] = False
+                    save_state(args.state, state)
+                except FileNotFoundError:
+                    print(f"State file not found: {args.state}", file=sys.stderr)
+            return 1
+        print("✅ lint:architecture clean")
+    else:
+        print("ℹ️  No lint:architecture in host project — gate records transition only")
 
-    if exit_code != 0:
-        print(f"\n❌ GATE BLOCKED — lint:architecture failed", file=sys.stderr)
-        print(f"Output:\n{output}", file=sys.stderr)
-
-        if args.update_state:
-            try:
-                state = load_state(args.state)
-                state.setdefault("lint", {})
-                state["lint"]["lastRun"] = now
-                state["lint"]["lastResult"] = output[:500]
-                state["lint"]["lastPass"] = False
-                save_state(args.state, state)
-                print(f"Updated: {args.state}", file=sys.stderr)
-            except FileNotFoundError:
-                print(f"State file not found: {args.state}", file=sys.stderr)
-
-        return 1
-
-    print(f"✅ GATE PASSED — lint:architecture clean")
-    print(f"Module transition to `{args.module}` is allowed.")
+    print(f"✅ GATE PASSED — transition to `{args.module}` is allowed.")
 
     if args.update_state:
         try:
             state = load_state(args.state)
             state.setdefault("lint", {})
             state["lint"]["lastRun"] = now
-            state["lint"]["lastResult"] = "passed"
+            state["lint"]["lastResult"] = "passed" if lint_enabled else "skipped_no_lint_script"
             state["lint"]["lastPass"] = True
             state["activeModule"]["slug"] = args.module
             state["activeModule"]["startedAt"] = now

@@ -69,7 +69,7 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
     DATE: today,
     BRANCH: branch,
     COMMIT: commit,
-    TOKEN_LIMIT: '35,000'
+    TOKEN_LIMIT: '30,000'
   };
   
   // Buildplan
@@ -122,9 +122,12 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
   }
   
   // Phase builder addon (optional)
-  if (options.phaseBuilder && phaseBuilderRoot) {
+  if (options.phaseBuilder && phaseBuilderRoot && existsSync(phaseBuilderRoot)) {
     log('Setting up phase_builder/');
     await copyDir(phaseBuilderRoot, resolve(projectRoot, 'phase_builder'), projectRoot);
+    log('');
+  } else if (options.phaseBuilder) {
+    log('⚠ phase_builder not available — skipping.');
     log('');
   }
   

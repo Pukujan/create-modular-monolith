@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/context-engineering",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "3-layer agent memory, hard state management, token budgeting, lint gates, and phase builder addon for any project.",
   "type": "module",
   "bin": {

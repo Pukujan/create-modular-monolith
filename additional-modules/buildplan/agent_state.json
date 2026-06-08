@@ -7,11 +7,8 @@
   "activeModule": {
     "slug": "none",
     "kind": "unknown",
-    "parentModule": "none",
     "startedAt": null,
     "phase": "planning",
-    "backendStatus": "not-started",
-    "frontendStatus": "not-started",
     "tasks": {
       "completed": [],
       "inProgress": [],
@@ -19,18 +16,10 @@
     }
   },
   "modules": {},
-  "architecture": {
-    "registryPath": "backend/src/shared/contracts/registry.json",
-    "registryVersion": "v001",
-    "miniModuleCount": 0,
-    "implemented": 0,
-    "planned": 0,
-    "gate": 0
-  },
   "lint": {
     "lastRun": null,
     "lastResult": null,
-    "lastPass": false
+    "lastPass": null
   },
   "sessions": {
     "currentId": null,
@@ -38,9 +27,9 @@
     "archive": []
   },
   "contextBudget": {
-    "hardLimit": 35000,
+    "hardLimit": 30000,
     "currentUsage": 0,
-    "remaining": 35000,
+    "remaining": 30000,
     "sessionStart": null
   }
 }

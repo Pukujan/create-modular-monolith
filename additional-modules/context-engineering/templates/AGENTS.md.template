@@ -13,31 +13,21 @@
 4. **Archive session** — on session end, run `python scripts/measure_context.py --archive-session --slug <slug>`
 
 ### Context Budget
-- **Hard limit:** 35,000 tokens per session
+- **Hard limit:** 30,000 tokens per session
 - **Enforced by:** `scripts/measure_context.py`
 - **Tracker:** `buildplan/context_budget.json`
-- **Check status:** `python scripts/measure_context.py --status`
+- **Check status:** `python scripts/measure_context.py --tokens <count>`
 
-### Module Gate
-- Before transitioning modules, run: `python scripts/check_gate.py`
-- Gate fails if `lint:architecture` has any errors
-- Blocks transition until lint passes
+### Phase Gate (optional)
+- Before transitioning work phases, run: `python scripts/check_gate.py --module <slug>`
+- If the host project defines `npm run lint:architecture`, the gate runs it; otherwise the gate records the transition only
 
 ### Session Archives
 - Location: `work-log/sessions/`
 - Format: `{YYYY-MM-DD}-{slug}.md`
 - Index: `work-log/sessions/INDEX.md`
-- Dev logs: `work-log/dev-logs/`
-
-## Lint Commands
-
-| Command | Checks |
-|---------|--------|
-| `lint:architecture` | Composite architecture checks |
-| `lint:boundaries` | Cross-module imports |
-| `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- Hard ~35k token limit with compact procedure
+- Hard ~30k token limit with compact procedure
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
