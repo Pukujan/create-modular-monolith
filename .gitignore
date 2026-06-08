@@ -1,4 +1,9 @@
 node_modules/
-agent_state.json
+# Scaffolded project files (not templates)
+!/additional-modules/buildplan/
+MEMORY.md
 *.pyc
 __pycache__/
+.venv/
+.pytest_cache/
+*.egg-info/

@@ -1,0 +1,12 @@
+---
+description: Study logs are user-only — agents must not read or write work-log/study-logs
+alwaysApply: true
+---
+
+# Study logs — user only
+
+**Never** read, write, list, or reference files under `work-log/study-logs/`.
+
+Study logs are personal portfolio / learning notes for the repo owner. They are **not** part of `planningPhase`, `plan:gate`, or agent workflows.
+
+Planning conversation audit → `work-log/planning/{NNN}_{date}_{time}_{slug}/audit-log.md` only.

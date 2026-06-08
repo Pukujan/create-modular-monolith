@@ -1,0 +1,6 @@
+{
+  "miniModule": "source-crawler",
+  "parentModule": "ai-ops",
+  "version": "v001",
+  "status": "implemented"
+}

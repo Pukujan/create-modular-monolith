@@ -1,0 +1,6 @@
+{
+  "miniModule": "applicability-agent",
+  "parentModule": "ai-ops",
+  "version": "v001",
+  "status": "implemented"
+}

@@ -1,0 +1,141 @@
+{
+  "version": "v001",
+  "parentModule": "ai-ops",
+  "description": "Mirrored pipeline agent / assigner mini-modules (frontend + backend under ai-ops).",
+  "infrastructureMiniModules": {
+    "frontend": [
+      "shared",
+      "state-machine",
+      "agent-runs",
+      "document-intelligence",
+      "rule-discovery",
+      "source-verification",
+      "human-review",
+      "memory"
+    ],
+    "backendParentLayers": ["services", "routes", "repositories", "events", "config", "tests"]
+  },
+  "miniModules": [
+    {
+      "slug": "run-orchestrator",
+      "kind": "orchestrator",
+      "label": "Run orchestrator",
+      "logicalAgentIds": [],
+      "pipelineStepIds": [],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "run-orchestrator", "status": "planned" }
+    },
+    {
+      "slug": "ingest-router",
+      "kind": "assigner",
+      "label": "Ingest router",
+      "logicalAgentIds": [],
+      "pipelineStepIds": ["ingest"],
+      "assignsTo": ["document-processor", "data-extractor"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "ingest-router", "status": "stub" }
+    },
+    {
+      "slug": "document-processor",
+      "kind": "worker",
+      "label": "Document processor",
+      "logicalAgentIds": ["agent_document_processor_v1"],
+      "pipelineStepIds": ["ingest"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "document-processor", "legacySlug": "ocr", "status": "partial" }
+    },
+    {
+      "slug": "data-extractor",
+      "kind": "worker",
+      "label": "Data extraction worker",
+      "logicalAgentIds": ["agent_data_extractor_v1"],
+      "pipelineStepIds": ["profile", "extract"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "data-extractor", "status": "stub" }
+    },
+    {
+      "slug": "audit-agent",
+      "kind": "worker",
+      "label": "Audit query",
+      "logicalAgentIds": ["agent_audit_query_v1"],
+      "pipelineStepIds": ["audit"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "audit-agent", "status": "stub" }
+    },
+    {
+      "slug": "planner-agent",
+      "kind": "worker",
+      "label": "Authority planner",
+      "logicalAgentIds": ["agent_planner_v1"],
+      "pipelineStepIds": ["planner"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "planner-agent", "status": "stub" }
+    },
+    {
+      "slug": "applicability-agent",
+      "kind": "worker",
+      "label": "Applicability research",
+      "logicalAgentIds": ["agent_applicability_v1"],
+      "pipelineStepIds": ["research"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "applicability-agent", "status": "stub" }
+    },
+    {
+      "slug": "source-discovery",
+      "kind": "worker",
+      "label": "Source discovery",
+      "logicalAgentIds": ["agent_source_discovery_v1"],
+      "pipelineStepIds": ["discovery"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-discovery", "status": "stub" }
+    },
+    {
+      "slug": "source-crawler",
+      "kind": "worker",
+      "label": "Source crawl & ingest",
+      "logicalAgentIds": [
+        "agent_source_index_v1",
+        "agent_source_ingest_v1"
+      ],
+      "pipelineStepIds": ["trusted", "ingest_src"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-crawler", "status": "stub" }
+    },
+    {
+      "slug": "source-verifier",
+      "kind": "worker",
+      "label": "Source verification",
+      "logicalAgentIds": ["agent_source_verification_v1"],
+      "pipelineStepIds": ["verify"],
+      "backend": { "status": "implemented", "manifest": "manifest.json" },
+      "frontend": { "slug": "source-verifier", "status": "stub" }
+    },
+    {
+      "slug": "relevance-agent",
+      "kind": "worker",
+      "label": "Relevance assessment",
+      "logicalAgentIds": ["agent_relevance_v1"],
+      "pipelineStepIds": ["relevance"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "relevance-agent", "status": "stub" }
+    },
+    {
+      "slug": "persist-agent",
+      "kind": "worker",
+      "label": "Persist worker",
+      "logicalAgentIds": ["agent_persist_v1"],
+      "pipelineStepIds": ["persist"],
+      "backend": { "status": "planned", "manifest": "manifest.json" },
+      "frontend": { "slug": "persist-agent", "status": "stub" }
+    },
+    {
+      "slug": "human-review",
+      "kind": "gate",
+      "label": "Human review gate",
+      "logicalAgentIds": ["human_review_gate"],
+      "pipelineStepIds": ["human"],
+      "backend": { "status": "orchestrated", "note": "Owned by run-orchestrator FSM, no separate worker folder" },
+      "frontend": { "slug": "human-review", "status": "partial" }
+    }
+  ]
+}
