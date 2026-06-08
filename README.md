@@ -20,7 +20,14 @@ npx @pukujan/context-engineering init --phase-builder
 ## Usage
 
 ```bash
-context-engineering init
+context-engineering init --phase-builder
+python3 scripts/measure_context.py --tokens 0 --start-session
+python3 scripts/render_memory.py
+```
+
+Re-run safely on existing projects (resolves `{{placeholders}}`, syncs scripts, renders MEMORY.md):
+
+```bash
 context-engineering init --phase-builder
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/context-engineering",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Standalone 3-layer agent memory: hard state, 30k token budget, session archives, and optional phase-builder addon. No scaffold or architecture contracts.",
   "type": "module",
   "bin": {

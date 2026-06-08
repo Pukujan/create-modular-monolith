@@ -9,18 +9,19 @@
 ### Workflow
 1. **Read `MEMORY.md` on session start** — restore project context
 2. **Edit `buildplan/agent_state.json`** — update state as you work
-3. **Regenerate `MEMORY.md`** — run `python scripts/render_memory.py` to update the view
-4. **Archive session** — on session end, run `python scripts/measure_context.py --archive-session --slug <slug>`
+3. **Regenerate `MEMORY.md`** — run `python3 scripts/render_memory.py`
+4. **Archive session** — run `python3 scripts/measure_context.py --archive-session --slug <slug> --tokens <count>`
 
 ### Context Budget
-- **Hard limit:** 30,000 tokens per session
-- **Enforced by:** `scripts/measure_context.py`
+- **Ceiling:** 30,000 tokens per session (warn-only — never aborts the agent)
+- **Tracked by:** `scripts/measure_context.py`
 - **Tracker:** `buildplan/context_budget.json`
-- **Check status:** `python scripts/measure_context.py --tokens <count>`
+- **Check status:** `python3 scripts/measure_context.py --status`
+- **Start session:** `python3 scripts/measure_context.py --tokens 0 --start-session`
 
 ### Phase Gate (optional)
-- Before transitioning work phases, run: `python scripts/check_gate.py --module <slug>`
-- If the host project defines `npm run lint:architecture`, the gate runs it; otherwise the gate records the transition only
+- Before transitioning work phases, run: `python3 scripts/check_gate.py --module <slug>`
+- Runs `lint:architecture` only when the host project defines it
 
 ### Session Archives
 - Location: `work-log/sessions/`
@@ -28,6 +29,6 @@
 - Index: `work-log/sessions/INDEX.md`
 
 ## Memory Rules
-- Hard ~30k token limit with compact procedure
+- ~30k token ceiling with warn-only procedure (compact + archive, do not stop work)
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
