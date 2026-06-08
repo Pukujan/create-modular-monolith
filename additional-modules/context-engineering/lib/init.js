@@ -61,42 +61,44 @@ function getGitInfo() {
 
 async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot, workLogRoot, options = {}) {
   log('🚀 Initializing context engineering...\n');
-  
+
   const { branch, commit } = getGitInfo();
   const today = new Date().toISOString().split('T')[0];
-  
+
   const vars = {
     DATE: today,
     BRANCH: branch,
     COMMIT: commit,
     TOKEN_LIMIT: '35,000'
   };
-  
+
+  const additionalModules = resolve(projectRoot, 'additional-modules');
+
   // Buildplan
-  const buildplanDir = resolve(projectRoot, 'buildplan');
-  if (await checkDir(buildplanDir, 'buildplan/')) {
-    log('Setting up buildplan/');
-    await copyDir(buildplanRoot, buildplanDir, projectRoot, vars);
+  const buildplanDir = resolve(additionalModules, 'buildplan');
+  if (await checkDir(buildplanDir, 'additional-modules/buildplan/')) {
+    log('Setting up additional-modules/buildplan/');
+    await copyDir(buildplanRoot, buildplanDir, additionalModules, vars);
     log('');
   }
-  
+
   // Scripts
-  const scriptsDir = resolve(projectRoot, 'scripts');
-  if (await checkDir(scriptsDir, 'scripts/')) {
-    log('Setting up scripts/');
-    await copyDir(resolve(templatesRoot, 'scripts'), scriptsDir, projectRoot);
+  const scriptsDir = resolve(additionalModules, 'scripts');
+  if (await checkDir(scriptsDir, 'additional-modules/scripts/')) {
+    log('Setting up additional-modules/scripts/');
+    await copyDir(resolve(templatesRoot, 'scripts'), scriptsDir, additionalModules);
     log('');
   }
-  
+
   // Work-log
-  const workLogDir = resolve(projectRoot, 'work-log');
-  if (await checkDir(workLogDir, 'work-log/')) {
-    log('Setting up work-log/');
-    await copyDir(workLogRoot, workLogDir, projectRoot);
+  const workLogDir = resolve(additionalModules, 'work-log');
+  if (await checkDir(workLogDir, 'additional-modules/work-log/')) {
+    log('Setting up additional-modules/work-log/');
+    await copyDir(workLogRoot, workLogDir, additionalModules);
     log('');
   }
-  
-  // AGENTS.md
+
+  // AGENTS.md (project root)
   const agentsMd = resolve(projectRoot, 'AGENTS.md');
   if (!existsSync(agentsMd)) {
     const template = await readFile(resolve(templatesRoot, 'AGENTS.md.template'), 'utf8');
@@ -107,8 +109,8 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
     log('⚠ AGENTS.md already exists. Run with --force to overwrite.');
     log('');
   }
-  
-  // MEMORY.md
+
+  // MEMORY.md (project root)
   const memoryMd = resolve(projectRoot, 'MEMORY.md');
   if (!existsSync(memoryMd)) {
     const template = await readFile(resolve(templatesRoot, 'MEMORY.md.template'), 'utf8');
@@ -120,21 +122,24 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
     log('⚠ MEMORY.md already exists. Run with --force to overwrite.');
     log('');
   }
-  
+
   // Phase builder addon (optional)
-  if (options.phaseBuilder && phaseBuilderRoot) {
+  if (options.phaseBuilder && phaseBuilderRoot && existsSync(phaseBuilderRoot)) {
     log('Setting up phase_builder/');
-    await copyDir(phaseBuilderRoot, resolve(projectRoot, 'phase_builder'), projectRoot);
+    await copyDir(phaseBuilderRoot, resolve(additionalModules, 'phase_builder'), additionalModules);
+    log('');
+  } else if (options.phaseBuilder) {
+    log('⚠ phase_builder not available — skipping.');
     log('');
   }
-  
+
   log('✅ Context engineering initialized!\n');
   log('Next steps:');
-  log('  1. Run: python scripts/measure_context.py --tokens 0 --start-session');
-  log('  2. Edit buildplan/agent_state.json for your project state');
-  log('  3. Run: python scripts/render_memory.py to regenerate MEMORY.md');
+  log('  1. Run: python additional-modules/scripts/measure_context.py --tokens 0 --start-session');
+  log('  2. Edit additional-modules/buildplan/agent_state.json for your project state');
+  log('  3. Run: python additional-modules/scripts/render_memory.py to regenerate MEMORY.md');
   if (options.phaseBuilder) {
-    log('  4. cd phase_builder && .venv/bin/pytest to run phase builder tests');
+    log('  4. cd additional-modules/phase_builder && .venv/bin/pytest to run phase builder tests');
   }
 }
 
