@@ -55,6 +55,11 @@ npm create @pukujan/modular-monolith@latest my-platform
 
 cd my-platform
 
+# Initialize context engineering (expands buildplan, work-log, scripts, and memory files)
+node additional-modules/context-engineering/bin/context-eng.js init
+# Optional: include phase builder
+# node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+
 # Install dependencies
 npm install --prefix backend && npm install --prefix frontend
 

@@ -62,11 +62,11 @@ if (existsSync(additionalModulesDir)) {
   for (const entry of readdirSync(additionalModulesDir)) {
     if (["phase-builder", "node_modules", "__pycache__"].includes(entry)) continue;
     const src = join(additionalModulesDir, entry);
-    const dest = join(target, entry);
-    if (statSync(src).isDirectory()) {
-      cpSync(src, dest, { recursive: true });
+    if (entry === "AGENTS.md" || entry === "MEMORY.md") {
+      copyFileSync(src, join(target, entry));
     } else {
-      copyFileSync(src, dest);
+      const additionalModulesTarget = join(target, "additional-modules");
+      cpSync(src, join(additionalModulesTarget, entry), { recursive: true });
     }
   }
 }
