@@ -59,7 +59,7 @@ function getGitInfo() {
   }
 }
 
-async function init(projectRoot, templatesRoot, phaseBuilderRoot, options = {}) {
+async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot, options = {}) {
   log('🚀 Initializing context engineering...\n');
   
   const { branch, commit } = getGitInfo();
@@ -76,7 +76,7 @@ async function init(projectRoot, templatesRoot, phaseBuilderRoot, options = {}) 
   const buildplanDir = resolve(projectRoot, 'buildplan');
   if (await checkDir(buildplanDir, 'buildplan/')) {
     log('Setting up buildplan/');
-    await copyDir(resolve(templatesRoot, 'buildplan'), buildplanDir, projectRoot, vars);
+    await copyDir(buildplanRoot, buildplanDir, projectRoot, vars);
     log('');
   }
   

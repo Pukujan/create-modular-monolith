@@ -4,14 +4,13 @@
   "description": "3-layer agent memory, hard state management, token budgeting, lint gates, and phase builder addon for any project.",
   "type": "module",
   "bin": {
-    "context-engineering": "bin/context-eng.js"
+    "context-engineering": "additional-modules/context-engineering/bin/context-eng.js"
   },
   "files": [
-    "context-eng/",
     "additional-modules/"
   ],
   "scripts": {
-    "init": "node bin/context-eng.js init"
+    "init": "node additional-modules/context-engineering/bin/context-eng.js init"
   },
   "keywords": [
     "context-engineering",
