@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phase-builder"
+version = "0.1.0"
+description = "Buildplan Context Control System — phase modules for state, budget, and gate enforcement"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["phase_builder*", "phase_builder.*"]
