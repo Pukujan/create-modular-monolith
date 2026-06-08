@@ -8,8 +8,8 @@ Usage:
     python scripts/measure_context.py --archive-session --slug <slug> --tokens <count>
 
 Rules:
-    - Ceiling: 30000 tokens (warn-only — always exits 0 so agents keep working).
-    - Warning at 20k; critical at 27k (90% of ceiling).
+    - Ceiling: 28000 tokens (warn-only — always exits 0 so agents keep working).
+    - Warning at 18k; critical at 25.2k (90% of ceiling).
     - Updates context_budget.json with current usage.
 
 Paths resolve relative to the current working directory (project root).
@@ -26,9 +26,9 @@ _REPO_ROOT = os.getcwd()
 DEFAULT_BUDGET = "buildplan/context_budget.json"
 DEFAULT_SESSIONS = "work-log/sessions"
 
-HARD_LIMIT = 30000
-WARN_THRESHOLD = 20000
-CRITICAL_THRESHOLD = 27000
+HARD_LIMIT = 28000
+WARN_THRESHOLD = 18000
+CRITICAL_THRESHOLD = 25200
 
 
 def _resolve(path: str) -> str:

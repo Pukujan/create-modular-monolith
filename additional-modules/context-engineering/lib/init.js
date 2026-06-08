@@ -104,7 +104,7 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
     DATE: today,
     BRANCH: branch,
     COMMIT: commit,
-    TOKEN_LIMIT: '30,000'
+    TOKEN_LIMIT: '28,000'
   };
 
   const buildplanDir = resolve(projectRoot, 'buildplan');
@@ -150,6 +150,22 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
   runRenderMemory(projectRoot);
   log('');
 
+  if (options.opencode) {
+    const opencodeDest = resolve(projectRoot, 'opencode.json');
+    const opencodeTemplate = resolve(templatesRoot, 'opencode.json.template');
+    if (!existsSync(opencodeTemplate)) {
+      log('⚠ opencode.json.template not found in package — skipping OpenCode config');
+      log('');
+    } else if (existsSync(opencodeDest) && !force) {
+      log('ℹ️  opencode.json already present (use --force to overwrite)');
+      log('');
+    } else {
+      log(`${force && existsSync(opencodeDest) ? 'Updating' : 'Creating'} opencode.json (OpenCode live compaction)`);
+      await copyFileWithSubstitution(opencodeTemplate, opencodeDest, projectRoot, vars);
+      log('');
+    }
+  }
+
   if (options.phaseBuilder && phaseBuilderRoot && existsSync(phaseBuilderRoot)) {
     const phaseDest = resolve(projectRoot, 'phase_builder');
     if ((await dirIsEmpty(phaseDest)) || force) {
@@ -171,8 +187,16 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
   log('  2. Edit buildplan/agent_state.json for your project');
   log('  3. python3 scripts/render_memory.py');
   log('  4. python3 scripts/measure_context.py --status');
+  let step = 5;
+  if (!options.opencode) {
+    log(`  ${step}. context-engineering init --opencode  (OpenCode users)`);
+    step += 1;
+  } else {
+    log(`  ${step}. Set provider model limits in opencode.json (see README)`);
+    step += 1;
+  }
   if (options.phaseBuilder) {
-    log('  5. cd phase-builder && python3 -m venv .venv && .venv/bin/pip install pytest && .venv/bin/pytest');
+    log(`  ${step}. cd additional-modules/phase-builder && python3 -m venv .venv && .venv/bin/pip install pytest && .venv/bin/pytest`);
   }
 }
 

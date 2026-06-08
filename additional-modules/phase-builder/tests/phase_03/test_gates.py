@@ -47,18 +47,18 @@ class TestTestGate:
 
 class TestBudgetGate:
     def test_pass_when_budget_ok(self):
-        gate_input = {"budget": {"usage": 20000, "limit": 35000}}
+        gate_input = {"budget": {"usage": 20000, "limit": 28000}}
         result = check_budget_gate(gate_input)
         assert result.status == "pass"
         assert result.name == "budget"
 
     def test_warn_when_budget_high(self):
-        gate_input = {"budget": {"usage": 30000, "limit": 35000}}
+        gate_input = {"budget": {"usage": 26000, "limit": 28000}}
         result = check_budget_gate(gate_input)
         assert result.status in ("pass", "warn")
 
     def test_warn_when_over_ceiling(self):
-        gate_input = {"budget": {"usage": 40000, "limit": 35000}}
+        gate_input = {"budget": {"usage": 29000, "limit": 28000}}
         result = check_budget_gate(gate_input)
         assert result.status in ("pass", "warn")
 
@@ -95,7 +95,7 @@ class TestEvaluateAllGates:
         }
         gate_input = {
             "tests": {"passed": True, "count": 42},
-            "budget": {"usage": 15000, "limit": 35000},
+            "budget": {"usage": 15000, "limit": 28000},
         }
         results = evaluate_all_gates(state, gate_input)
         assert all(r.status in ("pass", "warn") for r in results)
@@ -110,7 +110,7 @@ class TestEvaluateAllGates:
         }
         gate_input = {
             "tests": {"passed": True, "count": 42},
-            "budget": {"usage": 15000, "limit": 35000},
+            "budget": {"usage": 15000, "limit": 28000},
         }
         results = evaluate_all_gates(state, gate_input)
         assert any(r.status == "fail" for r in results)
@@ -126,7 +126,7 @@ class TestCanTransition:
         }
         gate_input = {
             "tests": {"passed": True, "count": 42},
-            "budget": {"usage": 15000, "limit": 35000},
+            "budget": {"usage": 15000, "limit": 28000},
         }
         ok, results = can_transition(state, gate_input)
         assert ok is True
@@ -140,7 +140,7 @@ class TestCanTransition:
         }
         gate_input = {
             "tests": {"passed": True, "count": 42},
-            "budget": {"usage": 15000, "limit": 35000},
+            "budget": {"usage": 15000, "limit": 28000},
         }
         ok, results = can_transition(state, gate_input)
         assert ok is False
@@ -154,7 +154,7 @@ class TestCanTransition:
         }
         gate_input = {
             "tests": {"passed": False, "count": 40},
-            "budget": {"usage": 15000, "limit": 35000},
+            "budget": {"usage": 15000, "limit": 28000},
         }
         ok, results = can_transition(state, gate_input)
         assert ok is False

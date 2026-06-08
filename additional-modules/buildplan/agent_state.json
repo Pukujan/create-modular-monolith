@@ -1,14 +1,17 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "{{DATE}}",
-  "branch": "{{BRANCH}}",
-  "latestCommit": "{{COMMIT}}",
+  "lastUpdated": "2026-06-08",
+  "branch": "main",
+  "latestCommit": "4849fe0",
   "projectDescription": "Describe your project here.",
   "activeModule": {
     "slug": "none",
     "kind": "unknown",
+    "parentModule": "none",
     "startedAt": null,
     "phase": "planning",
+    "backendStatus": "not-started",
+    "frontendStatus": "not-started",
     "tasks": {
       "completed": [],
       "inProgress": [],
@@ -16,10 +19,18 @@
     }
   },
   "modules": {},
+  "architecture": {
+    "registryPath": "backend/src/shared/contracts/registry.json",
+    "registryVersion": "v001",
+    "miniModuleCount": 0,
+    "implemented": 0,
+    "planned": 0,
+    "gate": 0
+  },
   "lint": {
     "lastRun": null,
     "lastResult": null,
-    "lastPass": null
+    "lastPass": false
   },
   "sessions": {
     "currentId": null,
@@ -27,9 +38,9 @@
     "archive": []
   },
   "contextBudget": {
-    "hardLimit": 30000,
+    "hardLimit": 28000,
     "currentUsage": 0,
-    "remaining": 30000,
+    "remaining": 28000,
     "sessionStart": null
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@pukujan/context-engineering",
-  "version": "2.1.1",
-  "description": "Standalone 3-layer agent memory: hard state, 30k token budget, session archives, and optional phase-builder addon. No scaffold or architecture contracts.",
+  "version": "2.2.0",
+  "description": "Standalone 3-layer agent memory: hard state, 28k warn-only token budget, session archives, OpenCode compaction, and optional phase-builder addon.",
   "type": "module",
   "bin": {
     "context-engineering": "additional-modules/context-engineering/bin/context-eng.js"
