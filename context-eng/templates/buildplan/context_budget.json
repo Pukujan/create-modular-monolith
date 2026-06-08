@@ -1,7 +1,7 @@
 {
-  "hardLimit": 24000,
+  "hardLimit": 35000,
   "currentUsage": 0,
-  "remaining": 24000,
+  "remaining": 35000,
   "sessionStart": null,
   "sessionEnd": null,
   "history": []

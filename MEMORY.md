@@ -23,7 +23,7 @@ Package CLI exposes `init` command. `lib/init.js` copies templates with `{{VAR}}
 - Templates use `{{DATE}}`, `{{BRANCH}}`, `{{COMMIT}}`, `{{TOKEN_LIMIT}}` substitution.
 
 ### Enforcement
-- `scripts/measure_context.py`: Hard 24k token limit, atomic writes, aborts with exit 1.
+- `scripts/measure_context.py`: Hard 35k token limit, atomic writes, aborts with exit 1.
 - `scripts/check_gate.py`: Runs `npm run lint:architecture` from repo root.
 - `scripts/render_memory.py`: Generates MEMORY.md from agent_state.json.
 
@@ -35,6 +35,6 @@ Index: `work-log/sessions/INDEX.md`
 (None yet)
 
 ## AGENT RULES
-- Hard 24000 token limit with compact procedure
+- Hard 35000 token limit with compact procedure
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
