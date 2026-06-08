@@ -1,20 +1,32 @@
 {
   "name": "@pukujan/context-engineering",
   "version": "2.1.0",
-  "description": "3-layer agent memory, hard state management, token budgeting, lint gates, and phase builder addon for any project.",
+  "description": "Standalone 3-layer agent memory: hard state, 30k token budget, session archives, and optional phase-builder addon. No scaffold or architecture contracts.",
   "type": "module",
   "bin": {
     "context-engineering": "additional-modules/context-engineering/bin/context-eng.js"
   },
+  "files": [
+    "additional-modules/buildplan",
+    "additional-modules/context-engineering",
+    "additional-modules/phase-builder",
+    "additional-modules/work-log",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
-    "init": "node additional-modules/context-engineering/bin/context-eng.js init"
+    "init": "node additional-modules/context-engineering/bin/context-eng.js init",
+    "prepublishOnly": "test -f additional-modules/context-engineering/bin/context-eng.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "context-engineering",
     "agent-memory",
     "token-budget",
     "state-management",
-    "lint-gates",
+    "phase-builder",
     "llm-agents"
   ],
   "author": "Pukujan",

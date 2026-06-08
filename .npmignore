@@ -7,13 +7,18 @@ __pycache__/
 node_modules/
 
 # Git and npm config
-.git
+.git/
 .gitignore
 .npmignore
 
-# Scaffolded project files at repo root only
+# Scaffolded project files at repo root only (not part of this package)
 /buildplan/
 /scripts/
 /work-log/
 /AGENTS.md
 /MEMORY.md
+/phase_builder/
+
+# IDE and OS
+.DS_Store
+*.log
