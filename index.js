@@ -3,7 +3,7 @@
  * npm create @pukujan/modular-monolith
  * Copies template/ into the target directory.
  */
-import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, readFileSync, statSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { createInterface } from "readline";
@@ -59,15 +59,21 @@ mkdirSync(target, { recursive: true });
 cpSync(templateDir, target, { recursive: true });
 copyFileSync(join(__dirname, "LICENSE"), join(target, "LICENSE"));
 if (existsSync(additionalModulesDir)) {
-  for (const entry of readdirSync(additionalModulesDir)) {
-    if (["phase-builder", "node_modules", "__pycache__"].includes(entry)) continue;
-    const src = join(additionalModulesDir, entry);
-    if (entry === "AGENTS.md" || entry === "MEMORY.md") {
-      copyFileSync(src, join(target, entry));
-    } else {
-      const additionalModulesTarget = join(target, "additional-modules");
-      cpSync(src, join(additionalModulesTarget, entry), { recursive: true });
+  const templatesRoot = join(additionalModulesDir, "context-engineering", "templates");
+  // Place AGENTS.md and MEMORY.md at project root (from templates)
+  for (const [name, template] of [["AGENTS.md", "AGENTS.md.template"], ["MEMORY.md", "MEMORY.md.template"]]) {
+    const tplPath = join(templatesRoot, template);
+    if (existsSync(tplPath)) {
+      const content = readFileSync(tplPath, "utf8");
+      writeFileSync(join(target, name), content);
     }
+  }
+  // Copy remaining additional-modules content
+  for (const entry of readdirSync(additionalModulesDir)) {
+    if (["phase-builder", "node_modules", "__pycache__", "AGENTS.md", "MEMORY.md"].includes(entry)) continue;
+    const src = join(additionalModulesDir, entry);
+    const additionalModulesTarget = join(target, "additional-modules");
+    cpSync(src, join(additionalModulesTarget, entry), { recursive: true });
   }
 }
 
