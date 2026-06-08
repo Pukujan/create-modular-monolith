@@ -5,20 +5,48 @@
   "latestCommit": "4849fe0",
   "projectDescription": "Describe your project here.",
   "activeModule": {
-    "slug": "none",
-    "kind": "unknown",
+    "slug": "control-platform",
+    "kind": "domain",
     "parentModule": "none",
-    "startedAt": null,
-    "phase": "planning",
-    "backendStatus": "not-started",
-    "frontendStatus": "not-started",
+    "startedAt": "2026-06-08",
+    "phase": "implementation",
+    "backendStatus": "scaffolded",
+    "frontendStatus": "scaffolded",
     "tasks": {
-      "completed": [],
+      "completed": [
+        "Phase 1: scaffold backend",
+        "Phase 1: scaffold frontend"
+      ],
       "inProgress": [],
-      "next": []
+      "next": [
+        "Phase 2: backend API routes",
+        "Phase 2: frontend components",
+        "Phase 2: integration tests"
+      ]
     }
   },
-  "modules": {},
+  "modules": {
+    "control-platform": {
+      "slug": "control-platform",
+      "kind": "domain",
+      "parentModule": "none",
+      "backendStatus": "scaffolded",
+      "frontendStatus": "scaffolded",
+      "phase": "implementation",
+      "tasks": {
+        "completed": [
+          "Phase 1: scaffold backend",
+          "Phase 1: scaffold frontend"
+        ],
+        "inProgress": [],
+        "next": [
+          "Phase 2: backend API routes",
+          "Phase 2: frontend components",
+          "Phase 2: integration tests"
+        ]
+      }
+    }
+  },
   "architecture": {
     "registryPath": "backend/src/shared/contracts/registry.json",
     "registryVersion": "v001",
