@@ -12,7 +12,7 @@ Version 2.5.0 introduces a **parent module / mini-module** architecture with a r
 
 **[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
 
-In short: the scaffold now ships with a pre-built `ai-ops` parent module containing 13 pipeline agent mini-modules and 8 infrastructure mini-modules. Each mini-module has enforced boundaries (barrel-only sibling imports, lint gates), a JSON registry, and a session memory system so agents survive context window limits.
+In short: the scaffold now includes a mini-modules architecture with enforced boundaries (barrel-only sibling imports, lint gates), a JSON registry, and a cross-session memory system so agents survive context window limits.
 
 ## The problem nobody warned you about
 
@@ -140,10 +140,10 @@ my-platform/
 ├── MEMORY.md                 ← Working memory (regenerated each session)
 ├── backend/src/
 │   ├── core/                 ← Module loader, server
-│   ├── modules/_reference/   ← Example health-check module
-│   ├── modules/model-condenser/
+│   ├── modules/_reference/   ← Example health-check module (only domain module)
+│   ├── modules/model-condenser/ ← Schema inventory tooling
 │   └── shared/               ← Contracts, agent-runtime, artifact paths
-├── frontend/src/core/ + modules/_reference/
+├── frontend/src/core/ + modules/_reference/  ← No pre-built product UI
 ├── additional-modules/
 │   ├── docs/architecture/    ← Contracts, guardrails, templates
 │   ├── file-exchange/        ← imports/ + exports/ (human ↔ agent handoff)
@@ -213,15 +213,11 @@ A single module can quickly grow to hundreds of files. When an AI agent loads a 
 Mini-modules split a parent module into small, single-responsibility units. Each mini-module has its own barrel (`index.js`), services, routes, and schema. Agents load only the one they need.
 
 ```
-backend/src/modules/ai-ops/                    ← parent module
-├── run-orchestrator/                          ← mini-module (pipeline)
-├── ingest-router/                             ← mini-module (pipeline)
-├── document-processor/                        ← mini-module (pipeline)
-├── data-extractor/                            ← mini-module (pipeline)
-├── ...                                        ← 12 pipeline mini-modules total
+backend/src/modules/my-parent-module/          ← parent module
+├── agent-alpha/                               ← mini-module
+├── agent-beta/                                ← mini-module
 ├── shared/                                    ← mini-module (infrastructure)
 ├── middleware/                                ← mini-module (infrastructure)
-├── ...                                        ← 8 infrastructure mini-modules total
 └── index.js                                   ← parent barrel, registers all
 ```
 
@@ -259,7 +255,7 @@ npx @pukujan/modular-monolith@latest my-project
 npx @pukujan/modular-monolith@c7ac6fb my-project
 ```
 
-Scaffolded projects include the full 3-layer memory system, registry scripts, and 20 pre-built mini-modules out of the box.
+Scaffolded projects include the full 3-layer memory system, registry scripts, and a clean `_reference` module — add your own domain modules with `npm run new:module`.
 
 **Post-scaffold init (required):**
 ```bash

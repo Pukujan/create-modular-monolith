@@ -1,17 +1,14 @@
-# Litigation Prompt Engineering v2
+# Modular Monolith Starter
 
-Product monolith for case filing, document ingest, prompts, and agent workflows.
-
-Express + React with architecture contracts, file-exchange, paired dev logs, and CI gates — developed in this repo only ([litigation-prompt-engineering-v2](https://github.com/Pukujan/litigation-prompt-engineering-v2)).
+Agent-first Express + React scaffold with architecture contracts, module boundaries, file-exchange, dev logs, and CI lint gates.
 
 ## Stack
 
 | Layer | Tech |
 | --- | --- |
-| Backend | Express, SQLite (`DATABASE_URL`), modular loaders |
-| Frontend | React + Vite |
-| Documents | `POST /api/documents/upload` — disk + SQL ([contract](docs/architecture/contracts/documentPersistence.contract.md)) |
-| Contracts | 9 registered IDs — [CONTRACTS_OVERVIEW](docs/architecture/CONTRACTS_OVERVIEW.md) |
+| Backend | Express, modular loader |
+| Frontend | React + Vite, registry-driven module routes |
+| Contracts | 8 registered IDs — [CONTRACTS_OVERVIEW](docs/architecture/CONTRACTS_OVERVIEW.md) |
 
 ## Quick start
 
@@ -20,6 +17,9 @@ npm install --prefix backend && npm install --prefix frontend
 
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+
+# Initialize context engineering (memory, buildplan, work-log scripts)
+node additional-modules/context-engineering/bin/context-eng.js init
 
 npm run test:ci
 ```
@@ -31,11 +31,10 @@ cd backend && npm run dev    # http://localhost:3001
 cd frontend && npm run dev   # http://localhost:5173
 ```
 
-Upload a document:
+## Add a module
 
 ```bash
-curl -X POST http://localhost:3001/api/documents/upload \
-  -F "file=@./path/to/note.txt"
+npm run new:module -- billing --label "Billing"
 ```
 
 ## Docs
@@ -44,8 +43,7 @@ curl -X POST http://localhost:3001/api/documents/upload \
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | Required for Cursor / automation |
 | [docs/architecture/CONTRACTS_OVERVIEW.md](docs/architecture/CONTRACTS_OVERVIEW.md) | Contract manifest |
-| [docs/documents/API.md](docs/documents/API.md) | Upload + read APIs |
-| [docs/API.md](docs/API.md) | Full HTTP registry |
+| [docs/API.md](docs/API.md) | HTTP endpoint registry |
 
 ## License
 

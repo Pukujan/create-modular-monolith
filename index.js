@@ -25,7 +25,7 @@ Docs: https://github.com/Pukujan/create-modular-monolith
   process.exit(targetArg ? 0 : 1);
 }
 
-const forceNoMiniModules = process.argv.includes("--no-mini-modules");
+const includeContextEngineering = !process.argv.includes("--no-memory");
 
 const target = resolve(process.cwd(), targetArg);
 
@@ -33,27 +33,6 @@ if (existsSync(target) && existsSync(join(target, "package.json"))) {
   console.error(`Target already exists and looks like a project: ${target}`);
   process.exit(1);
 }
-
-async function askMiniModules() {
-  if (forceNoMiniModules) return false;
-
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  console.log(`
-  Scaffolding options:
-    1) Mini-modules  (latest, default) — full pipeline agents + memory system
-    2) Lightweight   — base scaffold only
-
-`);
-  const answer = await new Promise((resolve) => {
-    rl.question("  Choose (1/2) [1]: ", (a) => {
-      rl.close();
-      resolve(a);
-    });
-  });
-  return answer.trim() === "" || answer.trim() === "1";
-}
-
-const includeMiniModules = await askMiniModules();
 
 mkdirSync(target, { recursive: true });
 cpSync(templateDir, target, { recursive: true });
@@ -77,19 +56,11 @@ if (existsSync(additionalModulesDir)) {
   }
 }
 
-if (!includeMiniModules) {
-  const backendAiOps = join(target, "backend/src/modules/ai-ops");
-  const frontendAiOps = join(target, "frontend/src/modules/ai-ops");
-
-  if (existsSync(backendAiOps)) rmSync(backendAiOps, { recursive: true });
-  if (existsSync(frontendAiOps)) rmSync(frontendAiOps, { recursive: true });
-}
-
 const REPO_URL = "https://github.com/Pukujan/create-modular-monolith";
 const NPM_URL = "https://www.npmjs.com/package/@pukujan/create-modular-monolith";
 
 console.log(`
-Created modular monolith at ${target} (mini-modules: ${includeMiniModules ? "included" : "skipped"})
+Created modular monolith at ${target}
 
 Next steps:
   cd ${targetArg}

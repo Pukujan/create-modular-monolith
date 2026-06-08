@@ -5,7 +5,7 @@ import { createAgentRuntime, validateAgentMachine } from "./createAgentRuntime.j
 const exampleMachine = {
   id: "example-assistant",
   version: "v001",
-  module: "documents",
+  module: "_reference",
   initial: "idle",
   states: {
     idle: { on: { START: "planning" } },

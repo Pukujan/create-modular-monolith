@@ -42,7 +42,7 @@ export function resolveArtifactPaths(repoRoot, env = process.env) {
 
   const inRepoFileExchange = join(repoRoot, "file-exchange");
   const inRepo = {
-    batches: join(repoRoot, "data/case-filing-ai/batches"),
+    batches: join(repoRoot, "data/batches"),
     fileExchange: inRepoFileExchange,
     fileExchangeImports: join(inRepoFileExchange, "imports"),
     fileExchangeExports: join(inRepoFileExchange, "exports"),

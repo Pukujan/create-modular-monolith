@@ -9,7 +9,7 @@ test("resolveArtifactPaths uses in-repo defaults without config", () => {
   const repoRoot = join(tmpdir(), "repo");
   const paths = resolveArtifactPaths(repoRoot, {});
   assert.equal(paths.artifactRoot, null);
-  assert.equal(paths.batches, join(repoRoot, "data", "case-filing-ai", "batches"));
+  assert.equal(paths.batches, join(repoRoot, "data", "batches"));
   assert.equal(paths.fileExchange, join(repoRoot, "file-exchange"));
 });
 
