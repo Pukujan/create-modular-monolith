@@ -3,13 +3,14 @@
  * npm create @pukujan/modular-monolith
  * Copies template/ into the target directory.
  */
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { createInterface } from "readline";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const templateDir = join(__dirname, "template");
+const additionalModulesDir = join(__dirname, "additional-modules");
 
 const targetArg = process.argv[2];
 if (!targetArg || targetArg === "--help" || targetArg === "-h") {
@@ -56,6 +57,19 @@ const includeMiniModules = await askMiniModules();
 
 mkdirSync(target, { recursive: true });
 cpSync(templateDir, target, { recursive: true });
+copyFileSync(join(__dirname, "LICENSE"), join(target, "LICENSE"));
+if (existsSync(additionalModulesDir)) {
+  for (const entry of readdirSync(additionalModulesDir)) {
+    if (["phase-builder", "node_modules", "__pycache__"].includes(entry)) continue;
+    const src = join(additionalModulesDir, entry);
+    const dest = join(target, entry);
+    if (statSync(src).isDirectory()) {
+      cpSync(src, dest, { recursive: true });
+    } else {
+      copyFileSync(src, dest);
+    }
+  }
+}
 
 if (!includeMiniModules) {
   const backendAiOps = join(target, "backend/src/modules/ai-ops");

@@ -1,0 +1,19 @@
+# Dev artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+node_modules/
+*.tsbuildinfo
+
+# Git and npm config
+.git/
+.gitignore
+.npmignore
+
+# IDE and OS
+.DS_Store
+*.log
+
+
