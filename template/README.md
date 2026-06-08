@@ -18,8 +18,10 @@ npm install --prefix backend && npm install --prefix frontend
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-# Initialize context engineering (memory, buildplan, work-log scripts)
-node additional-modules/context-engineering/bin/context-eng.js init
+# Finish context engineering (safe to re-run on pre-shipped scaffold)
+node additional-modules/context-engineering/bin/context-eng.js init --phase-builder
+python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
+python3 additional-modules/scripts/render_memory.py
 
 npm run test:ci
 ```

@@ -9,25 +9,24 @@
 ### Workflow
 1. **Read `MEMORY.md` on session start** — restore project context
 2. **Edit `additional-modules/buildplan/agent_state.json`** — update state as you work
-3. **Regenerate `MEMORY.md`** — run `python additional-modules/scripts/render_memory.py` to update the view
-4. **Archive session** — on session end, run `python additional-modules/scripts/measure_context.py --archive-session --slug <slug>`
+3. **Regenerate `MEMORY.md`** — run `python3 additional-modules/scripts/render_memory.py`
+4. **Archive session** — run `python3 additional-modules/scripts/measure_context.py --archive-session --slug <slug> --tokens <count>`
 
 ### Context Budget
-- **Hard limit:** 30,000 tokens per session
-- **Enforced by:** `additional-modules/scripts/measure_context.py`
+- **Ceiling:** 30,000 tokens per session (warn-only — never aborts the agent)
+- **Tracked by:** `additional-modules/scripts/measure_context.py`
 - **Tracker:** `additional-modules/buildplan/context_budget.json`
-- **Check status:** `python additional-modules/scripts/measure_context.py --status`
+- **Check status:** `python3 additional-modules/scripts/measure_context.py --status`
+- **Start session:** `python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session`
 
 ### Module Gate
-- Before transitioning modules, run: `python additional-modules/scripts/check_gate.py`
-- Gate fails if `lint:architecture` has any errors
-- Blocks transition until lint passes
+- Before transitioning modules, run: `python3 additional-modules/scripts/check_gate.py --module <slug>`
+- Gate runs `lint:architecture` when the host project defines it
 
 ### Session Archives
 - Location: `additional-modules/work-log/sessions/`
 - Format: `{YYYY-MM-DD}-{slug}.md`
 - Index: `additional-modules/work-log/sessions/INDEX.md`
-- Dev logs: `additional-modules/work-log/dev-logs/`
 
 ## Lint Commands
 
@@ -38,6 +37,6 @@
 | `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- Hard ~30k token limit with compact procedure
+- ~30k token ceiling with warn-only procedure (compact + archive, do not stop work)
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
