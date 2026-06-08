@@ -1,0 +1,19 @@
+# Dev artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+node_modules/
+
+# Git and npm config
+.git
+.gitignore
+.npmignore
+
+# Scaffolded project files at repo root only
+/buildplan/
+/scripts/
+/work-log/
+/AGENTS.md
+/MEMORY.md

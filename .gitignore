@@ -1,6 +1,6 @@
 node_modules/
-agent_state.json
-contextBudget.json
+# Scaffolded project files (not templates)
+!/additional-modules/buildplan/
 MEMORY.md
 *.pyc
 __pycache__/
