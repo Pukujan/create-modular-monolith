@@ -54,6 +54,6 @@ They are parallel — OpenCode does not call `measure_context.py` unless you run
 
 **Policy alignment:** 28k ceiling everywhere — compact around 25.2k (90%). Set `provider.<name>.models.<id>.limit.context` to **28672** (28k) in `opencode.json`; shipped `compaction.reserved: 3472` triggers compaction before the cap.
 
-**OpenCode discovery:** OpenCode loads `opencode.json` from the project root by default. Point it at this file with `OpenCode loads project-root `opencode.json` automatically when you run init --opencode`, 
+**OpenCode discovery:** OpenCode loads project-root `opencode.json` automatically when you run `context-engineering init --opencode`.
 
 **Avoid false "interrupted":** Do not send a new message while the agent is still running — OpenCode cancels the in-flight turn (`session.prompt cancel`).

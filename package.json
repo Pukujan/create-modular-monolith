@@ -1,6 +1,6 @@
 {
   "name": "@pukujan/context-engineering",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Standalone 3-layer agent memory: hard state, 28k warn-only token budget, session archives, OpenCode compaction, and optional phase-builder addon.",
   "type": "module",
   "bin": {
@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/Pukujan/create-modular-monolith/issues"
   },
-  "homepage": "https://github.com/Pukujan/create-modular-monolith#readme",
+  "homepage": "https://github.com/Pukujan/create-modular-monolith/tree/context-engineering#readme",
   "engines": {
     "node": ">=20",
     "python": ">=3.10"

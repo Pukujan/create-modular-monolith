@@ -12,6 +12,7 @@ Paths resolve relative to repo root (parent of scripts/).
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -31,6 +32,15 @@ def _resolve(path: str) -> str:
 def load_state(path: str) -> dict:
     with open(_resolve(path), "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def write_state_checksum(state_path: str) -> None:
+    resolved = _resolve(state_path)
+    checksum_path = os.path.join(os.path.dirname(resolved), "agent_state.sha256")
+    with open(resolved, "rb") as f:
+        digest = hashlib.sha256(f.read()).hexdigest()
+    with open(checksum_path, "w", encoding="utf-8") as f:
+        f.write(digest + "\n")
 
 
 def render(state: dict) -> str:
@@ -102,7 +112,9 @@ def render(state: dict) -> str:
     a("## MODULE STATUS")
     a("")
     if arch:
-        a(f"Registry: `{arch.get('registryPath', '—')}` (v{arch.get('registryVersion', '?')})")
+        registry = arch.get('registryPath') or '—'
+        version = arch.get('registryVersion') or '?'
+        a(f"Registry: `{registry}` (v{version})")
         a(f"Total: {arch.get('miniModuleCount', '?')} "
           f"| Implemented: {arch.get('implemented', '?')} "
           f"| Planned: {arch.get('planned', '?')} "
@@ -211,6 +223,7 @@ def main() -> int:
             os.makedirs(out_dir, exist_ok=True)
         with open(resolved, "w", encoding="utf-8") as f:
             f.write(md)
+        write_state_checksum(args.state)
         print(f"Written: {args.out} (→ {resolved})")
 
     return 0

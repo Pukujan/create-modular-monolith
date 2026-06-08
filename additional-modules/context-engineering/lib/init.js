@@ -1,6 +1,7 @@
 import { copyFile, mkdir, readFile, writeFile, readdir } from 'fs/promises';
 import { resolve, relative } from 'path';
 import { existsSync } from 'fs';
+import { createHash } from 'crypto';
 import { execSync, spawnSync } from 'child_process';
 
 const SCRIPT_NAMES = ['measure_context.py', 'render_memory.py', 'check_gate.py'];
@@ -63,6 +64,40 @@ async function resolvePlaceholdersInFile(filePath, vars, labelRoot) {
   return true;
 }
 
+const CONTEXT_BUDGET_THRESHOLDS = {
+  warningAt: 22000,
+  compactAt: 24000,
+  stopAt: 27000,
+  lastCompactedAt: null,
+  compactionStrategy: 'summarize completed work, preserve current phase, target files, failing tests, blockers'
+};
+
+async function patchContextBudgetThresholds(filePath, labelRoot) {
+  if (!existsSync(filePath)) return;
+  const budget = JSON.parse(await readFile(filePath, 'utf8'));
+  let changed = false;
+  for (const [key, value] of Object.entries(CONTEXT_BUDGET_THRESHOLDS)) {
+    if (!(key in budget)) {
+      budget[key] = value;
+      changed = true;
+    }
+  }
+  if (changed) {
+    await writeFile(filePath, JSON.stringify(budget, null, 2) + '\n');
+    log(`  ✓ patched compaction thresholds in ${relative(labelRoot, filePath)}`);
+  }
+}
+
+async function writeAgentStateChecksum(buildplanDir, labelRoot) {
+  const statePath = resolve(buildplanDir, 'agent_state.json');
+  const checksumPath = resolve(buildplanDir, 'agent_state.sha256');
+  if (!existsSync(statePath)) return;
+  const content = await readFile(statePath);
+  const hash = createHash('sha256').update(content).digest('hex');
+  await writeFile(checksumPath, `${hash}\n`);
+  log(`  ✓ wrote ${relative(labelRoot, checksumPath)}`);
+}
+
 async function syncScripts(templatesRoot, scriptsDir, labelRoot) {
   const srcDir = resolve(templatesRoot, 'scripts');
   await mkdir(scriptsDir, { recursive: true });
@@ -122,6 +157,9 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
     log('');
   }
 
+  await patchContextBudgetThresholds(resolve(buildplanDir, 'context_budget.json'), projectRoot);
+  await writeAgentStateChecksum(buildplanDir, projectRoot);
+
   log('Syncing scripts/ (always updates Python tooling)');
   await syncScripts(templatesRoot, scriptsDir, projectRoot);
   log('');
@@ -164,6 +202,9 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
       await copyFileWithSubstitution(opencodeTemplate, opencodeDest, projectRoot, vars);
       log('');
     }
+  } else if (!existsSync(resolve(projectRoot, 'opencode.json'))) {
+    log('ℹ️  No opencode.json at project root — run `context-engineering init --opencode` for live compaction');
+    log('');
   }
 
   if (options.phaseBuilder && phaseBuilderRoot && existsSync(phaseBuilderRoot)) {

@@ -20,8 +20,8 @@
   },
   "modules": {},
   "architecture": {
-    "registryPath": "backend/src/shared/contracts/registry.json",
-    "registryVersion": "v001",
+    "registryPath": null,
+    "registryVersion": null,
     "miniModuleCount": 0,
     "implemented": 0,
     "planned": 0,

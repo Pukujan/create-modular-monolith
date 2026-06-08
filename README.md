@@ -4,6 +4,23 @@ Standalone npm package for agent memory, hard state management, **28k warn-only*
 
 No Express/React scaffold, no architecture contracts — use [@pukujan/create-modular-monolith](https://github.com/Pukujan/create-modular-monolith) on `main` for the full modular monolith.
 
+## What's new in 2.2.1: compaction thresholds, checksums, OpenCode fix
+
+Version 2.2.1 ports the same fixes from create-modular-monolith 2.6.4, adapted for standalone root-level paths:
+
+- `context_budget.json` includes `warningAt` / `compactAt` / `stopAt` thresholds and a compaction strategy
+- `init` writes and patches `agent_state.sha256`; `render_memory.py` refreshes the checksum on every render
+- Fixed broken OpenCode discovery text in `AGENTS.md`
+- `init --opencode` writes `opencode.json` to the **project root** (OpenCode auto-discovery — no symlink needed)
+- Re-run `init` patches missing thresholds on existing projects; warns when `opencode.json` is absent
+- Standalone `agent_state.json` no longer references monolith-only registry paths
+
+```bash
+npm install -g @pukujan/context-engineering@2.2.1
+# or
+npx @pukujan/context-engineering@2.2.1 init --phase-builder --opencode
+```
+
 ## Install
 
 ```bash
@@ -40,7 +57,8 @@ Copies templates into your **project root** with variable substitution (`{{DATE}
 | `AGENTS.md` | Agent rules and memory workflow |
 | `MEMORY.md` | Read-only session view (regenerated) |
 | `buildplan/agent_state.json` | Hard state source of truth |
-| `buildplan/context_budget.json` | 28k token budget tracker (warn-only) |
+| `buildplan/agent_state.sha256` | Integrity checksum (auto-written by init/render) |
+| `buildplan/context_budget.json` | 28k token budget tracker with compaction thresholds (warn-only) |
 | `scripts/measure_context.py` | Token budget warnings — never aborts |
 | `scripts/render_memory.py` | MEMORY.md generator |
 | `scripts/check_gate.py` | Phase transition gate (optional lint if host has `lint:architecture`) |
@@ -85,6 +103,14 @@ The monolith embeds this package under `additional-modules/context-engineering/`
 - Python >= 3.10
 
 ## Changelog
+
+### 2.2.1 (2026-06-08)
+
+- `context_budget.json` includes warning/compact/stop thresholds and compaction strategy
+- Fixed broken OpenCode discovery text in `AGENTS.md` template
+- Re-run `init` patches missing compaction thresholds and writes `agent_state.sha256`
+- `render_memory.py` updates checksum when regenerating `MEMORY.md`
+- Standalone `agent_state.json` no longer references monolith-only registry paths
 
 ### 2.2.0 (2026-06-08)
 
