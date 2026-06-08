@@ -6,7 +6,6 @@
   "bin": {
     "context-engineering": "additional-modules/context-engineering/bin/context-eng.js"
   },
- 
   "scripts": {
     "init": "node additional-modules/context-engineering/bin/context-eng.js init"
   },

@@ -59,7 +59,7 @@ function getGitInfo() {
   }
 }
 
-async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot, options = {}) {
+async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot, workLogRoot, options = {}) {
   log('🚀 Initializing context engineering...\n');
   
   const { branch, commit } = getGitInfo();
@@ -92,7 +92,7 @@ async function init(projectRoot, templatesRoot, buildplanRoot, phaseBuilderRoot,
   const workLogDir = resolve(projectRoot, 'work-log');
   if (await checkDir(workLogDir, 'work-log/')) {
     log('Setting up work-log/');
-    await copyDir(resolve(templatesRoot, 'work-log'), workLogDir, projectRoot);
+    await copyDir(workLogRoot, workLogDir, projectRoot);
     log('');
   }
   
