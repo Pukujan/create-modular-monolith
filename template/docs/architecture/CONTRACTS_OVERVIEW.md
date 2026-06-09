@@ -8,6 +8,8 @@
 | **History** | [contracts/changelog.jsonl](./contracts/changelog.jsonl) |
 | **Paths on disk** | [REPO_ARTIFACT_LAYOUT.md](./REPO_ARTIFACT_LAYOUT.md) |
 | **Lint** | `npm run lint:contracts` · `npm run lint:repo-artifacts` |
+| **Agent workflow** | [AGENT_WORKFLOW_CONTRACTS.md](./AGENT_WORKFLOW_CONTRACTS.md) |
+| **Data handoff** | [DATA_HANDOFF_CONTRACTS.md](./DATA_HANDOFF_CONTRACTS.md) |
 
 ---
 
@@ -120,7 +122,6 @@ These entries are registered in [manifest.json](./contracts/manifest.json):
 | **apiDocumentationRegistry** | v001 | `docs/API.md`, active/stub/deprecated routes |
 | **documentPersistence** | v001 | Runtime uploads (`data/uploads/`) + DB tables; not file-exchange |
 | **moduleAgentStateMachine** | v001 | Per-module agent FSM controller + shared runtime |
-| **pipelineAgentMiniModules** | v001 | Mirrored frontend/backend pipeline agent + assigner mini-modules under `ai-ops` |
 | **asyncJobQueue** | v001 | BullMQ + Redis for background jobs (SQL remains source of truth) |
 
 Per-contract detail: follow the `doc` link in [manifest.json](./contracts/manifest.json).
@@ -151,6 +152,8 @@ Domain-specific contracts (e.g. case-filing batch layout, pipeline versions) bel
 
 | Doc | Scope |
 |-----|--------|
+| [AGENT_WORKFLOW_CONTRACTS.md](./AGENT_WORKFLOW_CONTRACTS.md) | Handoff contracts, tiny phase packets, root layout discipline |
+| [DATA_HANDOFF_CONTRACTS.md](./DATA_HANDOFF_CONTRACTS.md) | Repo handoff artifacts, future DB-backed state, manifests |
 | [ARCHITECTURE_GUARDRAILS.md](./ARCHITECTURE_GUARDRAILS.md) | Module boundaries, loader, lint:boundaries |
 | [MODULE_INTERNAL_CONTRACT.md](./MODULE_INTERNAL_CONTRACT.md) | Inside one module (routes, services, prompts) |
 | [API_DOCUMENTATION_CONTRACT.md](./API_DOCUMENTATION_CONTRACT.md) | How to maintain `docs/API.md` |

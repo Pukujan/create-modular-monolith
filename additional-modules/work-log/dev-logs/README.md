@@ -63,7 +63,6 @@ Agents should read the **JSON** first when resuming work; humans read **markdown
 | Folder | Audience | Content |
 |--------|----------|---------|
 | **handoffs/** | Implementers | Spec — what to build |
-| **study-docs/** | You + recruiters | Why — planning conversation |
 | **dev-logs/** | You + agents + reviewers | What landed — audit per push |
 
 ## vs `docs/DEVLOG_V2.md`

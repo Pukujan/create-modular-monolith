@@ -41,6 +41,21 @@
 - Session memory: read MEMORY.md on start, archive + prune on end
 - Terse bullets, no prose
 
+## Cache-Stable Prompt Rules
+- Keep stable project rules and architecture grounding above volatile task details.
+- Do not place timestamps, token counts, random IDs, branch names, commit hashes, command output, or generated status blocks before stable instructions.
+- Keep normal requests under 8k tokens and debug/error-log requests under 12k tokens whenever possible.
+- Read the minimum files needed for the current phase; summarize old state instead of repasting it.
+- Put changing task details, logs, file excerpts, and test output near the bottom of prompts or handoffs.
+
+## Architecture Grounding
+- Start from `additional-modules/docs/architecture/CONTRACTS_OVERVIEW.md` when a change touches module shape or install layout.
+- Use `additional-modules/docs/architecture/MODULE_INTERNAL_CONTRACT.md` for parent modules, page/feature mini-modules, barrel-only imports, and layer boundaries.
+- Use `additional-modules/docs/architecture/ARCHITECTURE_GUARDRAILS.md` for boundary lint behavior and cross-module import rules.
+- Use `additional-modules/docs/architecture/contracts/moduleAgentStateMachine.contract.md` only when a module owns FSM-driven agents, persistence, or route orchestration.
+- Use `additional-modules/docs/architecture/contracts/planningPhase.contract.md` for planning artifacts and phase gates.
+- Treat `additional-modules/buildplan/agent_state.json` and `MEMORY.md` as the memory/state pair, with `AGENTS.md` as the cache-stable prompt guide.
+
 ## OpenCode vs context-engineering (two systems)
 
 | Layer | Enforcer | What it does |

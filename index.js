@@ -11,6 +11,21 @@ import { createInterface } from "readline";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const templateDir = join(__dirname, "template");
 const additionalModulesDir = join(__dirname, "additional-modules");
+const phaseBuilderSourceDir = join(additionalModulesDir, "phase-builder");
+const templateInfraDirs = ["docs", "file-exchange", "scripts", "work-log"];
+
+function copyPhaseBuilderAddon(sourceDir, targetDir) {
+  cpSync(sourceDir, targetDir, {
+    recursive: true,
+    filter: (src) => {
+      const normalized = src.replace(/\\/g, "/");
+      const parts = normalized.split("/");
+      return !parts.includes(".venv") &&
+        !parts.includes(".pytest_cache") &&
+        !parts.includes("__pycache__");
+    }
+  });
+}
 
 const targetArg = process.argv[2];
 if (!targetArg || targetArg === "--help" || targetArg === "-h") {
@@ -35,9 +50,28 @@ if (existsSync(target) && existsSync(join(target, "package.json"))) {
 }
 
 mkdirSync(target, { recursive: true });
-cpSync(templateDir, target, { recursive: true });
+cpSync(templateDir, target, {
+  recursive: true,
+  filter: (src) => {
+    const relative = src.startsWith(templateDir)
+      ? src.slice(templateDir.length + 1)
+      : src;
+    const [topLevel] = relative.split(/[\\/]/);
+    return !templateInfraDirs.includes(topLevel);
+  }
+});
 copyFileSync(join(__dirname, "LICENSE"), join(target, "LICENSE"));
 if (existsSync(additionalModulesDir)) {
+  const additionalModulesTarget = join(target, "additional-modules");
+  mkdirSync(additionalModulesTarget, { recursive: true });
+
+  for (const dir of templateInfraDirs) {
+    const src = join(templateDir, dir);
+    if (existsSync(src)) {
+      cpSync(src, join(additionalModulesTarget, dir), { recursive: true });
+    }
+  }
+
   const templatesRoot = join(additionalModulesDir, "context-engineering", "templates");
   // Place AGENTS.md and MEMORY.md at project root (from templates)
   for (const [name, template] of [["AGENTS.md", "AGENTS.md.template"], ["MEMORY.md", "MEMORY.md.template"]]) {
@@ -47,11 +81,13 @@ if (existsSync(additionalModulesDir)) {
       writeFileSync(join(target, name), content);
     }
   }
+  if (existsSync(phaseBuilderSourceDir)) {
+    copyPhaseBuilderAddon(phaseBuilderSourceDir, join(additionalModulesTarget, "phase-builder"));
+  }
   // Copy remaining additional-modules content
   for (const entry of readdirSync(additionalModulesDir)) {
     if (["phase-builder", "node_modules", "__pycache__", "AGENTS.md", "MEMORY.md"].includes(entry)) continue;
     const src = join(additionalModulesDir, entry);
-    const additionalModulesTarget = join(target, "additional-modules");
     cpSync(src, join(additionalModulesTarget, entry), { recursive: true });
   }
 }

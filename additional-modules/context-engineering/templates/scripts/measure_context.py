@@ -5,7 +5,6 @@ Usage:
     python additional-modules/scripts/measure_context.py --tokens <current_count>
     python additional-modules/scripts/measure_context.py --status
     python additional-modules/scripts/measure_context.py --tokens 0 --start-session
-    python additional-modules/scripts/measure_context.py --archive-session --slug <slug> --tokens <count>
 
 Rules:
     - Ceiling: 28000 tokens (warn-only — always exits 0 so agents keep working).
@@ -24,8 +23,6 @@ from datetime import datetime, timezone
 _REPO_ROOT = os.getcwd()
 
 DEFAULT_BUDGET = "additional-modules/buildplan/context_budget.json"
-DEFAULT_SESSIONS = "additional-modules/work-log/sessions"
-
 HARD_LIMIT = 28000
 WARN_THRESHOLD = 18000
 CRITICAL_THRESHOLD = 25200
@@ -76,24 +73,6 @@ def print_status(budget: dict) -> None:
         print(f"Session ended: {budget['sessionEnd']}")
 
 
-def archive_session(slug: str, usage: int, budget_path: str) -> str:
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    sessions_dir = _resolve(DEFAULT_SESSIONS)
-    os.makedirs(sessions_dir, exist_ok=True)
-    filename = f"{today}-{slug}.md"
-    path = os.path.join(sessions_dir, filename)
-    now = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
-    body = (
-        f"# Session archive — {today}-{slug}\n\n"
-        f"- **Archived:** {now}\n"
-        f"- **Peak usage:** {usage:,} tokens\n"
-        f"- **Budget file:** `{budget_path}`\n"
-    )
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(body)
-    return path
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Measure context budget — warn-only, never aborts agents"
@@ -102,8 +81,6 @@ def main() -> int:
     parser.add_argument("--budget", default=DEFAULT_BUDGET, help="Path to context_budget.json")
     parser.add_argument("--start-session", action="store_true", help="Record session start timestamp")
     parser.add_argument("--end-session", action="store_true", help="Record session end in budget history")
-    parser.add_argument("--archive-session", action="store_true", help="Write work-log/sessions/{date}-{slug}.md")
-    parser.add_argument("--slug", default="session", help="Session slug for --archive-session")
     parser.add_argument("--status", action="store_true", help="Print budget status and exit")
     args = parser.parse_args()
 
@@ -136,24 +113,18 @@ def main() -> int:
     budget["currentUsage"] = usage
     budget["remaining"] = remaining
 
-    if args.end_session or args.archive_session:
+    if args.end_session:
         budget["sessionEnd"] = now
         entry = {
             "endedAt": now,
             "peakUsage": usage,
-            "reason": "archive_session" if args.archive_session else "manual_end",
+            "reason": "manual_end",
         }
-        if args.archive_session:
-            entry["slug"] = args.slug
         budget.setdefault("history", []).append(entry)
 
     save_budget(args.budget, budget)
 
-    if args.archive_session:
-        archive_path = archive_session(args.slug, usage, args.budget)
-        print(f"Archived session: {archive_path}")
-
-    if args.end_session and not args.archive_session:
+    if args.end_session:
         print(f"Session ended: {now}")
         print(f"Peak usage: {usage:,} / {limit:,} tokens")
 
@@ -161,8 +132,7 @@ def main() -> int:
 
     if usage >= HARD_LIMIT:
         print(f"\n🔴 CRITICAL: {usage:,} / {limit:,} tokens ({pct:.0f}%)", file=sys.stderr)
-        print("   At or above ceiling — compact context and archive the session soon.", file=sys.stderr)
-        print("   Run: python additional-modules/scripts/measure_context.py --archive-session --slug <topic> --tokens <count>", file=sys.stderr)
+        print("   At or above ceiling — compact context soon.", file=sys.stderr)
     elif usage >= CRITICAL_THRESHOLD:
         print(f"🔴 CRITICAL: {usage:,} / {limit:,} tokens ({pct:.0f}%)")
         print(f"   Remaining: {remaining:,} — compact context soon.")

@@ -11,8 +11,11 @@ This folder describes the **modular monolith platform starter** and how **archit
 | [Starter pack](./STARTER_PACK.md) | What ships in the repo, how to run it, and how to add modules |
 | [Architecture guardrails](./architecture/ARCHITECTURE_GUARDRAILS.md) | Module contracts, boundaries, naming, and how enforcement works |
 | [Module internal contract](./architecture/MODULE_INTERNAL_CONTRACT.md) | MVC layers, prompts, evals, tests inside each feature module |
+| [Agent workflow contracts](./architecture/AGENT_WORKFLOW_CONTRACTS.md) | Handoff packets, root layout, and tiny phase context |
+| [Data handoff contracts](./architecture/DATA_HANDOFF_CONTRACTS.md) | Repo handoff artifacts, manifests, and future DB-backed state |
 | [Evals, regression, and CI gates](./architecture/EVAL_AND_CI.md) | Golden evals, `test:evals`, GitHub Actions gates |
 | [Publishing the CLI](./PUBLISHING.md) | Release `@pukujan/create-modular-monolith` to npm |
+| [Workout module contracts](./workout/README.md) | Workout API, data contract, and persistence handoff rules |
 | [Case Filing AI starter](./case-filing-ai/README.md) | Domain blueprint, module split, pipeline, guardrails, and DB schema |
 
 Canonical repository: [https://github.com/Pukujan/litigation-prompt-engineering](https://github.com/Pukujan/litigation-prompt-engineering)

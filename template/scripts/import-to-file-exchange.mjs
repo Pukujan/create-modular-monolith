@@ -3,8 +3,9 @@
  * Copy an inbound bundle into file-exchange/imports/{UTC-stamp}/
  * Usage: node scripts/import-to-file-exchange.mjs /path/to/bundle [optional-stamp]
  */
+import { realpathSync } from "fs";
 import { cp, mkdir, access, rm } from "fs/promises";
-import { join, basename, dirname, resolve, isAbsolute, relative } from "path";
+import { join, basename, dirname, resolve, isAbsolute, sep } from "path";
 import { fileURLToPath } from "url";
 import { formatExchangeTimestamp } from "../backend/src/shared/utils/formatExchangeTimestamp.js";
 import { resolveArtifactPaths } from "../backend/src/shared/config/resolveArtifactPaths.js";
@@ -13,16 +14,18 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** @param {string} child @param {string} root */
 function isInside(child, root) {
-  const rel = relative(resolve(root), resolve(child));
-  return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
+  const normalizedRoot = normalizePath(root);
+  const normalizedChild = normalizePath(child);
+  const rootPrefix = normalizedRoot.endsWith(sep) ? normalizedRoot : `${normalizedRoot}${sep}`;
+  return normalizedChild === normalizedRoot || normalizedChild.startsWith(rootPrefix);
 }
 
-/** Remove inbound bundle from repo root after import (file-exchange contract). */
-function shouldRemoveSourceAfterImport(absSource, importsRoot) {
-  if (!isInside(absSource, repoRoot)) return false;
-  if (isInside(absSource, importsRoot)) return false;
-  if (isInside(absSource, join(repoRoot, "file-exchange/exports"))) return false;
-  return true;
+function normalizePath(path) {
+  try {
+    return realpathSync(resolve(path));
+  } catch {
+    return resolve(path);
+  }
 }
 
 async function main() {
@@ -36,6 +39,9 @@ async function main() {
   const { fileExchangeImports } = resolveArtifactPaths(repoRoot);
   const dest = join(fileExchangeImports, stamp);
   const absSource = isAbsolute(source) ? resolve(source) : resolve(process.cwd(), source);
+  const repoRootResolved = normalizePath(repoRoot);
+  const importsRoot = normalizePath(fileExchangeImports);
+  const exportsRoot = normalizePath(join(repoRoot, "file-exchange/exports"));
 
   try {
     await access(absSource);
@@ -52,7 +58,12 @@ async function main() {
   console.log(`Imported → ${dest}/${folderName}`);
   console.log(`Stamp: ${stamp} — use for ingest scripts or paths under this import folder.`);
 
-  if (shouldRemoveSourceAfterImport(absSource, fileExchangeImports)) {
+  const removeSource =
+    isInside(absSource, repoRootResolved) &&
+    !isInside(absSource, importsRoot) &&
+    !isInside(absSource, exportsRoot);
+
+  if (removeSource) {
     await rm(absSource, { recursive: true, force: true });
     console.log(`Removed source from repo (contract): ${absSource}`);
   }

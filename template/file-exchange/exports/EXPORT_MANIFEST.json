@@ -31,7 +31,6 @@
       "verify-dev-log.mjs",
       "plan-finalize.mjs",
       "plan-gate.mjs",
-      "lint-pipeline-agent-mini-modules.mjs",
       "import-to-file-exchange.mjs",
       "resolve-import-stamp.mjs",
       "export-consolidated-models.mjs",

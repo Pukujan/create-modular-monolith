@@ -24,9 +24,7 @@
     "finalize": "scripts/plan-finalize.mjs",
     "gate": "scripts/plan-gate.mjs",
     "artifacts": "scripts/lib/plan-artifacts.mjs",
-    "studyLogCommand": ".agents/commands/planning-study-log.md",
     "planPackageCommand": ".agents/commands/planning-plan-package.md",
-    "studyDocsDir": "work-log/study-docs",
     "planningDir": "work-log/planning"
   },
   "prePushDevLog": {

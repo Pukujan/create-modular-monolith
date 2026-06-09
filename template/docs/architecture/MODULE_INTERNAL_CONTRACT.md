@@ -76,38 +76,31 @@ The layer linter (`npm run lint:layers`) rejects imports that skip layers or cre
 
 `index.js` is the only composition root and may wire everything.
 
-### Backend agent mini-modules (under `ai-ops/`)
+### Backend parent modules and mini-modules
 
-Agent workers and orchestrators are **mini-modules inside the ai-ops parent** — same barrel rules as frontend workspace modules. The parent owns run persistence and the shared FSM runner; agents are loaded via `services/agent-registry.service.js`.
-
-```text
-backend/src/modules/ai-ops/
-├── index.js                    ← /api/ai-ops mount, agent runner wiring
-├── services/                   ← agent-registry, agent-runner, health
-├── repositories/               ← agent_runs persistence
-├── rule-discovery-run/         ← pipeline orchestrator (calls worker agents)
-├── ocr-agent/                  ← OCR worker (classify + vision OCR)
-├── parser-agent/               ← PDF text-layer vs scan routing (parser worker)
-└── documents/                  ← separate top-level module (document vault)
-```
-
-Each agent mini-module follows the standard module layout:
+Some features (e.g. `landing`, `dashboard`) are **parent workspace modules**. Each parent can contain child mini-modules for pages or feature slices, and each child must expose a barrel so siblings do not reach into internals.
 
 ```text
-backend/src/modules/ai-ops/<agent-id>/
-├── index.js                    ← REQUIRED public barrel
-├── manifest.json               ← when registered as FSM agent
-├── agents/                     ← FSM (*.machine.js) — orchestrators + workers with runs
-├── services/                   ← action handlers
-├── routes/                     ← optional HTTP (e.g. classify)
-├── schemas/, prompts/, evals/, tests/, data/
+backend/src/modules/<parent-module>/
+├── index.js                    ← optional public barrel / wiring
+├── services/                   ← parent orchestration only
+├── repositories/              ← parent persistence if needed
+├── pages/                      ← top-level route handlers
+└── <mini-module>/              ← internal page/feature capability
+    ├── index.js                ← REQUIRED public barrel
+    ├── pages/
+    ├── components/
+    ├── services/
+    ├── routes/
+    ├── schemas/, prompts/, evals/, tests/, data/
+    └── manifest.json           ← optional, if the child is a separately registered capability
 ```
 
 **Rules:**
 
-1. Sibling code under `ai-ops/` imports agents ONLY via `../<agent-id>` or `../<agent-id>/index.js`.
-2. `parser-agent` is a worker capability; `ocr-agent` and future workers call it via the barrel — no deep imports into `parser-agent/services/`.
-3. Orchestrators (`rule-discovery-run`) assign work to worker agents via their barrels or agent runs — not by nesting code under the orchestrator folder.
+1. Sibling code under a parent module imports child mini-modules ONLY via `../<mini-module>` or `../<mini-module>/index.js`.
+2. No deep imports into a sibling child’s `components/`, `services/`, or `routes/`.
+3. Parent orchestration belongs in the parent `services/` folder or a dedicated orchestrator child mini-module, not inside sibling internals.
 4. Enforced via `BACKEND_PARENT_MINI_MODULES` in `scripts/lib/parent-mini-modules.config.mjs` and `npm run lint:mini-modules`.
 
 ### Prompts & evals (platform / AI)
@@ -162,7 +155,7 @@ Pages and hooks talk to the backend; presentational components do not call `fetc
 
 ## Parent modules and mini-modules (frontend)
 
-Some features (e.g. `case-management`, `ai-ops`) are **parent workspace modules**. They may omit `index.jsx` registry discovery; routes are registered manually in `frontend/src/app/router.jsx`.
+Some features (e.g. `landing`, `dashboard`) are **parent workspace modules**. They may omit `index.jsx` registry discovery; routes are registered manually in `frontend/src/app/router.jsx`.
 
 ### Parent module layout
 
@@ -207,7 +200,7 @@ Each mini-module is **private to the parent** — not a sibling under `src/modul
 | Type | Route registration | Example |
 |------|-------------------|---------|
 | Feature module | `index.jsx` + moduleRegistry or manual | `documents` |
-| Workspace parent | Manual nested routes in `app/router.jsx` | `case-management`, `ai-ops` |
+| Workspace parent | Manual nested routes in `app/router.jsx` | `landing`, `dashboard` |
 
 ---
 
@@ -239,7 +232,7 @@ Stay in one module until you have multiple unrelated subdomains or teams. Then a
 | Command | Checks |
 | --- | --- |
 | `npm run lint:boundaries` | Cross-top-level-module imports (absolute path strings + frontend relative imports with allowlist) |
-| `npm run lint:mini-modules` | Parent mini-module barrel-only imports (frontend + backend `ai-ops/<agent-id>/`) |
+| `npm run lint:mini-modules` | Parent mini-module barrel-only imports (frontend + backend nested child modules) |
 | `npm run lint:layers` | Layer import rules inside each backend module |
 | `npm test` | Unit + integration tests (`node:test`) |
 | `npm run test:evals` | Module eval runners |
