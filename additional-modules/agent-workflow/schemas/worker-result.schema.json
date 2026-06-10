@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["phaseId", "status", "testsWrittenFirst"],
+  "properties": {
+    "phaseId": { "type": "string" },
+    "status": { "type": "string" },
+    "testsWrittenFirst": { "type": "boolean" }
+  }
+}

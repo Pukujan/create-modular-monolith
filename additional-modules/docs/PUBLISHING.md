@@ -1,54 +1,50 @@
-# Publishing the v2 CLI
+# Publishing
 
-Publish as **`@pukujan/create-modular-monolith`** — users scaffold with:
+Two npm packages ship from this repo on **different branches**.
 
-```bash
-npm create @pukujan/modular-monolith@2 my-platform
-```
+## Packages
+
+| npm name | Branch | User command |
+|----------|--------|----------------|
+| `@pukujan/create-modular-monolith` | `main` | `npm create @pukujan/modular-monolith@latest my-app` |
+| `@pukujan/context-engineering` | `context-engineering` | `npx @pukujan/context-engineering init` |
 
 ## One-time setup
 
 1. [npm account](https://www.npmjs.com/signup) and `npm login`
-2. Ensure you can publish scope **`@pukujan`** (org or user on npm)
+2. Access to publish scope **`@pukujan`**
 
-## Release flow
-
-On branch **`v2`**:
-
-**Architecture-only** (no domain modules — recommended for boilerplate updates):
+## Publish `@pukujan/create-modular-monolith` (main)
 
 ```bash
-# Review local output (gitignored): file-exchange/exports/architecture-starter/
-npm run export:architecture-starter -- --to /absolute/path/to/create-modular-monolith/template
-```
-
-Starter patch sources live in `file-exchange/exports/templates/` (committed).
-
-**Full repo copy** (legacy — includes all modules):
-
-```bash
-npm run sync:cli-template
-```
-
-Then bump version and publish:
-
-```bash
-cd packages/create-modular-monolith
+git checkout main
+# bump version in package.json, commit
+npm pack --dry-run   # preview tarball
 npm publish --access public
+git push origin main
 ```
 
-## Package identity
+**Ships:** `index.js`, `template/`, `additional-modules/` (context-engineering, phase-builder, docs, scripts), `scripts/postinstall-message.mjs`
 
-| Field | Value |
-| --- | --- |
-| npm name | `@pukujan/create-modular-monolith` |
-| bin | `create-modular-monolith` |
-| user command | `npm create @pukujan/modular-monolith@2 <folder>` |
-| major pin | `@2` = platform starter line |
+**Does not ship:** root `AGENTS.md`, `MEMORY.md` (maintainer workspace only)
 
-## Branches
+## Publish `@pukujan/context-engineering` (context-engineering)
 
-| Branch | Purpose |
-| --- | --- |
-| `main` | Minimal v1 modular shell |
-| `v2` | Full internal contract + CLI |
+```bash
+git checkout context-engineering
+# bump version in package.json, commit
+npm pack --dry-run
+npm publish --access public
+git push origin context-engineering
+```
+
+**Ships:** `additional-modules/buildplan/`, `context-engineering/`, `phase-builder/`, `work-log/` only — no Express/React template, no architecture contracts.
+
+**Init writes to project root:** `buildplan/`, `scripts/`, `work-log/`, `AGENTS.md`, `MEMORY.md`
+
+Optional addon: `context-engineering init --phase-builder` → `phase_builder/`
+
+## Version policy
+
+- **create-modular-monolith `2.x`** — platform scaffold line (breaking when template layout or default modules change)
+- **context-engineering `2.x`** — standalone memory package (paths at project root)

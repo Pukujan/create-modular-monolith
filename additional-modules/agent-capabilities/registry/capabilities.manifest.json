@@ -1,0 +1,11 @@
+{
+  "version": "v001",
+  "capabilities": [
+    "frontend-contract-slice",
+    "backend-route-contract-slice",
+    "output-proof-contract",
+    "filesystem-search",
+    "npm-test",
+    "phase-builder-plan"
+  ]
+}

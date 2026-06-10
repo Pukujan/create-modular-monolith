@@ -1,0 +1,31 @@
+{
+  "version": "v001",
+  "initial": "intake",
+  "states": [
+    "intake",
+    "contract_lock",
+    "phase_planned",
+    "capabilities_selected",
+    "packet_built",
+    "worker_dispatched",
+    "proof_received",
+    "proof_validated",
+    "tests_verified",
+    "outcome_recorded",
+    "done",
+    "blocked"
+  ],
+  "transitions": [
+    { "from": "intake", "event": "CONTRACTS_LOCKED", "to": "contract_lock" },
+    { "from": "contract_lock", "event": "PHASES_READY", "to": "phase_planned" },
+    { "from": "phase_planned", "event": "CAPABILITIES_READY", "to": "capabilities_selected" },
+    { "from": "capabilities_selected", "event": "PACKET_READY", "to": "packet_built" },
+    { "from": "packet_built", "event": "WORKER_DISPATCHED", "to": "worker_dispatched" },
+    { "from": "worker_dispatched", "event": "PROOF_RECEIVED", "to": "proof_received" },
+    { "from": "proof_received", "event": "PROOF_VALID", "to": "proof_validated" },
+    { "from": "proof_validated", "event": "TESTS_PASS", "to": "tests_verified" },
+    { "from": "tests_verified", "event": "OUTCOME_RECORDED", "to": "outcome_recorded" },
+    { "from": "outcome_recorded", "event": "COMPLETE", "to": "done" },
+    { "from": "intake", "event": "BLOCK", "to": "blocked" }
+  ]
+}

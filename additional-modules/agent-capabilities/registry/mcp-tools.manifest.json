@@ -1,0 +1,14 @@
+{
+  "version": "v001",
+  "tools": [
+    {
+      "id": "filesystem-search",
+      "transport": "stdio",
+      "capabilities": ["read-files", "search-files"],
+      "riskLevel": "low",
+      "allowedProfiles": ["qwen-20k", "hermes-cloud"],
+      "requiresApproval": false,
+      "contextCostTokens": 250
+    }
+  ]
+}

@@ -3,7 +3,7 @@
  * npm create @pukujan/modular-monolith
  * Copies template/ into the target directory.
  */
-import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, readFileSync, statSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { createInterface } from "readline";
@@ -11,6 +11,21 @@ import { createInterface } from "readline";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const templateDir = join(__dirname, "template");
 const additionalModulesDir = join(__dirname, "additional-modules");
+const phaseBuilderSourceDir = join(additionalModulesDir, "phase-builder");
+const templateInfraDirs = ["docs", "file-exchange", "scripts", "work-log"];
+
+function copyPhaseBuilderAddon(sourceDir, targetDir) {
+  cpSync(sourceDir, targetDir, {
+    recursive: true,
+    filter: (src) => {
+      const normalized = src.replace(/\\/g, "/");
+      const parts = normalized.split("/");
+      return !parts.includes(".venv") &&
+        !parts.includes(".pytest_cache") &&
+        !parts.includes("__pycache__");
+    }
+  });
+}
 
 const targetArg = process.argv[2];
 if (!targetArg || targetArg === "--help" || targetArg === "-h") {
@@ -25,7 +40,7 @@ Docs: https://github.com/Pukujan/create-modular-monolith
   process.exit(targetArg ? 0 : 1);
 }
 
-const forceNoMiniModules = process.argv.includes("--no-mini-modules");
+const includeContextEngineering = !process.argv.includes("--no-memory");
 
 const target = resolve(process.cwd(), targetArg);
 
@@ -34,59 +49,60 @@ if (existsSync(target) && existsSync(join(target, "package.json"))) {
   process.exit(1);
 }
 
-async function askMiniModules() {
-  if (forceNoMiniModules) return false;
-
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  console.log(`
-  Scaffolding options:
-    1) Mini-modules  (latest, default) — full pipeline agents + memory system
-    2) Lightweight   — base scaffold only
-
-`);
-  const answer = await new Promise((resolve) => {
-    rl.question("  Choose (1/2) [1]: ", (a) => {
-      rl.close();
-      resolve(a);
-    });
-  });
-  return answer.trim() === "" || answer.trim() === "1";
-}
-
-const includeMiniModules = await askMiniModules();
-
 mkdirSync(target, { recursive: true });
-cpSync(templateDir, target, { recursive: true });
+cpSync(templateDir, target, {
+  recursive: true,
+  filter: (src) => {
+    const relative = src.startsWith(templateDir)
+      ? src.slice(templateDir.length + 1)
+      : src;
+    const [topLevel] = relative.split(/[\\/]/);
+    return !templateInfraDirs.includes(topLevel);
+  }
+});
 copyFileSync(join(__dirname, "LICENSE"), join(target, "LICENSE"));
 if (existsSync(additionalModulesDir)) {
-  for (const entry of readdirSync(additionalModulesDir)) {
-    if (["phase-builder", "node_modules", "__pycache__"].includes(entry)) continue;
-    const src = join(additionalModulesDir, entry);
-    const dest = join(target, entry);
-    if (statSync(src).isDirectory()) {
-      cpSync(src, dest, { recursive: true });
-    } else {
-      copyFileSync(src, dest);
+  const additionalModulesTarget = join(target, "additional-modules");
+  mkdirSync(additionalModulesTarget, { recursive: true });
+
+  for (const dir of templateInfraDirs) {
+    const src = join(templateDir, dir);
+    if (existsSync(src)) {
+      cpSync(src, join(additionalModulesTarget, dir), { recursive: true });
     }
   }
-}
 
-if (!includeMiniModules) {
-  const backendAiOps = join(target, "backend/src/modules/ai-ops");
-  const frontendAiOps = join(target, "frontend/src/modules/ai-ops");
-
-  if (existsSync(backendAiOps)) rmSync(backendAiOps, { recursive: true });
-  if (existsSync(frontendAiOps)) rmSync(frontendAiOps, { recursive: true });
+  const templatesRoot = join(additionalModulesDir, "context-engineering", "templates");
+  // Place AGENTS.md and MEMORY.md at project root (from templates)
+  for (const [name, template] of [["AGENTS.md", "AGENTS.md.template"], ["MEMORY.md", "MEMORY.md.template"]]) {
+    const tplPath = join(templatesRoot, template);
+    if (existsSync(tplPath)) {
+      const content = readFileSync(tplPath, "utf8");
+      writeFileSync(join(target, name), content);
+    }
+  }
+  if (existsSync(phaseBuilderSourceDir)) {
+    copyPhaseBuilderAddon(phaseBuilderSourceDir, join(additionalModulesTarget, "phase-builder"));
+  }
+  // Copy remaining additional-modules content
+  for (const entry of readdirSync(additionalModulesDir)) {
+    if (["phase-builder", "node_modules", "__pycache__", "AGENTS.md", "MEMORY.md"].includes(entry)) continue;
+    const src = join(additionalModulesDir, entry);
+    cpSync(src, join(additionalModulesTarget, entry), { recursive: true });
+  }
 }
 
 const REPO_URL = "https://github.com/Pukujan/create-modular-monolith";
 const NPM_URL = "https://www.npmjs.com/package/@pukujan/create-modular-monolith";
 
 console.log(`
-Created modular monolith at ${target} (mini-modules: ${includeMiniModules ? "included" : "skipped"})
+Created modular monolith at ${target}
 
 Next steps:
   cd ${targetArg}
+  node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
+  python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
+  python3 additional-modules/scripts/render_memory.py
   npm install --prefix backend
   npm install --prefix frontend
   npm run lint:contracts

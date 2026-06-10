@@ -54,7 +54,7 @@ def check_test_gate(gate_input: dict) -> GateResult:
 def check_budget_gate(gate_input: dict) -> GateResult:
     budget = gate_input.get("budget", {})
     usage = budget.get("usage", 0)
-    limit = budget.get("limit", 35000)
+    limit = budget.get("limit", 28000)
 
     remaining = max(0, limit - usage)
     pct = usage / limit if limit else 1.0

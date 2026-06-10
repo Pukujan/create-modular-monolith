@@ -1,6 +1,5 @@
 /** Shared path constants for plan scripts (mirrors planningPhase.contract.js). */
 
-export const STUDY_DOCS_DIR = "work-log/study-docs";
 export const PLANNING_DIR = "work-log/planning";
 
 export const PLAN_LOG_FILE = "plan-log.md";

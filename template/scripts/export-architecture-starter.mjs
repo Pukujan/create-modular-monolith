@@ -64,7 +64,6 @@ const SCRIPTS_KEEP = new Set([
   "verify-dev-log.mjs",
   "plan-finalize.mjs",
   "plan-gate.mjs",
-  "lint-pipeline-agent-mini-modules.mjs",
   "import-to-file-exchange.mjs",
   "resolve-import-stamp.mjs",
   "export-consolidated-models.mjs",
@@ -179,7 +178,7 @@ function copyWorkLog(target) {
   }
   writeFileSync(
     join(dest, "INDEX.md"),
-    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs, study-docs, and dev-log rows as you work.\n`
+    `# Work log — index\n\nSee [README.md](./README.md). Add handoffs and dev-log rows as you work.\n`
   );
   copyFiltered(join(repoRoot, "work-log/dev-logs"), join(dest, "dev-logs"), (p) => {
     const base = p.split(/[/\\]/).pop() || "";
@@ -190,8 +189,6 @@ function copyWorkLog(target) {
   });
   mkdirSync(join(dest, "handoffs"), { recursive: true });
   cpSync(join(repoRoot, "work-log/handoffs/README.md"), join(dest, "handoffs/README.md"));
-  mkdirSync(join(dest, "study-docs"), { recursive: true });
-  cpSync(join(repoRoot, "work-log/study-docs/README.md"), join(dest, "study-docs/README.md"));
   mkdirSync(join(dest, "planning"), { recursive: true });
   writeFileSync(join(dest, "planning/.gitkeep"), "");
   console.log("  ✓ work-log/ (structure, planning/, no domain handoffs)");
@@ -426,11 +423,8 @@ function patchLintRepoArtifacts(target) {
   "docs/architecture/contracts/prePushDevLog.contract.md",
   "docs/architecture/contracts/planningPhase.contract.md",
   "docs/architecture/contracts/moduleAgentStateMachine.contract.md",
-  "docs/architecture/contracts/pipelineAgentMiniModules.contract.md",
   "docs/architecture/contracts/asyncJobQueue.contract.md",
   "docs/architecture/contracts/apiDocumentationRegistry.contract.md",
-  "backend/src/shared/contracts/pipelineAgentMiniModules.contract.js",
-  "backend/src/shared/contracts/pipeline-agent-mini-modules.registry.json",
   "backend/src/shared/contracts/moduleAgentStateMachine.contract.js",
   "backend/src/shared/contracts/prePushDevLog.contract.js",
   "backend/src/shared/contracts/planningPhase.contract.js",

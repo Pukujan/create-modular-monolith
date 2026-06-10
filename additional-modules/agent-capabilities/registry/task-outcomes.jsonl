@@ -1,0 +1,1 @@
+{"taskId":"seed","taskType":"ui-contract","agentProfile":"qwen-20k","skillsUsed":["frontend-contract-slice"],"mcpToolsUsed":[],"cliToolsUsed":["npm-test"],"contextTokensEstimated":1200,"status":"passed","notes":"seed outcome"}

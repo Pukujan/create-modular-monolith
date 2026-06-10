@@ -1,0 +1,29 @@
+{
+  "version": "v001",
+  "skills": [
+    {
+      "id": "frontend-contract-slice",
+      "description": "Frontend UI contract enforcement for adapter-only API calls and no drift.",
+      "bestFor": ["ui-contract", "frontend-adapter", "browser-proof"],
+      "avoidFor": ["backend-only", "database-migration"],
+      "contextCostTokens": 900,
+      "requiredContractIds": ["CONTRACT:UI:NO_DIRECT_FETCH"]
+    },
+    {
+      "id": "backend-route-contract-slice",
+      "description": "Backend route and response contract enforcement.",
+      "bestFor": ["backend-route", "persistence"],
+      "avoidFor": ["frontend-ui"],
+      "contextCostTokens": 850,
+      "requiredContractIds": ["CONTRACT:API:WORKOUT_RESPONSE_WRAPPERS"]
+    },
+    {
+      "id": "output-proof-contract",
+      "description": "Structured proof validation for phase completion.",
+      "bestFor": ["proof", "workflow"],
+      "avoidFor": [],
+      "contextCostTokens": 400,
+      "requiredContractIds": ["CONTRACT:OUTPUT:PHASE_PROOF"]
+    }
+  ]
+}

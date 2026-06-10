@@ -1,5 +1,4 @@
 export const PLANNING_PHASE_VERSION = "v003";
-export const STUDY_DOCS_DIR = "work-log/study-docs";
 export const PLANNING_DIR = "work-log/planning";
 
 export const PLAN_LOG_FILE = "plan-log.md";
@@ -24,7 +23,6 @@ export function planningManifestPath(phaseDir) {
 
 export function artifactLocations() {
   return {
-    studyLogMd: STUDY_DOCS_DIR,
     phaseDir: PLANNING_DIR,
     planLogMd: PLANNING_DIR,
     auditLogMd: PLANNING_DIR,

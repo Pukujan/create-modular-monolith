@@ -6,13 +6,31 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
-## What's new in 2.4.0: mini-modules and context engineering
+## What's new in 2.6.6: agent capability registry and workflow skeleton
 
-Version 2.4.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
+Version 2.6.6 adds the first cut of the agent capability registry and workflow skeleton so the repo can recommend tools, build compact task packets, and keep a task's state machine visible across sessions. The new additions live under `additional-modules/agent-capabilities/` and `additional-modules/agent-workflow/`, with tests that cover the registry, packet builder, and workflow state transitions.
 
 **[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
 
-In short: the scaffold now ships with a pre-built `ai-ops` parent module containing 13 pipeline agent mini-modules and 8 infrastructure mini-modules. Each mini-module has enforced boundaries (barrel-only sibling imports, lint gates), a JSON registry, and a session memory system so agents survive context window limits.
+The package README, template docs, and additional-modules docs now all point at the same workflow surface so humans and agents land on the same rules.
+
+## What's new in 2.6.4: agent state, compaction symlink, context budget thresholds
+
+Version 2.6.4 resolves critical agent state bugs: `activeModule` now reflects the current module being scaffolded (was `"none"`), an `opencode.json` symlink enables auto-compaction at the 28k ceiling, and `context_budget.json` includes proper warning/compact/stop thresholds. Also fixes the `.mdc` rule discovery path mismatch by moving rules to `.agents/rules/`.
+
+**[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
+
+Also in 2.6.x: init re-run on existing scaffolds, `--archive-session` / `--status` flags, and phase-builder copied via `init --phase-builder`.
+
+**Standalone memory-only package:** the same compaction-threshold and checksum fixes ship in [`@pukujan/context-engineering@2.2.1`](https://www.npmjs.com/package/@pukujan/context-engineering) on the [`context-engineering`](https://github.com/Pukujan/create-modular-monolith/tree/context-engineering) branch — memory + budgeting only, writes to project root (no Express/React scaffold).
+
+## What's new in 2.5.0: mini-modules and context engineering
+
+Version 2.5.0 introduces a **parent module / mini-module** architecture with a registry-driven pipeline system, strict boundary enforcement, and a cross-session memory protocol. These are now the default scaffold.
+
+**[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
+
+In short: the scaffold now includes a mini-modules architecture with enforced boundaries (barrel-only sibling imports, lint gates), a JSON registry, and a cross-session memory system so agents survive context window limits.
 
 ## The problem nobody warned you about
 
@@ -54,6 +72,11 @@ If you are still writing every line by hand, this is probably overkill.
 npm create @pukujan/modular-monolith@latest my-platform
 
 cd my-platform
+
+# Finish context engineering (resolves placeholders, syncs scripts, renders MEMORY.md)
+node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
+python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
+python3 additional-modules/scripts/render_memory.py
 
 # Install dependencies
 npm install --prefix backend && npm install --prefix frontend
@@ -132,20 +155,25 @@ npm run plan:gate -- --slug auth-refactor
 ```
 my-platform/
 ├── AGENTS.md                 ← Required reading for Cursor / agents
+├── MEMORY.md                 ← Working memory (regenerated each session)
 ├── backend/src/
 │   ├── core/                 ← Module loader, server
-│   ├── modules/_reference/   ← Example health-check module
-│   ├── modules/model-condenser/
+│   ├── modules/_reference/   ← Example health-check module (only domain module)
+│   ├── modules/model-condenser/ ← Schema inventory tooling
 │   └── shared/               ← Contracts, agent-runtime, artifact paths
-├── frontend/src/core/ + modules/_reference/
-├── docs/architecture/        ← Contracts, guardrails, templates
-├── file-exchange/            ← imports/ + exports/ (human ↔ agent handoff)
-├── work-log/                 ← dev-logs, planning/{folder}/, study-logs/
+├── frontend/src/core/ + modules/_reference/  ← No pre-built product UI
+├── additional-modules/
+│   ├── docs/architecture/    ← Contracts, guardrails, templates
+│   ├── file-exchange/        ← imports/ + exports/ (human ↔ agent handoff)
+│   ├── work-log/             ← dev-logs, planning/{folder}/, study-logs/
+│   ├── buildplan/            ← Agent state, context budget
+│   ├── scripts/              ← render_memory, measure_context, check_gate
+│   └── context-engineering/  ← CLI tool and templates
 ├── local-artifacts.example.json
 └── package.json              ← Root scripts (test:ci, condense:all, new:module, …)
 ```
 
-Read `docs/architecture/CONTRACTS_OVERVIEW.md` and `AGENTS.md` before adding your own domain modules.
+Read `additional-modules/docs/architecture/CONTRACTS_OVERVIEW.md` and `AGENTS.md` before adding your own domain modules.
 
 ## Architecture contracts (the boring-but-important part)
 
@@ -203,15 +231,11 @@ A single module can quickly grow to hundreds of files. When an AI agent loads a 
 Mini-modules split a parent module into small, single-responsibility units. Each mini-module has its own barrel (`index.js`), services, routes, and schema. Agents load only the one they need.
 
 ```
-backend/src/modules/ai-ops/                    ← parent module
-├── run-orchestrator/                          ← mini-module (pipeline)
-├── ingest-router/                             ← mini-module (pipeline)
-├── document-processor/                        ← mini-module (pipeline)
-├── data-extractor/                            ← mini-module (pipeline)
-├── ...                                        ← 12 pipeline mini-modules total
+backend/src/modules/my-parent-module/          ← parent module
+├── agent-alpha/                               ← mini-module
+├── agent-beta/                                ← mini-module
 ├── shared/                                    ← mini-module (infrastructure)
 ├── middleware/                                ← mini-module (infrastructure)
-├── ...                                        ← 8 infrastructure mini-modules total
 └── index.js                                   ← parent barrel, registers all
 ```
 
@@ -233,9 +257,52 @@ This scaffold includes a 3-layer memory system for AI agents:
 |---|---|---|
 | L1 — Working memory | `MEMORY.md` | Current state, <100 lines, updated every session |
 | L2 — Rules | `AGENTS.md` | Architecture rules, boundaries, lint commands |
-| L3 — Archive | `work-log/sessions/` | Completed session notes, study logs |
+| L3 — Archive | `additional-modules/work-log/sessions/` | Completed session notes, study logs |
 
 The `work-log/` folder also holds study documents with mermaid diagrams, token budgets, and migration notes.
+
+### OpenCode users (live compaction)
+
+Context-engineering and OpenCode solve different problems:
+
+| System | Scope | Role |
+|---|---|---|
+| **OpenCode** (`additional-modules/context-engineering/opencode.json`) | Current chat session | Auto-compact before overflow; prune old tool outputs |
+| **Context-engineering** (`measure_context.py`, `MEMORY.md`) | Across sessions | Track budget, archive work, restore project state |
+
+They share the same **28k ceiling** (compact around 25.2k at 90%) but use different enforcers. OpenCode never calls `measure_context.py` unless you run it.
+
+```bash
+# Writes additional-modules/context-engineering/opencode.json with compaction defaults
+node additional-modules/context-engineering/bin/context-eng.js init --opencode
+```
+
+Shipped defaults: `compaction.auto`, `prune`, and `reserved: 3472` (compact at ~25.2k before the 28k cap). Set your provider model limit to **28672** context tokens:
+
+```json
+{
+  "provider": {
+    "local-qwen": {
+      "models": {
+        "qwen": {
+          "limit": { "context": 28672, "output": 4096 }
+        }
+      }
+    }
+  }
+}
+```
+
+OpenCode looks for `opencode.json` in the project root by default. Point it at the module config:
+
+```bash
+export OPENCODE_CONFIG="$PWD/additional-modules/context-engineering/opencode.json"
+# or: ln -sf additional-modules/context-engineering/opencode.json opencode.json
+```
+
+Global defaults live in `~/.config/opencode/opencode.jsonc` and apply to all projects; project config overrides them when OpenCode runs in that directory.
+
+**Tip:** Sending a new message while the agent is running shows "interrupted" — that is a manual cancel, not failed compaction. Wait for the turn to finish.
 
 ### Installation
 
@@ -249,7 +316,33 @@ npx @pukujan/modular-monolith@latest my-project
 npx @pukujan/modular-monolith@c7ac6fb my-project
 ```
 
-Scaffolded projects include the full 3-layer memory system, registry scripts, and 20 pre-built mini-modules out of the box.
+Scaffolded projects include the full 3-layer memory system, registry scripts, and a clean `_reference` module — add your own domain modules with `npm run new:module`.
+
+**Post-scaffold init (required):**
+```bash
+cd my-project
+node additional-modules/context-engineering/bin/context-eng.js init --phase-builder --opencode
+python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session
+python3 additional-modules/scripts/render_memory.py
+```
+
+### Standalone context-engineering package
+
+Need memory, token budgeting, and OpenCode compaction **without** the full monolith scaffold? Use the separate npm package on the `context-engineering` branch:
+
+```bash
+npm install -g @pukujan/context-engineering@2.2.1
+context-engineering init --phase-builder --opencode
+python3 scripts/measure_context.py --tokens 0 --start-session
+python3 scripts/render_memory.py
+```
+
+| Package | Branch | Layout |
+|---------|--------|--------|
+| `@pukujan/create-modular-monolith` | `main` | Full scaffold; paths under `additional-modules/` |
+| `@pukujan/context-engineering` | `context-engineering` | Memory only; paths at project root |
+
+See the [context-engineering README](https://github.com/Pukujan/create-modular-monolith/tree/context-engineering#readme) for v2.2.1 release notes.
 
 ## Package vs. product
 

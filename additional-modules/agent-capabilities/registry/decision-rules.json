@@ -1,0 +1,17 @@
+{
+  "version": "v001",
+  "rules": [
+    {
+      "id": "RULE:USE_SKILL_FOR_PROCEDURAL_GUIDANCE",
+      "if": { "needsWorkflowPattern": true },
+      "then": { "allowTypes": ["skill"] },
+      "because": "Skills are procedural knowledge packets."
+    },
+    {
+      "id": "RULE:USE_CLI_FOR_VERIFICATION",
+      "if": { "needsDeterministicProof": true },
+      "then": { "allowTypes": ["cli"] },
+      "because": "CLI tools produce reproducible proof."
+    }
+  ]
+}

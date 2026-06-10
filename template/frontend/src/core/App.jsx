@@ -6,7 +6,7 @@ export function App() {
   return (
     <BrowserRouter>
       <nav>
-        <strong>Modular Litigation Starter</strong>
+        <strong>Modular Monolith</strong>
         <span>{moduleRoutes.length} modules</span>
         {moduleRoutes.map((entry) => (
           <NavLink key={entry.route} to={entry.route}>

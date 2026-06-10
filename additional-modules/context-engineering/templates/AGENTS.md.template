@@ -2,32 +2,26 @@
 
 ## State Management (Hard Rules)
 
-**Source of truth:** `buildplan/agent_state.json` (machine-readable, agent writes here)
-**Checksum:** `buildplan/agent_state.sha256` (auto-updated on every state change)
+**Source of truth:** `additional-modules/buildplan/agent_state.json` (machine-readable, agent writes here)
+**Checksum:** `additional-modules/buildplan/agent_state.sha256` (auto-updated on every state change)
 **View:** `MEMORY.md` (read-only for agent, generated from agent_state.json)
 
 ### Workflow
 1. **Read `MEMORY.md` on session start** — restore project context
-2. **Edit `buildplan/agent_state.json`** — update state as you work
-3. **Regenerate `MEMORY.md`** — run `python scripts/render_memory.py` to update the view
-4. **Archive session** — on session end, run `python scripts/measure_context.py --archive-session --slug <slug>`
+2. **Edit `additional-modules/buildplan/agent_state.json`** — update state as you work
+3. **Regenerate `MEMORY.md`** — run `python3 additional-modules/scripts/render_memory.py`
+4. **Record session end** — run `python3 additional-modules/scripts/measure_context.py --end-session --tokens <count>`
 
 ### Context Budget
-- **Hard limit:** 24,000 tokens per session
-- **Enforced by:** `scripts/measure_context.py`
-- **Tracker:** `buildplan/context_budget.json`
-- **Check status:** `python scripts/measure_context.py --status`
+- **Ceiling:** 28,000 tokens per session (warn-only — never aborts the agent)
+- **Tracked by:** `additional-modules/scripts/measure_context.py`
+- **Tracker:** `additional-modules/buildplan/context_budget.json`
+- **Check status:** `python3 additional-modules/scripts/measure_context.py --status`
+- **Start session:** `python3 additional-modules/scripts/measure_context.py --tokens 0 --start-session`
 
 ### Module Gate
-- Before transitioning modules, run: `python scripts/check_gate.py`
-- Gate fails if `lint:architecture` has any errors
-- Blocks transition until lint passes
-
-### Session Archives
-- Location: `work-log/sessions/`
-- Format: `{YYYY-MM-DD}-{slug}.md`
-- Index: `work-log/sessions/INDEX.md`
-- Dev logs: `work-log/dev-logs/`
+- Before transitioning modules, run: `python3 additional-modules/scripts/check_gate.py --module <slug>`
+- Gate runs `lint:architecture` when the host project defines it
 
 ## Lint Commands
 
@@ -38,6 +32,38 @@
 | `lint:layers` | Intra-module layer rules |
 
 ## Memory Rules
-- Hard ~24k token limit with compact procedure
-- Session memory: read MEMORY.md on start, archive + prune on end
+- ~28k token ceiling with warn-only procedure (compact, do not stop work)
+- Session memory: read MEMORY.md on start, prune on end
 - Terse bullets, no prose
+
+## Cache-Stable Prompt Rules
+- Keep stable project rules and architecture grounding above volatile task details.
+- Do not place timestamps, token counts, random IDs, branch names, commit hashes, command output, or generated status blocks before stable instructions.
+- Keep normal requests under 8k tokens and debug/error-log requests under 12k tokens whenever possible.
+- Read the minimum files needed for the current phase; summarize old state instead of repasting it.
+- Put changing task details, logs, file excerpts, and test output near the bottom of prompts or handoffs.
+
+## Architecture Grounding
+- Start from `additional-modules/docs/architecture/CONTRACTS_OVERVIEW.md` when a change touches module shape or install layout.
+- Use `additional-modules/docs/architecture/MODULE_INTERNAL_CONTRACT.md` for parent modules, page/feature mini-modules, barrel-only imports, and layer boundaries.
+- Use `additional-modules/docs/architecture/ARCHITECTURE_GUARDRAILS.md` for boundary lint behavior and cross-module import rules.
+- Use `additional-modules/docs/architecture/contracts/moduleAgentStateMachine.contract.md` only when a module owns FSM-driven agents, persistence, or route orchestration.
+- Use `additional-modules/docs/architecture/contracts/planningPhase.contract.md` for planning artifacts and phase gates.
+- Treat `additional-modules/buildplan/agent_state.json` and `MEMORY.md` as the memory/state pair, with `AGENTS.md` as the cache-stable prompt guide.
+
+## OpenCode vs context-engineering (two systems)
+
+| Layer | Enforcer | What it does |
+|---|---|---|
+| Live chat compaction | `additional-modules/context-engineering/opencode.json` | Auto-compact before context overflow; prune old tool outputs |
+| Cross-session memory | `measure_context.py`, `MEMORY.md`, work-log | Track budget, restore state next session |
+
+They are parallel — OpenCode does not call `measure_context.py` unless you run it.
+
+**Setup:** `node additional-modules/context-engineering/bin/context-eng.js init --opencode`
+
+**Policy alignment:** 28k ceiling everywhere — compact around 25.2k (90%). Set `provider.<name>.models.<id>.limit.context` to **28672** (28k) in `additional-modules/context-engineering/opencode.json`; shipped `compaction.reserved: 3472` triggers compaction before the cap.
+
+**OpenCode discovery:** OpenCode loads `opencode.json` from the project root by default. Point it at this file with `export OPENCODE_CONFIG="$PWD/additional-modules/context-engineering/opencode.json"`, or symlink: `ln -sf additional-modules/context-engineering/opencode.json opencode.json`.
+
+**Avoid false "interrupted":** Do not send a new message while the agent is still running — OpenCode cancels the in-flight turn (`session.prompt cancel`).

@@ -1,0 +1,21 @@
+{
+  "version": "v001",
+  "profiles": [
+    {
+      "id": "qwen-20k",
+      "contextWindow": 20000,
+      "targetPacketTokens": 8000,
+      "requiresStructuredOutput": true,
+      "defaultOutputSchema": "phase-proof.v1",
+      "maxRecommendedCapabilities": 5
+    },
+    {
+      "id": "hermes-cloud",
+      "contextWindow": 20000,
+      "targetPacketTokens": 8000,
+      "requiresStructuredOutput": true,
+      "defaultOutputSchema": "phase-proof.v1",
+      "maxRecommendedCapabilities": 5
+    }
+  ]
+}

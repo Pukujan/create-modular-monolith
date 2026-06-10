@@ -2,20 +2,51 @@
 
 All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
+## [2.6.2] - 2026-06-08
+
+### Added
+
+- **`init --opencode`** — writes `additional-modules/context-engineering/opencode.json` with compaction defaults (`reserved: 3472` for 28k cap)
+- **OpenCode docs** — README and `AGENTS.md` explain live compaction vs cross-session memory
+
+### Changed
+
+- **28k token ceiling** — aligned across `measure_context.py`, `buildplan/`, phase-builder, and `MEMORY.md` rendering
+- **Warn thresholds** — warning at 18k, critical at 25.2k (90%); always exit 0 on budget check
+- **Post-scaffold flow** — `init --phase-builder --opencode` documented in README, `index.js`, and `template/README.md`
+
+### Fixed
+
+- **Phase-builder defaults** — `hard_limit` 28000 (was 35000) with updated tests
+
+## [2.6.1] - 2026-06-08
+
+### Fixed
+
+- **`init` re-run** — resolves `{{placeholders}}`, syncs Python scripts, re-renders `MEMORY.md` on existing projects
+- **`measure_context.py`** — warn-only (no abort at limit); added `--status` and session start/end tracking
+- **`AGENTS.md`** — documents real CLI flags
+
+## [2.6.0] - 2026-06-08
+
+### Changed
+
+- **Clean scaffold** — removed litigation product modules; ships `_reference` + contracts only
+
 ## [2.4.0] - 2026-06-06
 
 ### Added
 
 - **Parent module / mini-module architecture** — modules can now contain smaller single-responsibility sub-units with their own barrel exports, services, routes, and manifests
-- **Registry-driven mini-modules** — `pipeline-agent-mini-modules.registry.json` declares all mini-modules; lint scripts enforce registry ↔ folder ↔ manifest alignment
-- **3-layer memory system** — L1 `MEMORY.md` (working memory, <100 lines), L2 `AGENTS.md` (rules and boundaries), L3 `work-log/sessions/` (completed session archive)
-- **Pre-built ai-ops parent module** — ships with 13 pipeline agent mini-modules and 8 infrastructure mini-modules (all generic, domain-agnostic)
-- **`work-log/study-docs/`** — study documents with mermaid diagrams, token budgets, and context engineering notes
+- **Registry-driven mini-modules** — parent modules can contain child page/feature mini-modules; lint scripts enforce barrel-only sibling imports and module boundaries
+- **3-layer memory system** — L1 `MEMORY.md` (working memory, <100 lines), L2 `AGENTS.md` (rules and boundaries), L3 `work-log/` utilities
+- **Parent module / child mini-modules** — ship with generic parent modules and independent child modules for pages/features
+- **Work-log cleanup** — simplified the scaffold to live planning, handoff, and dev-log paths
 
 ### Changed
 
 - **Mini-module boundary enforcement** — `lint:mini-modules` enforces barrel-only sibling imports; no deep paths into sibling internals
-- **Generic naming** — all pipeline agents renamed from legal-tech-specific slugs to generic names (e.g., `parser-agent` → `ingest-router`)
+- **Generic naming** — module examples use product-agnostic names like `landing` and `dashboard`
 - **Scaffold is default** — mini-modules and context engineering are now the default scaffold, not optional
 
 ### Fixed
@@ -42,7 +73,7 @@ All notable changes to `@pukujan/create-modular-monolith` are documented here.
 
 - **`plan:gate` / `plan:finalize`** — omitting `--plan-id` no longer reads `process.argv[0]` as the plan id (manifest paths like `node.exe.json` on Windows)
 - **`dev-log:pre-push`** — starter boilerplate no longer crashes when pipeline/prompt registries are null
-- **Planning paths** — consolidated planning audit logs, design, and plan packages into `work-log/planning/` (removed `study-docs/` split)
+- **Planning paths** — consolidated planning audit logs, design, and plan packages into `work-log/planning/`
 - **Terminology** — planning gate files are **audit logs** (`*_audit-log_*`, `/planning-audit-log`); study logs are a separate concept, not gated by `plan:gate`
 - **Windows** — planning manifest paths use forward slashes; `agent:push` git commit no longer splits on spaces in the message
 

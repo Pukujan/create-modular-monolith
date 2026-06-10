@@ -22,11 +22,7 @@ export async function loadModules(app) {
     .filter((d) => !d.name.startsWith("."))
     .map((d) => d.name);
 
-  const loadFirst = ["documents", "ai-ops"];
-  const ordered = [
-    ...loadFirst.filter((n) => names.includes(n)),
-    ...names.filter((n) => !loadFirst.includes(n)).sort()
-  ];
+  const ordered = [...names].sort();
 
   console.log(`\nLoading ${ordered.length} backend module(s)...`);
 

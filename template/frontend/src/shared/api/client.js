@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+const BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:3001";
 
 async function readResponseBody(response) {
   const raw = await response.text();
@@ -17,7 +17,7 @@ function errorMessageFromBody(body, status) {
     if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) {
       const preMatch = text.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
       const snippet = preMatch?.[1]?.trim() ?? "Route not found";
-      return `${snippet} (HTTP ${status}). Is the backend running with DATABASE_URL set to SQLite (file:./data/app.db)? Restart npm run dev in backend after pulling.`;
+      return `${snippet} (HTTP ${status}). Is the backend running on ${BASE_URL}?`;
     }
     return text;
   }
