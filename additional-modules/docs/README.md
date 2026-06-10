@@ -18,4 +18,14 @@ This folder describes the **modular monolith platform starter** and how **archit
 | [Workout module contracts](./workout/README.md) | Workout API, data contract, and persistence handoff rules |
 | [Case Filing AI starter](./case-filing-ai/README.md) | Domain blueprint, module split, pipeline, guardrails, and DB schema |
 
+## Next Up
+
+Short-term architecture work planned for the agent-first workflow:
+
+1. Agent capability registry with skill, MCP, and CLI manifests.
+2. Decision graph plus retrieval index, symbolic-first and vector-ready later.
+3. Context packet builder with strict token budget checks.
+4. Workflow state machine that orchestrates worker/subagent phases.
+5. Output proof schemas and outcome recording for low-context agents.
+
 Canonical repository: [https://github.com/Pukujan/litigation-prompt-engineering](https://github.com/Pukujan/litigation-prompt-engineering)
