@@ -6,6 +6,14 @@ You know the feeling. You come back to a project after the weekend, and Cursor h
 
 This is a scaffolding tool for teams who code with agents daily and are tired of pretending that a vanilla Express + React starter is enough.
 
+## What's new in 2.6.6: agent capability registry and workflow skeleton
+
+Version 2.6.6 adds the first cut of the agent capability registry and workflow skeleton so the repo can recommend tools, build compact task packets, and keep a task's state machine visible across sessions. The new additions live under `additional-modules/agent-capabilities/` and `additional-modules/agent-workflow/`, with tests that cover the registry, packet builder, and workflow state transitions.
+
+**[Read the full mini-modules and context engineering guide →](#mini-modules-and-context-engineering)**
+
+The package README, template docs, and additional-modules docs now all point at the same workflow surface so humans and agents land on the same rules.
+
 ## What's new in 2.6.4: agent state, compaction symlink, context budget thresholds
 
 Version 2.6.4 resolves critical agent state bugs: `activeModule` now reflects the current module being scaffolded (was `"none"`), an `opencode.json` symlink enables auto-compaction at the 28k ceiling, and `context_budget.json` includes proper warning/compact/stop thresholds. Also fixes the `.mdc` rule discovery path mismatch by moving rules to `.agents/rules/`.

@@ -14,6 +14,16 @@ template/backend/node_modules/
 template/frontend/node_modules/
 template/backend/package-lock.json
 template/frontend/package-lock.json
+additional-modules/docs/workout/
+template/backend/src/modules/workout/
+template/backend/src/shared/contracts/workoutPersistence.contract.js
+template/docs/workout/
+template/frontend/src/modules/workout/
+template/frontend/src/services/
+tests/fixtures/
+tests/workout_data_contract.test.js
+tests/workout_ui_contract.test.js
+tmp-agent-capabilities-test/
 
 # Git and npm config
 .git/

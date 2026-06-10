@@ -1,0 +1,6 @@
+backend/src/modules/workout/
+backend/src/shared/contracts/workoutPersistence.contract.js
+docs/workout/
+frontend/src/modules/workout/
+frontend/src/services/workoutApi.js
+frontend/src/services/workoutApi.test.js
