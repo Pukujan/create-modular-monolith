@@ -1,0 +1,19 @@
+{
+  "version": "v001",
+  "tools": [
+    {
+      "id": "npm-test",
+      "command": "npm test",
+      "purpose": "Run deterministic repository tests.",
+      "proofRequired": true,
+      "contextCostTokens": 300
+    },
+    {
+      "id": "phase-builder-plan",
+      "command": "npm run phase-builder:plan",
+      "purpose": "Generate TDD implementation phases from contract input.",
+      "proofRequired": true,
+      "contextCostTokens": 300
+    }
+  ]
+}

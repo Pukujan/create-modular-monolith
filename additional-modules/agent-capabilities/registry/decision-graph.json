@@ -1,0 +1,30 @@
+{
+  "version": "v001",
+  "nodes": [
+    {
+      "id": "task.ui-contract",
+      "type": "taskType",
+      "label": "UI contract enforcement"
+    },
+    {
+      "id": "skill.frontend-contract-slice",
+      "type": "skill",
+      "capabilityId": "frontend-contract-slice"
+    },
+    {
+      "id": "cli.npm-test",
+      "type": "cli",
+      "capabilityId": "npm-test"
+    }
+  ],
+  "edges": [
+    {
+      "from": "task.ui-contract",
+      "to": "skill.frontend-contract-slice",
+      "relation": "recommends",
+      "reason": "UI contract work needs frontend adapter enforcement.",
+      "weight": 0.9,
+      "requiredContractIds": ["CONTRACT:UI:NO_DIRECT_FETCH"]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "v001",
+  "backend": "none",
+  "mode": "symbolic-first",
+  "records": [
+    {
+      "id": "outcome.workout-ui-contract-proof",
+      "source": "registry/task-outcomes.jsonl",
+      "taskType": "ui-contract",
+      "capabilitiesUsed": ["frontend-contract-slice", "npm-test"],
+      "summary": "Adapter test caught environment boundary issue.",
+      "tags": ["ui-contract", "adapter", "test-proof"]
+    }
+  ]
+}

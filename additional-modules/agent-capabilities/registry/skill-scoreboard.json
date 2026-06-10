@@ -1,0 +1,8 @@
+{
+  "version": "v001",
+  "scores": {
+    "frontend-contract-slice": { "uses": 1, "passes": 1, "failures": 0 },
+    "backend-route-contract-slice": { "uses": 0, "passes": 0, "failures": 0 },
+    "output-proof-contract": { "uses": 0, "passes": 0, "failures": 0 }
+  }
+}
